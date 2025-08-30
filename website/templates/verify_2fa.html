@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Verify Two-Factor Authentication{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card glass-card-ui p-5">
+                <div class="text-center mb-4">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle" style="background:rgba(193,211,254,0.18);border-radius:50%;padding:12px;">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22,4 12,14 9,11"></polyline>
+                    </svg>
+                </div>
+                
+                <h2 class="text-center mb-4" style="color:#7092BE;font-family:'Manrope','Inter',Arial,sans-serif;font-weight:700;">
+                    Verify Two-Factor Authentication
+                </h2>
+                
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle mr-2"></i>
+                    <strong>Test your 2FA setup</strong> by entering a code from your authenticator app or using a backup code.
+                </div>
+                
+                <form method="POST" class="mb-4">
+                    <div class="form-group mb-4">
+                        <label for="code" style="font-size: 1.1rem; color: #7092BE;">
+                            <i class="fa fa-mobile mr-2"></i>Authenticator App Code
+                        </label>
+                        <input type="text" class="form-control text-center" id="code" name="code" 
+                               placeholder="000000" maxlength="6" pattern="[0-9]{6}" 
+                               style="font-size: 1.2rem; letter-spacing: 2px;">
+                        <small class="form-text text-muted">Enter the 6-digit code from your authenticator app</small>
+                    </div>
+                    
+                    <div class="text-center mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fa fa-check mr-2"></i>Verify Code
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mb-4">
+                    <span class="text-muted">— OR —</span>
+                </div>
+                
+                <form method="POST" class="mb-4">
+                    <div class="form-group mb-4">
+                        <label for="backup_code" style="font-size: 1.1rem; color: #7092BE;">
+                            <i class="fa fa-key mr-2"></i>Backup Code
+                        </label>
+                        <input type="text" class="form-control text-center" id="backup_code" name="backup_code" 
+                               placeholder="Enter backup code" style="font-family: monospace;">
+                        <small class="form-text text-muted">Use one of your backup codes if you can't access your authenticator app</small>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-outline-secondary btn-lg">
+                            <i class="fa fa-unlock mr-2"></i>Use Backup Code
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('views.settings') }}" class="text-muted">
+                        <i class="fa fa-arrow-left mr-1"></i>Back to Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus on the first input
+document.getElementById('code').focus();
+
+// Auto-advance to next input for better UX
+document.getElementById('code').addEventListener('input', function(e) {
+    if (this.value.length === 6) {
+        this.form.submit();
+    }
+});
+
+// Format backup code input
+document.getElementById('backup_code').addEventListener('input', function(e) {
+    this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '');
+});
+</script>
+{% endblock %}
+
+
+
+

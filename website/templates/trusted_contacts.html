@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+{% block title %}Trusted Contacts{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h1 class="headline-calm text-center mb-2">Your Trusted Contacts</h1>
+    <p class="headline-reassure text-center mb-5">These are the people who will help deliver your messages safely.</p>
+    <!-- Add Trusted Contact Form -->
+    <div class="card shadow-sm mb-6 p-4 glass-card-ui">
+        <div class="card-header bg-white border-0" style="background: transparent !important;">
+            <div class="position-relative d-flex align-items-center mb-0" style="justify-content:center;">
+              <h4 class="mb-0" style="color:#7092BE;font-family:'Manrope','Inter',Arial,sans-serif;font-weight:700;">Add New Trusted Contact</h4>
+              <span tabindex="0" id="trusted-contact-info-main" style="cursor:pointer;display:inline-block;vertical-align:middle;margin-left:6px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
+              </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="addContactForm" method="POST" action="{{ url_for('views.add_trusted_contact') }}{% if request.args.get('from_letter') == '1' %}?from_letter=1{% endif %}" novalidate>
+                <div class="form-group mb-4">
+                    <label for="first_name" style="font-size: 1.15rem; color: #7092BE;">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" required style="font-size: 1.15rem;">
+                    <small class="text-danger d-none" id="firstNameError">First name is required.</small>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="last_name" style="font-size: 1.15rem; color: #7092BE;">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" required style="font-size: 1.15rem;">
+                    <small class="text-danger d-none" id="lastNameError">Last name is required.</small>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="email" style="font-size: 1.15rem; color: #7092BE;">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" required style="font-size: 1.15rem;" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
+                    <small class="text-danger d-none" id="emailError">Please enter a valid email address.</small>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="phone" style="font-size: 1.15rem; color: #7092BE;">Phone Number (Optional)</label>
+                    <input type="text" class="form-control" id="phone" name="phone" style="font-size: 1.15rem;">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="relationship" style="font-size: 1.15rem; color: #7092BE;">Relationship (Optional)</label>
+                    <input type="text" class="form-control" id="relationship" name="relationship" style="font-size: 1.15rem;">
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 0.7rem; font-size: 1.1rem; padding: 0.7rem 2.2rem;">Add Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Glassmorphism Trusted Contacts List -->
+    <div class="glass-card-ui mb-6 p-4">
+      <div class="d-flex align-items-center mb-4">
+        <input type="text" class="form-control glass-search" id="trustedContactSearch" placeholder="Type a name or relationship..." autocomplete="off" style="max-width: 350px; border-radius: 1.5rem; margin-right: 1rem; font-size: 1.1rem;">
+      </div>
+      <div id="trustedContactCards" class="d-flex flex-wrap justify-content-start"></div>
+      <small class="form-text text-muted mt-2" style="color: #828A99;">You can edit, delete, or resend confirmation for your trusted souls at any time.</small>
+    </div>
+
+    <!-- Edit Trusted Contact Modal -->
+    <div class="modal fade" id="editContactModal" tabindex="-1" role="dialog" aria-labelledby="editContactModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form id="editContactForm" method="POST" action="{{ url_for('views.edit_trusted_contact') }}">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title" id="editContactModalLabel">Edit Trusted Contact</h5>
+              <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editContactId" name="contact_id">
+              <div class="form-group">
+                <label for="editFirstName">First Name</label>
+                <input type="text" class="form-control" id="editFirstName" name="first_name" required>
+                <small class="text-danger d-none" id="editFirstNameError">First name is required.</small>
+              </div>
+              <div class="form-group">
+                <label for="editLastName">Last Name</label>
+                <input type="text" class="form-control" id="editLastName" name="last_name" required>
+                <small class="text-danger d-none" id="editLastNameError">Last name is required.</small>
+              </div>
+              <div class="form-group">
+                <label for="editEmail">Email Address</label>
+                <input type="email" class="form-control" id="editEmail" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
+                <small class="text-danger d-none" id="editEmailError">Please enter a valid email address.</small>
+              </div>
+              <div class="form-group">
+                <label for="editPhone">Phone Number (Optional)</label>
+                <input type="text" class="form-control" id="editPhone" name="phone">
+              </div>
+              <div class="form-group">
+                <label for="editRelationship">Relationship (Optional)</label>
+                <input type="text" class="form-control" id="editRelationship" name="relationship">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+<div id="trusted-contact-main-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(30,40,60,0.45);z-index:9998;"></div>
+<div id="trusted-contact-main-popup" style="display:none;position:fixed;top:20%;left:50%;transform:translate(-50%,0);background:rgba(255,255,255,0.98);border-radius:1.2em;box-shadow:0 8px 32px rgba(112,146,190,0.18);border:1.5px solid #C1D3FE;padding:1.5em 2em;z-index:9999;max-width:370px;">
+  <div style="font-size:1.08em;color:#4A5A7A;">
+    <strong>A Trusted Contact is a person you choose</strong> who can confirm your passing when the time comes.<br><br>
+    They help make sure your messages are only delivered when it’s truly time.<br><br>
+    <span style="font-size:1.2em;">🔒</span> <strong>Your Trusted Contact:</strong>
+    <ul style="margin: 0 0 0 1.2em; padding: 0; color: #4A5A7A; font-size: 1em;">
+      <li>Cannot read your messages</li>
+      <li>Cannot change or delete them</li>
+      <li>Only helps us know when to send what you’ve written</li>
+    </ul>
+    <br>
+    You can change or remove your Trusted Contact at any time.
+  </div>
+  <div class="text-center mt-3">
+    <button onclick="document.getElementById('trusted-contact-main-popup').style.display='none';document.getElementById('trusted-contact-main-overlay').style.display='none';" class="btn btn-primary" style="border-radius:0.7em;padding:0.3em 1.5em;font-size:1em;background:linear-gradient(135deg,#C1D3FE,#7092BE);color:#fff;border:none;">OK</button>
+  </div>
+</div>
+<script>
+document.getElementById('trusted-contact-info-main').addEventListener('click', function(e) {
+  var popup = document.getElementById('trusted-contact-main-popup');
+  var overlay = document.getElementById('trusted-contact-main-overlay');
+  popup.style.display = 'block';
+  overlay.style.display = 'block';
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var popup = document.getElementById('trusted-contact-main-popup');
+    var overlay = document.getElementById('trusted-contact-main-overlay');
+    if (popup.style.display === 'block') popup.style.display = 'none';
+    if (overlay.style.display === 'block') overlay.style.display = 'none';
+  }
+});
+</script>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    // Email validation function
+    function isValidEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    }
+    
+    // Add Contact Form validation
+    document.getElementById('addContactForm').addEventListener('submit', function(e) {
+        let valid = true;
+        // Hide all errors first
+        document.getElementById('firstNameError').classList.add('d-none');
+        document.getElementById('lastNameError').classList.add('d-none');
+        document.getElementById('emailError').classList.add('d-none');
+        // Validate first name
+        if (!document.getElementById('first_name').value.trim()) {
+            document.getElementById('firstNameError').classList.remove('d-none');
+            valid = false;
+        }
+        // Validate last name
+        if (!document.getElementById('last_name').value.trim()) {
+            document.getElementById('lastNameError').classList.remove('d-none');
+            valid = false;
+        }
+        // Validate email
+        const emailInput = document.getElementById('email');
+        const emailValue = emailInput.value.trim();
+        if (!emailValue) {
+            document.getElementById('emailError').textContent = 'Email address is required.';
+            document.getElementById('emailError').classList.remove('d-none');
+            valid = false;
+        } else if (!isValidEmail(emailValue)) {
+            document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+            document.getElementById('emailError').classList.remove('d-none');
+            valid = false;
+        } else if (emailValue.toLowerCase() === '{{ current_user.email }}'.toLowerCase()) {
+            document.getElementById('emailError').textContent = 'You cannot add yourself as a trusted contact.';
+            document.getElementById('emailError').classList.remove('d-none');
+            valid = false;
+        }
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+    
+    // Real-time email validation
+    document.getElementById('email').addEventListener('input', function() {
+        const emailValue = this.value.trim();
+        const emailError = document.getElementById('emailError');
+        
+        if (!emailValue) {
+            emailError.textContent = 'Email address is required.';
+            emailError.classList.add('d-none');
+        } else if (!isValidEmail(emailValue)) {
+            emailError.textContent = 'Please enter a valid email address.';
+            emailError.classList.remove('d-none');
+        } else if (emailValue.toLowerCase() === '{{ current_user.email }}'.toLowerCase()) {
+            emailError.textContent = 'You cannot add yourself as a trusted contact.';
+            emailError.classList.remove('d-none');
+        } else {
+            emailError.classList.add('d-none');
+        }
+    });
+    // Real-time email validation for edit modal
+    document.getElementById('editEmail').addEventListener('input', function() {
+        const emailValue = this.value.trim();
+        const emailError = document.getElementById('editEmailError');
+        
+        if (!emailValue) {
+            emailError.textContent = 'Email address is required.';
+            emailError.classList.add('d-none');
+        } else if (!isValidEmail(emailValue)) {
+            emailError.textContent = 'Please enter a valid email address.';
+            emailError.classList.remove('d-none');
+        } else if (emailValue.toLowerCase() === '{{ current_user.email }}'.toLowerCase()) {
+            emailError.textContent = 'You cannot add yourself as a trusted contact.';
+            emailError.classList.remove('d-none');
+        } else {
+            emailError.classList.add('d-none');
+        }
+    });
+    
+    // Edit Contact Modal population
+    $('#editContactModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var id = button.data('id');
+      var fullName = button.data('full-name');
+      var email = button.data('email');
+      var phone = button.data('phone');
+      var relationship = button.data('relationship');
+      var modal = $(this);
+      modal.find('#editContactId').val(id);
+      modal.find('#editFirstName').val(fullName.split(' ')[0]);
+      modal.find('#editLastName').val(fullName.split(' ')[1] || '');
+      modal.find('#editEmail').val(email);
+      modal.find('#editPhone').val(phone);
+      modal.find('#editRelationship').val(relationship);
+    });
+    // Glassmorphism Trusted Contact Card UI
+    const contactData = [
+        {% for contact in contacts %}
+        {
+            id: '{{ contact.id }}',
+            name: `{{ contact.full_name|e }}`,
+            email: `{{ contact.email|e }}`,
+            relationship: `{{ contact.relationship|e }}`,
+            phone: `{{ contact.phone|e }}`,
+            is_confirmed: {{ 'true' if contact.is_confirmed else 'false' }}
+        },
+        {% endfor %}
+    ];
+    const resendConfirmationBaseUrl = "{{ url_for('views.resend_confirmation', contact_id=0)[:-1] }}";
+    function renderContactCards(filter = '') {
+        const cardsDiv = document.getElementById('trustedContactCards');
+        if (!cardsDiv) return;
+        cardsDiv.innerHTML = '';
+        contactData.forEach(contact => {
+            if (filter && !(contact.name.toLowerCase().includes(filter) || (contact.relationship && contact.relationship.toLowerCase().includes(filter)))) return;
+            const card = document.createElement('div');
+            card.className = 'glass-contact-card m-2' + (contact.is_confirmed ? ' glass-selected' : '');
+            card.setAttribute('data-id', contact.id);
+            card.tabIndex = 0;
+            card.innerHTML = `
+                <div class='glass-avatar'>${getInitials(contact.name)}</div>
+                <div class='glass-info'>
+                  <span class='glass-name'>${contact.name}</span>
+                </div>
+                <div class='glass-more-info'>
+                  <span><i class='fa fa-envelope'></i> ${contact.email}</span><br>
+                  <span><i class='fa fa-phone'></i> ${contact.phone || ''}</span><br>
+                  <span>Status: ${contact.is_confirmed ? 'Confirmed' : 'Unconfirmed'}</span>
+                </div>
+                <div class='glass-actions mt-2'>
+                  <form method='POST' action='{{ url_for('views.delete_trusted_contact') }}' style='display:inline;'>
+                    <input type='hidden' name='contact_id' value='${contact.id}'>
+                    <button type='submit' class='btn btn-danger btn-sm mr-1'>Delete</button>
+                  </form>
+                  <button type='button' class='btn btn-info btn-sm mr-1' data-id='${contact.id}' data-full-name='${contact.name}' data-email='${contact.email}' data-phone='${contact.phone}' data-relationship='${contact.relationship}' data-toggle='modal' data-target='#editContactModal'>Edit</button>
+                  {% raw %}${!contact.is_confirmed ? `<a href='` + resendConfirmationBaseUrl + contact.id + `' class='btn btn-secondary btn-sm'>Resend Confirmation</a>` : `<span class='badge badge-success'>Confirmed</span>`}{% endraw %}
+                </div>
+            `;
+            card.onmouseover = function() {
+                card.classList.add('glass-hover');
+            };
+            card.onmouseleave = function() {
+                card.classList.remove('glass-hover');
+            };
+            cardsDiv.appendChild(card);
+        });
+        // Relationship editing
+        document.querySelectorAll('.glass-relationship').forEach(el => {
+            el.addEventListener('blur', function() {
+                // Optionally, send AJAX to update relationship
+            });
+        });
+    }
+    function getInitials(name) {
+        return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    }
+    document.getElementById('trustedContactSearch')?.addEventListener('input', function() {
+        renderContactCards(this.value.toLowerCase());
+    });
+    // Initial render
+    renderContactCards();
+    
+
+    // Add confirmation for deleting a trusted contact
+    document.querySelectorAll('form[action$="delete-trusted-contact"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Get the contact name from the hidden input or card
+            let contactName = '';
+            const input = form.querySelector('input[name="contact_id"]');
+            if (input) {
+                const contactId = input.value;
+                // Try to find the card with this contact id
+                const card = document.querySelector(`.glass-contact-card[data-id='${contactId}']`);
+                if (card) {
+                    const nameEl = card.querySelector('.glass-name');
+                    if (nameEl) contactName = nameEl.textContent.trim();
+                }
+            }
+            // Create modal if not already present
+            let modal = document.getElementById('deleteContactConfirmModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'deleteContactConfirmModal';
+                modal.tabIndex = -1;
+                modal.role = 'dialog';
+                modal.innerHTML = `
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body" id="deleteContactModalBody">
+                        <p>Are you sure you want to delete <strong>"${contactName}"</strong> from trusted contacts?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelDeleteContactBtn">No</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteContactBtn">Yes</button>
+                      </div>
+                    </div>
+                  </div>`;
+                document.body.appendChild(modal);
+                $(modal).modal({ show: false });
+            }
+            // Set the message with the contact name
+            const modalBody = document.getElementById('deleteContactModalBody');
+            if (modalBody) {
+                modalBody.innerHTML = `<p>Are you sure you want to delete <strong>"${contactName}"</strong> from trusted contacts?</p>`;
+            }
+            // Show modal
+            $(modal).modal('show');
+            // Remove previous listeners
+            document.getElementById('confirmDeleteContactBtn').onclick = null;
+            document.getElementById('cancelDeleteContactBtn').onclick = null;
+            // On confirm, submit the form
+            document.getElementById('confirmDeleteContactBtn').onclick = function() {
+                $(modal).modal('hide');
+                form.submit();
+            };
+            // On cancel, just hide
+            document.getElementById('cancelDeleteContactBtn').onclick = function() {
+                $(modal).modal('hide');
+            };
+        });
+    });
+</script>
+<style>
+// ... reuse glassmorphism styles from home.html ...
+</style>
+{% endblock %} 

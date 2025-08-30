@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Confirm Trusted Contact{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="glass-card-ui p-5 mb-5" style="max-width: 600px; margin: 0 auto;">
+        <h2 class="headline-calm mb-3" style="font-size: 2rem; color: #7092BE;">Confirm Trusted Contact Role</h2>
+        <p class="headline-reassure mb-4" style="color: #A2A8B5; font-size: 1.2rem;">You have been invited to help deliver a legacy message. Please confirm your role below.</p>
+        <div class="alert alert-info" style="font-size: 1.1rem; background: #EDF1F7; color: #7092BE; border: none;">
+            User <strong>{{ contact.user.first_name }} {{ contact.user.last_name }}</strong> ({{ contact.user.email }}) has invited you to be a trusted contact.
+        </div>
+        <form method="POST" class="mt-4">
+            <button type="submit" name="action" value="accept" class="btn btn-primary btn-lg mr-3" style="border-radius: 0.7rem; font-size: 1.1rem;">Accept</button>
+            <button type="submit" name="action" value="deny" class="btn btn-danger btn-lg" style="border-radius: 0.7rem; font-size: 1.1rem; background: #FDD6D6; color: #222; border: none;">Deny</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

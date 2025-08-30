@@ -1,3 +1,10 @@
 flask
 Flask-SQLAlchemy
 flask-login
+flask-migrate
+flask-mail
+psycopg2-binary
+sqlalchemy-utils
+pyotp
+qrcode
+Pillow

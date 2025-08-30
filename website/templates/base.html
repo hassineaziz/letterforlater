@@ -3,46 +3,328 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-      crossorigin="anonymous"
-    />
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
     <title>{% block title %}Home{% endblock %}</title>
+    <style>
+      body {
+        font-family: 'Inter', 'Manrope', Arial, sans-serif;
+        background: linear-gradient(135deg, #EDF1F7 0%, #FFFFFF 100%);
+        min-height: 100vh;
+        color: #222;
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .navbar {
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        border-radius: 0 0 1rem 1rem;
+        margin-bottom: 2rem;
+      }
+      .navbar-nav .nav-link {
+        font-size: 1.15rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.7rem;
+        color: #7092BE !important;
+        transition: background 0.2s, color 0.2s;
+        display: flex;
+        align-items: center;
+      }
+      .navbar-nav .nav-link.active, .navbar-nav .nav-link:hover {
+        background: #C1D3FE;
+        color: #222 !important;
+      }
+      .navbar-nav .fa {
+        margin-right: 0.6em;
+        font-size: 1.2em;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem 1rem;
+      }
+      .glass-card-ui, .card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1.5px solid #C1D3FE;
+      }
+      .modal-content {
+        border-radius: 1.2rem;
+        border: 1.5px solid #7092BE;
+        background: linear-gradient(135deg, #EDF1F7 0%, #FFFFFF 100%) !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      .btn-primary {
+        background: #C1D3FE;
+        color: #222;
+        border: none;
+        border-radius: 0.7rem;
+        font-size: 1.1rem;
+        padding: 0.7rem 2.2rem;
+        box-shadow: 0 2px 8px rgba(193,211,254,0.12);
+        transition: background 0.2s, color 0.2s;
+      }
+      .btn-primary:hover, .btn-primary:focus {
+        background: #7092BE;
+        color: #fff;
+      }
+      .btn, .form-control {
+        border-radius: 0.7rem;
+        font-size: 1.08rem;
+      }
+      .form-control:focus {
+        border-color: #C1D3FE;
+        box-shadow: 0 2px 8px rgba(193,211,254,0.12);
+      }
+      .alert-success {
+        background: #B4E5B9;
+        color: #222;
+        border: none;
+      }
+      .alert-danger {
+        background: #FDD6D6;
+        color: #222;
+        border: none;
+      }
+      .alert {
+        border-radius: 0.7rem;
+        font-size: 1.08rem;
+      }
+      h1, h2, h3, h4, h5 {
+        font-family: 'Manrope', 'Inter', Arial, sans-serif;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 0.7em;
+      }
+      .headline-calm {
+        font-size: 2.2rem;
+        color: #7092BE;
+        margin-bottom: 0.5em;
+        font-family: 'Manrope', 'Inter', Arial, sans-serif;
+      }
+      .headline-reassure {
+        font-size: 1.3rem;
+        color: #A2A8B5;
+        margin-bottom: 1.5em;
+        font-family: 'Manrope', 'Inter', Arial, sans-serif;
+      }
+      /* Accessibility: Large font toggle placeholder */
+      .font-toggle {
+        position: fixed;
+        top: 1.2rem;
+        right: 1.2rem;
+        z-index: 1000;
+      }
+      @media (max-width: 600px) {
+        .container { padding: 1rem 0.2rem; }
+        .navbar-nav .nav-link { font-size: 1rem; padding: 0.7rem 1rem; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbar"
-      >
+    <div class="font-toggle"><!-- Large font toggle placeholder --></div>
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbar">
         <div class="navbar-nav">
           {% if user.is_authenticated %}
-          <a class="nav-item nav-link" id="home" href="/">Home</a>
-          <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+          <a class="nav-item nav-link" id="home" href="/">
+            <i class="fa fa-home"></i>Home
+          </a>
+          <a class="nav-item nav-link" id="view-letters" href="{{ url_for('views.view_letters', user_id=user.id) }}">
+            <i class="fa fa-envelope-open"></i>Letters
+          </a>
+          <a class="nav-item nav-link" href="{{ url_for('views.trusted_contacts') }}">
+            <i class="fa fa-users"></i>Contacts
+          </a>
+          {% if check_trusted_contact_status(user) %}
+          <a class="nav-item nav-link" href="{{ url_for('views.verify_death') }}">
+            <i class="fa fa-user-shield"></i>Verify Death
+          </a>
+          {% endif %}
+          <a class="nav-item nav-link" href="{{ url_for('views.settings') }}">
+            <i class="fa fa-cog"></i>Settings
+          </a>
+          <a class="nav-item nav-link" id="logout" href="/logout">
+            <i class="fa fa-sign-out"></i>Logout
+          </a>
           {% else %}
-          <a class="nav-item nav-link" id="login" href="/login">Login</a>
-          <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
+          <a class="nav-item nav-link" id="login" href="/login"><i class="fa fa-sign-in"></i>Login</a>
+          <a class="nav-item nav-link" id="signUp" href="/sign-up"><i class="fa fa-user-plus"></i>Sign Up</a>
           {% endif %}
         </div>
+        {% if user.is_authenticated %}
+        <div class="ml-auto d-flex align-items-center" style="position:relative;">
+          <li class="nav-item dropdown" id="notification-bell-container" style="list-style:none;">
+            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position:relative;">
+              <span id="notification-bell" style="display:inline-block;position:relative;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span id="notification-badge"></span>
+              </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right glass-card-ui" aria-labelledby="notificationDropdown" id="notification-dropdown-menu" style="min-width:340px;backdrop-filter:blur(16px);background:rgba(255,255,255,0.85);box-shadow:0 8px 32px rgba(112,146,190,0.18);border:1.5px solid #C1D3FE;">
+              <span class="dropdown-item text-muted" id="no-notifications">No notifications</span>
+            </div>
+          </li>
+        </div>
+        {% endif %}
       </div>
     </nav>
+    <style>
+    #notification-badge {
+      display: none;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: linear-gradient(135deg,#C1D3FE,#7092BE);
+      color: #fff;
+      border-radius: 50%;
+      padding: 2px 7px;
+      font-size: 1em;
+      min-width: 22px;
+      min-height: 22px;
+      text-align: center;
+      line-height: 18px;
+      font-weight: bold;
+      border: 2.5px solid #fff;
+      z-index: 2;
+    }
+    .glass-card-ui {
+      background: rgba(255,255,255,0.18) !important;
+      border-radius: 1.2rem !important;
+      box-shadow: 0 8px 32px rgba(112,146,190,0.18) !important;
+      border: 1.5px solid #C1D3FE !important;
+    }
+    </style>
+    <script>
+    function renderNotifications(invites) {
+        const badge = document.getElementById('notification-badge');
+        const menu = document.getElementById('notification-dropdown-menu');
+        
+        if (invites.length > 0) {
+            badge.textContent = invites.length;
+            badge.style.display = 'inline';
+            
+            menu.innerHTML = '';
+            invites.forEach(invite => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.innerHTML = `<strong>${invite.from_name}</strong> wants to add you as a trusted contact.<br>
+                    <button onclick="handleInvitation(${invite.id}, 'accept')" class="btn btn-primary btn-sm mr-2">Accept</button>
+                    <button onclick="handleInvitation(${invite.id}, 'deny')" class="btn btn-secondary btn-sm">Deny</button>`;
+                menu.appendChild(item);
+            });
+        } else {
+            badge.style.display = 'none';
+            menu.innerHTML = '<span class="dropdown-item text-muted" id="no-notifications">No notifications</span>';
+        }
+    }
 
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %} {% if category ==
-    'error' %}
+    function renderAllNotifications(notifications) {
+        const badge = document.getElementById('notification-badge');
+        const menu = document.getElementById('notification-dropdown-menu');
+        
+        if (notifications.length > 0) {
+            badge.textContent = notifications.length;
+            badge.style.display = 'inline';
+            
+            menu.innerHTML = '';
+            notifications.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item border-bottom';
+                
+                if (notif.type === 'trusted_contact_invitation') {
+                    item.innerHTML = `
+                        <div class="mb-2">
+                            <strong>${notif.from_name}</strong> wants to add you as a trusted contact.
+                        </div>
+                        <div>
+                            <button onclick="handleInvitation(${notif.id}, 'accept')" class="btn btn-primary btn-sm mr-2">Accept</button>
+                            <button onclick="handleInvitation(${notif.id}, 'deny')" class="btn btn-secondary btn-sm">Deny</button>
+                        </div>
+                    `;
+                } else if (notif.type === 'trusted_contact_confirmed') {
+                    item.innerHTML = `
+                        <div class="text-success">
+                            <i class="fa fa-check-circle mr-2"></i>
+                            <strong>${notif.title}</strong>
+                        </div>
+                        <div class="text-muted small">${notif.message}</div>
+                        <button onclick="markAsRead(${notif.id})" class="btn btn-sm btn-outline-secondary mt-1">Mark as Read</button>
+                    `;
+                } else if (notif.type === 'trusted_contact_removed') {
+                    item.innerHTML = `
+                        <div class="text-warning">
+                            <i class="fa fa-exclamation-triangle mr-2"></i>
+                            <strong>${notif.title}</strong>
+                        </div>
+                        <div class="text-muted small">${notif.message}</div>
+                        <button onclick="markAsRead(${notif.id})" class="btn btn-sm btn-outline-secondary mt-1">Mark as Read</button>
+                    `;
+                } else if (notif.type === 'death_verification') {
+                    item.innerHTML = `
+                        <div class="text-danger">
+                            <i class="fa fa-exclamation-circle mr-2"></i>
+                            <strong>${notif.title}</strong>
+                        </div>
+                        <div class="text-muted small">${notif.message}</div>
+                        <button onclick="markAsRead(${notif.id})" class="btn btn-sm btn-outline-secondary mt-1">Mark as Read</button>
+                    `;
+                }
+                
+                menu.appendChild(item);
+            });
+        } else {
+            badge.style.display = 'none';
+            menu.innerHTML = '<span class="dropdown-item text-muted" id="no-notifications">No notifications</span>';
+        }
+    }
+
+    async function markAsRead(notificationId) {
+        try {
+            const response = await fetch(`/api/mark-notification-read/${notificationId}`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                pollNotifications(); // Refresh notifications
+            }
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    }
+
+    async function pollNotifications() {
+        try {
+            const res = await fetch('/api/notifications');
+            const data = await res.json();
+            if (data.notifications) {
+                renderAllNotifications(data.notifications);
+            } else {
+                renderNotifications(data.pending_trusted_invitations || []);
+            }
+        } catch (error) {
+            console.error('Error polling notifications:', error);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      pollNotifications();
+      setInterval(pollNotifications, 15000); // every 15 seconds
+    });
+    </script>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %} {% if category == 'error' %}
     <div class="alert alert-danger alter-dismissable fade show" role="alert">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
@@ -57,35 +339,10 @@
       </button>
     </div>
     {% endif %} {% endfor %} {% endif %} {% endwith %}
-
     <div class="container">{% block content %} {% endblock %}</div>
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-      crossorigin="anonymous"
-    ></script>
-
-{% block javascript %}
-    <script type="text/javascript">
-      function deleteNote(noteId) {
-  fetch("/delete-note", {
-    method: "POST",
-    body: JSON.stringify({ noteId: noteId }),
-  }).then((_res) => {
-    window.location.href = "/";
-  });
-  }
-</script>
-{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+{% block javascript %}{% endblock %}
   </body>
 </html>

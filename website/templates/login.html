@@ -22,7 +22,13 @@
       placeholder="Enter password"
     />
   </div>
+  {% if next %}
+    <input type="hidden" name="next" value="{{ next }}" />
+  {% endif %}
   <br />
   <button type="submit" class="btn btn-primary">Login</button>
+  <div class="text-center mt-3">
+    <a href="{{ url_for('auth.forgot_password') }}" class="text-muted">Forgot your password?</a>
+  </div>
 </form>
 {% endblock %}

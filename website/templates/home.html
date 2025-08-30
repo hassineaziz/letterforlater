@@ -1,21 +1,994 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-%}
-<h1 align="center">Notes</h1>
-<ul class="list-group list-group-flush" id="notes">
-  {% for note in user.notes %}
-  <li class="list-group-item">
-    {{ note.data }}
-    <button type="button" class="close" onClick="deleteNote({{ note.id }})">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </li>
-  {% endfor %}
-</ul>
-<form method="POST">
-  <textarea name="note" id="note" class="form-control"></textarea>
-  <br />
-  <div align="center">
-    <button type="submit" class="btn btn-primary">Add Note</button>
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+<h1 class="headline-calm" align="center">Write a Legacy Letter</h1>
+<p class="headline-reassure" align="center">Your message will be safe here, and delivered with care.</p>
+
+<!-- Letter Creation Form -->
+<div class="card mb-6 p-4 glass-card-ui">
+    <div class="card-header bg-white border-0" style="background: transparent !important;">
+        <h4 class="mb-0" style="font-family: 'Manrope', 'Inter', Arial, sans-serif; color: #7092BE; font-size: 2rem;">Create New Letter</h4>
+    </div>
+    <div id="draftNotice" class="alert alert-info" style="display:none; font-size:1.1rem;">
+        <!-- Draft notice removed: new letter form is always fresh -->
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="form-group mb-4">
+                <label for="title" style="font-size: 1.15rem; color: #7092BE;">Letter Title</label>
+                <input type="text" class="form-control" id="title" name="title" required style="font-size: 1.15rem;">
+            </div>
+            <div class="form-group mb-4">
+                <label for="content" style="font-size: 1.15rem; color: #7092BE;">Letter Content</label>
+                <textarea class="form-control letter-content-input" id="content" name="content" rows="6" required style="font-family: 'Merriweather', 'Spectral', serif; font-size: 1.18rem; background: rgba(255,255,255,0.7); border-radius: 1.2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); padding: 1.2rem;"></textarea>
+            </div>
+            <div class="form-group mb-4">
+                <label for="recipient_name" style="font-size: 1.15rem; color: #7092BE;">Recipient Name</label>
+                <input type="text" class="form-control" id="recipient_name" name="recipient_name" required style="font-size: 1.15rem;">
+            </div>
+            <div class="form-group mb-4">
+                <label for="recipient_email" style="font-size: 1.15rem; color: #7092BE;">Recipient Email</label>
+                <input type="email" class="form-control" id="recipient_email" name="recipient_email" required style="font-size: 1.15rem;">
+            </div>
+            <div class="form-group mb-4">
+                <label for="delivery_type" style="font-size: 1.15rem; color: #7092BE;">Delivery Type</label>
+                <select class="form-control" id="delivery_type" name="delivery_type" required style="font-size: 1.15rem;">
+                    <option value="date">Fixed Date Delivery</option>
+                    <option value="death_verification">After Death Verification</option>
+                </select>
+            </div>
+            <div class="form-group mb-4" id="date_schedule_group">
+                <label for="scheduled_date" style="font-size: 1.15rem; color: #7092BE;">Scheduled Date</label>
+                <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" min="{{ now.strftime('%Y-%m-%d') }}" style="font-size: 1.15rem;">
+            </div>
+            <div class="form-group mb-4" id="trusted_contact_group" style="display: none;">
+                {% set all_contacts = user.trusted_contacts_list | list %}
+                {% set confirmed_contacts = user.trusted_contacts_list | selectattr('is_confirmed') | list %}
+                {% set unconfirmed_contacts = user.trusted_contacts_list | rejectattr('is_confirmed') | list %}
+                <div id="trustedContactWarnings">
+                  {% if all_contacts|length == 0 %}
+                    <div class="alert alert-warning" id="noContactsWarning">
+                      <strong>You have no trusted contacts.</strong><br>
+                      <a href="{{ url_for('views.trusted_contacts') }}?from_letter=1" class="btn btn-primary btn-sm mt-2" id="addTrustedContactBtn" onclick="saveDraftBeforeNavigation(event)">Add Trusted Contact</a>
+                      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addContactLaterBtn">Add Trusted Contact Later</button>
+                      <div id="addLaterConfirmation" class="mt-2" style="display:none;"></div>
+                    </div>
+                  {% elif confirmed_contacts|length == 0 %}
+                    <div class="alert alert-warning" id="unconfirmedContactsWarning">
+                      <strong>Attention:</strong> Your trusted contact(s) have not confirmed yet.<br>
+                      {% for contact in unconfirmed_contacts %}
+                        <div>
+                          {{ contact.full_name }} ({{ contact.email }})
+                          <a href="{{ url_for('views.resend_confirmation', contact_id=contact.id) }}" class="btn btn-link btn-sm">Resend Confirmation</a>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+                
+                <!-- Delay After Death Verification Options -->
+                <div class="form-group mb-4" id="delay_options_group">
+                    <label for="delay_option" style="font-size: 1.15rem; color: #7092BE;">Delivery Delay After Death Verification</label>
+                    <select class="form-control" id="delay_option" name="delay_option" style="font-size: 1.15rem;">
+                        <option value="immediate">Send immediately after verification</option>
+                        <option value="1_day">Send after 1 day</option>
+                        <option value="1_week">Send after 1 week</option>
+                        <option value="1_month">Send after 1 month</option>
+                        <option value="custom">Custom delay</option>
+                    </select>
+                </div>
+                
+                <!-- Custom Delay Input -->
+                <div class="form-group mb-4" id="custom_delay_group" style="display: none;">
+                    <label for="custom_delay_days" style="font-size: 1.15rem; color: #7092BE;">Custom Delay (Days)</label>
+                    <input type="number" class="form-control" id="custom_delay_days" name="custom_delay_days" min="1" max="365" style="font-size: 1.15rem;" placeholder="Enter number of days">
+                    <small class="form-text text-muted">Enter a number between 1 and 365 days</small>
+                </div>
+            </div>
+            <div align="center" class="mt-5">
+                <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 0.7rem; font-size: 1.2rem; padding: 0.8rem 2.5rem;">Create Letter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Letters List -->
+<div class="card">
+    <div class="card-header">
+        <h4>Your Letters</h4>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush" id="letters">
+            {% for letter in user.letters %}
+            <li class="list-group-item" {% if letter.status == 'draft' %}id="draft-letter"{% endif %}>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>{{ letter.title }}
+                        {% if letter.status == 'draft' %}
+                            <span class="badge badge-secondary ml-2" data-toggle="tooltip" data-placement="top" title="Still being written">✍️ Draft</span>
+                        {% elif letter.status == 'scheduled' %}
+                            <span class="badge badge-info ml-2" data-toggle="tooltip" data-placement="top" title="Waiting for delivery date">⏳ Scheduled</span>
+                        {% elif letter.status == 'pending_verification' %}
+                            <span class="badge badge-warning ml-2" data-toggle="tooltip" data-placement="top" title="Waiting for death verification">🕊️ Waiting Confirmation</span>
+                        {% elif letter.status == 'delivered' %}
+                            <span class="badge badge-success ml-2" data-toggle="tooltip" data-placement="top" title="Successfully delivered">📩 Delivered</span>
+                        {% elif letter.status == 'cancelled' %}
+                            <span class="badge badge-danger ml-2" data-toggle="tooltip" data-placement="top" title="Delivery was cancelled">❌ Cancelled</span>
+                        {% endif %}
+                        </h5>
+                        <p class="mb-1">To: {{ letter.recipient_name }} ({{ letter.recipient_email }})</p>
+                        <small class="text-muted">
+                            Status: {{ letter.status }} | 
+                            Created: {{ letter.created_date.strftime('%Y-%m-%d') }}
+                            {% if letter.delivery_type == 'death_verification' and letter.delay_after_verification is defined %}
+                                | Delay: {% if letter.delay_after_verification == 0 %}Immediate{% else %}{{ letter.delay_after_verification }} days{% endif %}
+                            {% endif %}
+                            {% if letter.delivery_schedule and letter.delivery_schedule.delivery_date %}
+                            | Scheduled: {{ letter.delivery_schedule.delivery_date.strftime('%Y-%m-%d') }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info btn-sm mr-1" data-toggle="modal" data-target="#viewLetterModal" data-id="{{ letter.id }}" data-title="{{ letter.title|e }}" data-content="{{ letter.content|e }}">View</button>
+                        <button type="button" class="btn btn-secondary btn-sm mr-1" data-toggle="modal" data-target="#editLetterModal" data-id="{{ letter.id }}" data-title="{{ letter.title|e }}" data-content="{{ letter.content|e }}" data-recipient_name="{{ letter.recipient_name|e }}" data-recipient_email="{{ letter.recipient_email|e }}" data-delivery_type="{{ letter.delivery_type }}" data-delay_after_verification="{{ letter.delay_after_verification }}">Edit</button>
+                        <button type="button" class="btn btn-danger btn-sm" onClick="deleteLetter({{ letter.id }})">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- View Letter Modal -->
+<div class="modal fade" id="viewLetterModal" tabindex="-1" role="dialog" aria-labelledby="viewLetterModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewLetterModalLabel">Letter Content</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h5 id="viewLetterTitle"></h5>
+        <p id="viewLetterContent"></p>
+      </div>
+    </div>
   </div>
-</form>
+</div>
+
+<!-- Edit Letter Modal -->
+<div class="modal fade" id="editLetterModal" tabindex="-1" role="dialog" aria-labelledby="editLetterModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="editLetterForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editLetterModalLabel">Edit Letter</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editLetterId" name="letterId">
+          <div class="form-group">
+            <label for="editLetterTitleInput">Title</label>
+            <input type="text" class="form-control" id="editLetterTitleInput" name="title" required>
+          </div>
+          <div class="form-group">
+            <label for="editLetterContentInput">Content</label>
+            <textarea class="form-control" id="editLetterContentInput" name="content" rows="6" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="editRecipientNameInput">Recipient Name</label>
+            <input type="text" class="form-control" id="editRecipientNameInput" name="recipient_name" required>
+          </div>
+          <div class="form-group">
+            <label for="editRecipientEmailInput">Recipient Email</label>
+            <input type="email" class="form-control" id="editRecipientEmailInput" name="recipient_email" required>
+          </div>
+          
+          <!-- Delay After Death Verification Options for Edit -->
+          <div class="form-group" id="editDelayOptionsGroup" style="display: none;">
+            <label for="editDelayOption">Delivery Delay After Death Verification</label>
+            <select class="form-control" id="editDelayOption" name="delay_option">
+                <option value="immediate">Send immediately after verification</option>
+                <option value="1_day">Send after 1 day</option>
+                <option value="1_week">Send after 1 week</option>
+                <option value="1_month">Send after 1 month</option>
+                <option value="custom">Custom delay</option>
+            </select>
+          </div>
+          
+          <!-- Custom Delay Input for Edit -->
+          <div class="form-group" id="editCustomDelayGroup" style="display: none;">
+            <label for="editCustomDelayDays">Custom Delay (Days)</label>
+            <input type="number" class="form-control" id="editCustomDelayDays" name="custom_delay_days" min="1" max="365" placeholder="Enter number of days">
+            <small class="form-text text-muted">Enter a number between 1 and 365 days</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Continue Draft Modal -->
+<div class="modal fade" id="continueDraftModal" tabindex="-1" role="dialog" aria-labelledby="continueDraftModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="continueDraftModalLabel">Continue Creating Your Letter?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        You have an unfinished letter draft. Would you like to continue editing it?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="continueDraftYes">Yes</button>
+        <button type="button" class="btn btn-secondary" id="continueDraftNo">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Draft Conflict Modal -->
+<div class="modal fade" id="draftConflictModal" tabindex="-1" role="dialog" aria-labelledby="draftConflictModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="draftConflictModalLabel">Unfinished Draft Detected</h5>
+        <!-- Remove the close button to force a choice -->
+      </div>
+      <div class="modal-body">
+        <div id="draftInfo" style="display: none;">
+          <div class="alert alert-info mb-3">
+            <strong>Draft Title:</strong> <span id="draftTitle"></span>
+          </div>
+        </div>
+        You have an unfinished letter draft. <strong>If you start a new letter, you will lose your old draft.</strong>
+        <br><br>Would you like to edit your draft or start a new letter?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="editDraftBtn">Edit Draft</button>
+        <button type="button" class="btn btn-danger" id="startNewLetterBtn">Start New Letter</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    function deleteLetter(letterId) {
+        // Get the letter title for the popup
+        var letterTitle = '';
+        var letterRow = document.querySelector('button[onClick="deleteLetter(' + letterId + ')"]').closest('li');
+        if (letterRow) {
+            var h5 = letterRow.querySelector('h5');
+            if (h5) letterTitle = h5.childNodes[0].textContent.trim();
+        }
+        // Create modal if not already present
+        let modal = document.getElementById('deleteLetterConfirmModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'deleteLetterConfirmModal';
+            modal.tabIndex = -1;
+            modal.role = 'dialog';
+            modal.innerHTML = `
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body" id="deleteLetterModalBody">
+                    <p>Are you sure you want to delete the letter <strong>""</strong>?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelDeleteLetterBtn">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteLetterBtn">Yes</button>
+                  </div>
+                </div>
+              </div>`;
+            document.body.appendChild(modal);
+            $(modal).modal({ show: false });
+        }
+        // Set the message with the letter title
+        const modalBody = document.getElementById('deleteLetterModalBody');
+        if (modalBody) {
+            modalBody.innerHTML = `<p>Are you sure you want to delete the letter <strong>"${letterTitle}"</strong>?</p>`;
+        }
+        // Show modal
+        $(modal).modal('show');
+        // Remove previous listeners
+        document.getElementById('confirmDeleteLetterBtn').onclick = null;
+        document.getElementById('cancelDeleteLetterBtn').onclick = null;
+        // On confirm, delete the letter
+        document.getElementById('confirmDeleteLetterBtn').onclick = function() {
+            $(modal).modal('hide');
+            fetch("/delete-letter", {
+                method: "POST",
+                body: JSON.stringify({ letterId: letterId }),
+            }).then((_res) => {
+                window.location.href = "/";
+            });
+        };
+        // On cancel, just hide
+        document.getElementById('cancelDeleteLetterBtn').onclick = function() {
+            $(modal).modal('hide');
+        };
+    }
+
+    // Show/hide date schedule and trusted contact based on delivery type
+    document.getElementById('delivery_type').addEventListener('change', function() {
+        const dateGroup = document.getElementById('date_schedule_group');
+        const trustedGroup = document.getElementById('trusted_contact_group');
+        const delayOptionsGroup = document.getElementById('delay_options_group');
+        const customDelayGroup = document.getElementById('custom_delay_group');
+        
+        if (this.value === 'date') {
+            dateGroup.style.display = 'block';
+            trustedGroup.style.display = 'none';
+            delayOptionsGroup.style.display = 'none';
+            customDelayGroup.style.display = 'none';
+        } else { // death_verification
+            dateGroup.style.display = 'none';
+            trustedGroup.style.display = 'block';
+            delayOptionsGroup.style.display = 'block';
+            // Show/hide trusted contact warnings
+            updateTrustedContactWarnings();
+        }
+    });
+
+    // Show/hide custom delay input based on delay option
+    document.getElementById('delay_option').addEventListener('change', function() {
+        const customDelayGroup = document.getElementById('custom_delay_group');
+        if (this.value === 'custom') {
+            customDelayGroup.style.display = 'block';
+        } else {
+            customDelayGroup.style.display = 'none';
+        }
+    });
+
+    // Show/hide custom delay input in edit modal based on delay option
+    document.getElementById('editDelayOption').addEventListener('change', function() {
+        const editCustomDelayGroup = document.getElementById('editCustomDelayGroup');
+        if (this.value === 'custom') {
+            editCustomDelayGroup.style.display = 'block';
+        } else {
+            editCustomDelayGroup.style.display = 'none';
+        }
+    });
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('scheduled_date').min = today;
+
+    // View Letter Modal population
+    $('#viewLetterModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var title = button.data('title');
+      var content = button.data('content');
+      var modal = $(this);
+      modal.find('#viewLetterTitle').text(title);
+      modal.find('#viewLetterContent').text(content);
+    });
+
+    // Edit Letter Modal population
+    $('#editLetterModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var id = button.data('id');
+      var title = button.data('title');
+      var content = button.data('content');
+      var recipient_name = button.data('recipient_name');
+      var recipient_email = button.data('recipient_email');
+      var delivery_type = button.data('delivery_type');
+      var delay_after_verification = button.data('delay_after_verification');
+      var modal = $(this);
+      
+      modal.find('#editLetterId').val(id);
+      modal.find('#editLetterTitleInput').val(title);
+      modal.find('#editLetterContentInput').val(content);
+      modal.find('#editRecipientNameInput').val(recipient_name);
+      modal.find('#editRecipientEmailInput').val(recipient_email);
+      
+      // Handle delay options based on delivery type
+      const editDelayOptionsGroup = document.getElementById('editDelayOptionsGroup');
+      const editCustomDelayGroup = document.getElementById('editCustomDelayGroup');
+      
+      if (delivery_type === 'death_verification') {
+        editDelayOptionsGroup.style.display = 'block';
+        
+        // Set the current delay option
+        if (delay_after_verification === 0) {
+          modal.find('#editDelayOption').val('immediate');
+          editCustomDelayGroup.style.display = 'none';
+        } else if (delay_after_verification === 1) {
+          modal.find('#editDelayOption').val('1_day');
+          editCustomDelayGroup.style.display = 'none';
+        } else if (delay_after_verification === 7) {
+          modal.find('#editDelayOption').val('1_week');
+          editCustomDelayGroup.style.display = 'none';
+        } else if (delay_after_verification === 30) {
+          modal.find('#editDelayOption').val('1_month');
+          editCustomDelayGroup.style.display = 'none';
+        } else {
+          modal.find('#editDelayOption').val('custom');
+          editCustomDelayGroup.style.display = 'block';
+          modal.find('#editCustomDelayDays').val(delay_after_verification);
+        }
+      } else {
+        editDelayOptionsGroup.style.display = 'none';
+        editCustomDelayGroup.style.display = 'none';
+      }
+    });
+
+    // Handle Edit Letter Form submission
+    $('#editLetterForm').on('submit', function(e) {
+      e.preventDefault();
+      var letterId = $('#editLetterId').val();
+      var data = {
+        letterId: letterId,
+        title: $('#editLetterTitleInput').val(),
+        content: $('#editLetterContentInput').val(),
+        recipient_name: $('#editRecipientNameInput').val(),
+        recipient_email: $('#editRecipientEmailInput').val()
+      };
+      
+      // Add delay information if it's a death verification letter
+      const editDelayOptionsGroup = document.getElementById('editDelayOptionsGroup');
+      if (editDelayOptionsGroup.style.display !== 'none') {
+        const delayOption = $('#editDelayOption').val();
+        data.delay_option = delayOption;
+        
+        if (delayOption === 'custom') {
+          const customDays = $('#editCustomDelayDays').val();
+          if (customDays && customDays.trim() !== '') {
+            data.custom_delay_days = customDays;
+          }
+        }
+      }
+      
+      fetch('/edit-letter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }).then((_res) => {
+        $('#editLetterModal').modal('hide');
+        window.location.href = "/";
+      });
+    });
+
+    // Glassmorphism Trusted Contact Card UI
+    const contactData = [
+        {% for contact in confirmed_contacts %}
+        {
+            id: '{{ contact.id }}',
+            name: `{{ contact.full_name|e }}`,
+            email: `{{ contact.email|e }}`,
+            relationship: `{{ contact.relationship|e }}`,
+            phone: `{{ contact.phone|e }}`
+        },
+        {% endfor %}
+        { id: 'choose_later', name: 'Choose later', relationship: '', email: '', phone: '', chooseLater: true }
+    ];
+    let selectedContact = null;
+    function renderContactCards(filter = '') {
+        const cardsDiv = document.getElementById('trustedContactCards');
+        if (!cardsDiv) return;
+        cardsDiv.innerHTML = '';
+        contactData.forEach(contact => {
+            if (filter && !contact.chooseLater && !(contact.name.toLowerCase().includes(filter) || (contact.relationship && contact.relationship.toLowerCase().includes(filter)))) return;
+            const card = document.createElement('div');
+            card.className = 'glass-contact-card m-2' + (selectedContact === contact.id ? ' glass-selected' : '') + (contact.chooseLater ? ' glass-later' : '');
+            card.setAttribute('data-id', contact.id);
+            card.tabIndex = 0;
+            card.innerHTML = contact.chooseLater
+                ? `<div class='glass-avatar choose-later-avatar'>&#x23F3;</div><div class='glass-info'><span class='glass-name'>Choose later</span></div>`
+                : `<div class='glass-avatar'>${getInitials(contact.name)}</div>
+                   <div class='glass-info'>
+                     <span class='glass-name'>${contact.name}</span>
+                     <span class='glass-relationship' contenteditable='true' data-id='${contact.id}' title='Click to edit relationship'>${contact.relationship || 'Add relationship'}</span>
+                   </div>
+                   <div class='glass-more-info'>
+                     <span><i class='fa fa-envelope'></i> ${contact.email}</span><br>
+                     <span><i class='fa fa-phone'></i> ${contact.phone || ''}</span>
+                   </div>`;
+            card.onclick = function() {
+                selectedContact = contact.id;
+                updateHiddenInput();
+                renderContactCards(document.getElementById('trustedContactSearch').value.toLowerCase());
+            };
+            card.onmouseover = function() {
+                card.classList.add('glass-hover');
+            };
+            card.onmouseleave = function() {
+                card.classList.remove('glass-hover');
+            };
+            cardsDiv.appendChild(card);
+        });
+        // Relationship editing
+        document.querySelectorAll('.glass-relationship').forEach(el => {
+            el.addEventListener('blur', function() {
+                const id = this.getAttribute('data-id');
+                const contact = contactData.find(c => c.id === id);
+                if (contact) contact.relationship = this.textContent.trim();
+            });
+        });
+    }
+    function getInitials(name) {
+        return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    }
+    function updateHiddenInput() {
+        document.getElementById('trusted_contact_id').value = selectedContact || '';
+    }
+    document.getElementById('trustedContactSearch')?.addEventListener('input', function() {
+        renderContactCards(this.value.toLowerCase());
+    });
+    // Voice search (if supported)
+    document.getElementById('voiceSearchBtn')?.addEventListener('click', function() {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert('Voice search not supported in this browser.');
+            return;
+        }
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('trustedContactSearch').value = transcript;
+            renderContactCards(transcript.toLowerCase());
+        };
+        recognition.start();
+    });
+    // On form submit, set hidden input
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const deliveryType = document.getElementById('delivery_type').value;
+        const scheduledDate = document.getElementById('scheduled_date').value;
+        const delayOption = document.getElementById('delay_option').value;
+        const customDelayDays = document.getElementById('custom_delay_days').value;
+
+        // Remove any previous error message
+        let prevError = document.getElementById('date_required_error');
+        if (prevError) prevError.remove();
+        if (deliveryType === 'date' && (!scheduledDate || scheduledDate.trim() === '')) {
+            e.preventDefault();
+            const dateGroup = document.getElementById('date_schedule_group');
+            const error = document.createElement('div');
+            error.className = 'text-danger mb-2';
+            error.id = 'date_required_error';
+            error.textContent = 'Please select a delivery date.';
+            dateGroup.appendChild(error);
+            document.getElementById('scheduled_date').focus();
+            return false;
+        }
+        // Trusted contact logic (for death_verification)
+        if (deliveryType === 'death_verification') {
+            if (!selectedContact || selectedContact === 'choose_later') {
+                document.getElementById('trusted_contact_id').value = '';
+            } else {
+                document.getElementById('trusted_contact_id').value = selectedContact;
+            }
+        }
+        // Delay logic (for death_verification)
+        if (deliveryType === 'death_verification') {
+            if (delayOption === 'custom') {
+                if (!customDelayDays || customDelayDays.trim() === '') {
+                    e.preventDefault();
+                    const delayOptionsGroup = document.getElementById('delay_options_group');
+                    const error = document.createElement('div');
+                    error.className = 'text-danger mb-2';
+                    error.textContent = 'Please enter a custom delay in days.';
+                    delayOptionsGroup.appendChild(error);
+                    document.getElementById('custom_delay_days').focus();
+                    return false;
+                }
+                document.getElementById('custom_delay_days').value = customDelayDays;
+            }
+        }
+    });
+    // Initial render
+    renderContactCards();
+
+    // Add Contact Later button handler
+    document.getElementById('addContactLaterBtn')?.addEventListener('click', function() {
+        this.classList.remove('btn-outline-secondary');
+        this.classList.add('btn-success');
+        this.textContent = 'You will add a trusted contact later';
+        this.disabled = true;
+        const conf = document.getElementById('addLaterConfirmation');
+        if (conf) {
+            conf.style.display = 'block';
+            conf.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> You can create your letter now and add a trusted contact at any time.</span>';
+        }
+    });
+    function updateTrustedContactWarnings() {
+        // This function can be expanded if you want to update warnings dynamically via JS
+        // For now, server-side rendering handles the logic
+    }
+
+    // --- Auto-Save Draft to Database ---
+    let draftTimeout = null;
+    const formFields = ['title', 'content', 'recipient_name', 'recipient_email', 'delivery_type', 'scheduled_date', 'delay_option', 'custom_delay_days'];
+    let currentDraftId = null; // Track the current draft session
+    function getFormData() {
+        const data = {};
+        formFields.forEach(f => {
+            const el = document.getElementById(f);
+            if (el) data[f] = el.value;
+        });
+        return data;
+    }
+    function saveDraft() {
+        const data = getFormData();
+        return fetch('/save-draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(r => r.json()).then(res => {
+            if (res.draft_id) {
+                currentDraftId = res.draft_id;
+                sessionStorage.setItem('currentDraftId', currentDraftId);
+            }
+            return res;
+        });
+    }
+    
+    // Save draft before navigating to add trusted contact
+    function saveDraftBeforeNavigation(event) {
+        event.preventDefault();
+        const href = event.target.href;
+        
+        // Clear any pending timeout
+        if (draftTimeout) clearTimeout(draftTimeout);
+        
+        // Save draft immediately
+        saveDraft().then((response) => {
+            window.location.href = href;
+        }).catch((error) => {
+            // If save fails, still allow navigation
+            window.location.href = href;
+        });
+    }
+    function debounceSaveDraft() {
+        if (draftTimeout) clearTimeout(draftTimeout);
+        draftTimeout = setTimeout(saveDraft, 800);
+    }
+    formFields.forEach(f => {
+        const el = document.getElementById(f);
+        if (el) {
+            el.addEventListener('input', debounceSaveDraft);
+            el.addEventListener('change', debounceSaveDraft);
+        }
+    });
+    // No draft is auto-loaded into the new letter form. The form is always fresh.
+
+    // --- Draft Conflict Modal Logic ---
+    function getUrlParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+
+    document.getElementById('continueDraftYes')?.addEventListener('click', function() {
+        // Load draft into form
+        fetch('/get-draft').then(r => r.json()).then(data => {
+            if (data.draft) {
+                for (const f of formFields) {
+                    if (data.draft[f] !== undefined && data.draft[f] !== null) {
+                        const el = document.getElementById(f);
+                        if (el) el.value = data.draft[f];
+                    }
+                }
+                document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+            }
+        });
+        $('#continueDraftModal').modal('hide');
+    });
+    document.getElementById('continueDraftNo')?.addEventListener('click', function() {
+        // Discard draft via AJAX
+        fetch('/delete-draft', { method: 'POST' }).then(() => {
+            // Clear form fields
+            formFields.forEach(f => {
+                const el = document.getElementById(f);
+                if (el) el.value = '';
+            });
+            document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+            sessionStorage.removeItem('currentDraftId');
+        });
+        $('#continueDraftModal').modal('hide');
+    });
+
+    // --- Only show draft conflict modal if user tries to start a new letter while a draft exists ---
+    function checkForDraftConflictBeforeNewLetter() {
+        fetch('/get-draft').then(r => r.json()).then(data => {
+            if (data.draft && (data.draft.title || data.draft.content || data.draft.recipient_name || data.draft.recipient_email)) {
+                // Populate draft information in the modal
+                if (data.draft.title) {
+                    document.getElementById('draftTitle').textContent = data.draft.title;
+                    document.getElementById('draftInfo').style.display = 'block';
+                } else {
+                    document.getElementById('draftInfo').style.display = 'none';
+                }
+                
+                // Show modal
+                $('#draftConflictModal').modal('show');
+                document.getElementById('editDraftBtn').onclick = function() {
+                    // Load draft into form
+                    for (const f of formFields) {
+                        if (data.draft[f] !== undefined && data.draft[f] !== null) {
+                            const el = document.getElementById(f);
+                            if (el) el.value = data.draft[f];
+                        }
+                    }
+                    document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+                    $('#draftConflictModal').modal('hide');
+                };
+                document.getElementById('startNewLetterBtn').onclick = function() {
+                    // Delete draft and clear form immediately
+                    fetch('/delete-draft', { method: 'POST' }).then(() => {
+                        formFields.forEach(f => {
+                            const el = document.getElementById(f);
+                            if (el) el.value = '';
+                        });
+                        document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+                        $('#draftConflictModal').modal('hide');
+                        // Remove draft from letters list if present
+                        const draftLi = document.getElementById('draft-letter');
+                        if (draftLi) draftLi.remove();
+                    });
+                };
+            }
+        });
+    }
+    // Attach to "New Letter" button if you have one, e.g.:
+    // document.getElementById('newLetterBtn').addEventListener('click', checkForDraftConflictBeforeNewLetter);
+    // Or call checkForDraftConflictBeforeNewLetter() before resetting the form for a new letter.
+
+    // Do NOT show the draft conflict modal on every field change or input.
+    // Only show it if the user is about to abandon a draft for a new letter.
+
+    // --- Preserve Scroll Position on Reload ---
+    window.addEventListener('beforeunload', function() {
+        localStorage.setItem('scrollPosition', window.scrollY);
+    });
+    window.addEventListener('DOMContentLoaded', function() {
+        const scrollY = localStorage.getItem('scrollPosition');
+        if (scrollY !== null) {
+            window.scrollTo(0, parseInt(scrollY, 10));
+            localStorage.removeItem('scrollPosition');
+        }
+    });
+
+    // --- Draft Conflict Logic ---
+    // Only check for drafts when the page loads, not on every input
+    let draftConflictChecked = false;
+    
+    function checkForDraftOnPageLoad() {
+        if (draftConflictChecked || sessionStorage.getItem('draftConflictHandled')) return;
+        
+
+        
+        fetch('/get-draft').then(r => r.json()).then(data => {
+            if (data.draft && (data.draft.title || data.draft.content || data.draft.recipient_name || data.draft.recipient_email)) {
+                draftConflictChecked = true;
+                sessionStorage.setItem('draftConflictHandled', '1');
+                
+                // Populate draft information in the modal
+                if (data.draft.title) {
+                    document.getElementById('draftTitle').textContent = data.draft.title;
+                    document.getElementById('draftInfo').style.display = 'block';
+                } else {
+                    document.getElementById('draftInfo').style.display = 'none';
+                }
+                
+                // Show modal
+                $('#draftConflictModal').modal('show');
+                document.getElementById('editDraftBtn').onclick = function() {
+                    // Load draft into form
+                    for (const f of formFields) {
+                        if (data.draft[f] !== undefined && data.draft[f] !== null) {
+                            const el = document.getElementById(f);
+                            if (el) el.value = data.draft[f];
+                        }
+                    }
+                    document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+                    $('#draftConflictModal').modal('hide');
+                };
+                document.getElementById('startNewLetterBtn').onclick = function() {
+                    // Delete draft and clear form immediately
+                    fetch('/delete-draft', { method: 'POST' }).then(() => {
+                        formFields.forEach(f => {
+                            const el = document.getElementById(f);
+                            if (el) el.value = '';
+                        });
+                        document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+                        $('#draftConflictModal').modal('hide');
+                        // Remove draft from letters list if present
+                        const draftLi = document.getElementById('draft-letter');
+                        if (draftLi) draftLi.remove();
+                    });
+                };
+            }
+        });
+    }
+    
+    // Only check for drafts when the page loads, not on input events
+    // This prevents the modal from showing when users are actively filling out the form
+    document.addEventListener('DOMContentLoaded', function() {
+        // Small delay to ensure the page is fully loaded
+        setTimeout(checkForDraftOnPageLoad, 100);
+    });
+    
+    // Initialize tooltips with better options
+    $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip({
+            placement: 'top',
+            trigger: 'hover',
+            html: true
+        });
+    });
+    
+    // Reset sessionStorage flag when leaving the page
+    window.addEventListener('beforeunload', function() {
+        sessionStorage.removeItem('draftConflictHandled');
+    });
+</script>
+<style>
+.glass-card-ui {
+    background: rgba(255,255,255,0.25);
+    border-radius: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.18);
+    transition: box-shadow 0.3s, background 0.3s;
+}
+.glass-contact-card {
+    background: rgba(255,255,255,0.18);
+    border-radius: 1.5rem;
+    min-width: 220px;
+    max-width: 260px;
+    padding: 1.2rem 1.2rem 0.7rem 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    position: relative;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
+    border: 1.5px solid rgba(180,200,255,0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 1rem;
+}
+.glass-contact-card.glass-selected {
+    background: rgba(0,123,255,0.18);
+    border-color: #007bff;
+    box-shadow: 0 4px 24px rgba(0,123,255,0.18);
+    transform: scale(1.04);
+}
+.glass-contact-card.glass-later {
+    background: rgba(224,231,255,0.5);
+    color: #007bff;
+    border-style: dashed;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+}
+.glass-contact-card .glass-avatar {
+    background: rgba(180,200,255,0.35);
+    color: #007bff;
+    border-radius: 50%;
+    width: 3.2rem;
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: background 0.2s, color 0.2s;
+}
+.glass-contact-card .choose-later-avatar {
+    background: #e0e7ff;
+    color: #007bff;
+}
+.glass-contact-card .glass-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0.3rem;
+}
+.glass-contact-card .glass-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+}
+.glass-contact-card .glass-relationship {
+    font-size: 0.95rem;
+    color: #007bff;
+    background: rgba(255,255,255,0.4);
+    border-radius: 0.7rem;
+    padding: 0.1rem 0.7rem;
+    margin-top: 0.2rem;
+    outline: none;
+    min-width: 80px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.glass-contact-card .glass-relationship:focus {
+    background: rgba(0,123,255,0.12);
+}
+.glass-contact-card .glass-more-info {
+    opacity: 0;
+    max-height: 0;
+    font-size: 0.92rem;
+    color: #444;
+    margin-top: 0.2rem;
+    transition: opacity 0.3s, max-height 0.3s;
+    pointer-events: none;
+}
+.glass-contact-card.glass-hover .glass-more-info,
+.glass-contact-card:focus .glass-more-info {
+    opacity: 1;
+    max-height: 100px;
+    pointer-events: auto;
+}
+.glass-contact-card.glass-hover,
+.glass-contact-card:focus {
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18), 0 0 0 2px #007bff33;
+    background: rgba(255,255,255,0.32);
+    outline: none;
+}
+.glass-search {
+    background: rgba(255,255,255,0.35);
+    border: 1.5px solid rgba(180,200,255,0.18);
+    color: #222;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: background 0.2s, border 0.2s;
+}
+.glass-search:focus {
+    background: rgba(255,255,255,0.55);
+    border-color: #007bff;
+}
+.letter-content-input {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.15rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    padding: 1.2rem;
+    border: 1.5px solid #e0e7ff;
+    transition: box-shadow 0.2s, border 0.2s;
+}
+.letter-content-input:focus {
+    box-shadow: 0 4px 24px rgba(0,123,255,0.10);
+    border-color: #007bff;
+    background: rgba(255,255,255,0.9);
+}
+.letter-preview-container {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.1rem;
+    background: rgba(255,255,255,0.5);
+    border-radius: 1.2rem;
+    min-height: 80px;
+    color: #444;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    border: 1.5px solid #e0e7ff;
+    margin-top: 0.5rem;
+    letter-spacing: 0.01em;
+}
+</style>
 {% endblock %}

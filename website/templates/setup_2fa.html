@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}Setup Two-Factor Authentication{% endblock %}
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <div class="mb-4">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield" style="background:rgba(193,211,254,0.18);border-radius:50%;padding:16px;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                
+                <h1 class="mb-3" style="color:#7092BE;font-family:'Manrope','Inter',Arial,sans-serif;font-weight:700;font-size:2.5rem;">
+                    Setup Two-Factor Authentication
+                </h1>
+                
+                <p class="text-muted mx-auto" style="max-width: 600px; font-size: 1.2rem; line-height: 1.6;">
+                    Add an extra layer of security to your account by requiring a second form of verification in addition to your password.
+                </p>
+            </div>
+            
+            {% if secret and qr_code %}
+                <!-- Main Content -->
+                <div class="row">
+                    <!-- QR Code Section -->
+                    <div class="col-lg-6 mb-5">
+                        <div class="card glass-card-ui p-5 h-100">
+                            <h3 class="mb-4" style="color: #7092BE; font-size: 1.8rem; text-align: center;">
+                                Step 1: Scan QR Code
+                            </h3>
+                            
+                            <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.6; text-align: center;">
+                                Use your authenticator app to scan this QR code:
+                            </p>
+                            
+                            <div class="text-center mb-4">
+                                <div class="qr-code-wrapper" style="display: inline-block; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);">
+                                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" style="border: 3px solid #C1D3FE; border-radius: 15px; max-width: 250px;">
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <h5 class="mb-3" style="color: #7092BE; font-size: 1.3rem;">Manual Entry</h5>
+                                <p class="text-muted mb-3" style="font-size: 1rem;">
+                                    Can't scan? Enter this secret manually:
+                                </p>
+                                <div class="secret-code-container">
+                                    <code class="secret-code" style="display: inline-block; background: #f8f9fa; color: #495057; padding: 12px 18px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.95rem; font-weight: 600; border: 2px solid #e9ecef; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all; max-width: 100%; overflow-wrap: break-word;">{{ secret }}</code>
+                                    <br>
+                                    <button type="button" class="btn btn-outline-secondary btn-lg" onclick="copyToClipboard('{{ secret }}')" style="border-radius: 10px; padding: 12px 25px; font-size: 1.1rem;">
+                                        <i class="fa fa-copy mr-2"></i>Copy Secret Code
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Verification Section -->
+                    <div class="col-lg-6 mb-5">
+                        <div class="card glass-card-ui p-5 h-100">
+                            <h3 class="mb-4" style="color: #7092BE; font-size: 1.8rem; text-align: center;">
+                                Step 2: Verify Setup
+                            </h3>
+                            
+                            <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.6; text-align: center;">
+                                Enter the 6-digit code from your authenticator app:
+                            </p>
+                            
+                            <form method="POST" action="{{ url_for('auth.verify_2fa') }}" class="verification-form">
+                                <div class="form-group mb-4">
+                                    <label for="code" class="form-label" style="font-size: 1.2rem; color: #7092BE; font-weight: 600; margin-bottom: 1rem; text-align: center; display: block;">
+                                        <i class="fa fa-mobile mr-2"></i>Verification Code
+                                    </label>
+                                    <input type="text" class="form-control verification-input" id="code" name="code" 
+                                           placeholder="000000" maxlength="6" pattern="[0-9]{6}" required
+                                           style="font-size: 1.5rem; letter-spacing: 4px; text-align: center; padding: 20px; border-radius: 15px; border: 2px solid #e9ecef; max-width: 300px; margin: 0 auto; display: block;">
+                                    <small class="form-text text-muted text-center d-block mt-3">
+                                        Enter the 6-digit code from your authenticator app
+                                    </small>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 12px; padding: 15px 40px; font-size: 1.2rem; background: linear-gradient(135deg,#C1D3FE,#7092BE); border: none; box-shadow: 0 4px 20px rgba(112,146,190,0.3);">
+                                        <i class="fa fa-check mr-2"></i>Verify & Enable 2FA
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backup Codes Section - Full Width -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card glass-card-ui p-5">
+                            <h3 class="mb-4" style="color: #7092BE; font-size: 1.8rem; text-align: center;">
+                                Step 3: Save Backup Codes
+                            </h3>
+                            
+                            <div class="alert alert-warning mx-auto mb-4" style="max-width: 800px; background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: #856404; text-align: center;">
+                                <i class="fa fa-exclamation-triangle mr-2"></i>
+                                <strong>Important:</strong> Save these backup codes in a secure location. You can use them to access your account if you lose your authenticator device.
+                            </div>
+                            
+                            <div class="backup-codes-container text-center">
+                                <div class="row justify-content-center">
+                                    {% for code in backup_codes %}
+                                        <div class="col-lg-2 col-md-3 col-6 mb-3">
+                                            <div class="backup-code-item" style="background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 20px; text-align: center; transition: all 0.2s ease;">
+                                                <code style="font-family: 'Courier New', monospace; font-size: 1.2rem; font-weight: 600; color: #495057; letter-spacing: 1px;">{{ code }}</code>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="window.print()" style="border-radius: 12px; padding: 15px 30px; font-size: 1.1rem;">
+                                    <i class="fa fa-print mr-2"></i>Print Backup Codes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% else %}
+                <!-- Initial Setup Form -->
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card glass-card-ui p-5 text-center">
+                            <p class="text-muted mb-4" style="font-size: 1.3rem; line-height: 1.6;">
+                                Click the button below to begin setting up two-factor authentication for your account.
+                            </p>
+                            <form method="POST" class="d-inline-block">
+                                <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 12px; padding: 18px 45px; font-size: 1.3rem; background: linear-gradient(135deg,#C1D3FE,#7092BE); border: none; box-shadow: 0 6px 20px rgba(112,146,190,0.3);">
+                                    <i class="fa fa-shield mr-2"></i>Begin 2FA Setup
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Back to Settings Link -->
+            <div class="text-center mt-5">
+                <a href="{{ url_for('views.settings') }}" class="text-muted" style="text-decoration: none; font-size: 1.1rem;">
+                    <i class="fa fa-arrow-left mr-2"></i>Back to Settings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.verification-input:focus {
+    border-color: #C1D3FE;
+    box-shadow: 0 0 0 0.3rem rgba(193,211,254,0.25);
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.backup-code-item:hover {
+    background: #e9ecef;
+    border-color: #C1D3FE;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.qr-code-wrapper:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+}
+
+.secret-code:hover {
+    border-color: #C1D3FE;
+    box-shadow: 0 2px 15px rgba(193,211,254,0.3);
+    transition: all 0.2s ease;
+}
+
+@media print {
+    .no-print { display: none !important; }
+    .glass-card-ui { box-shadow: none !important; }
+}
+</style>
+
+<script>
+// Copy secret to clipboard
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fa fa-check"></i> Copied!';
+        button.classList.remove('btn-outline-secondary');
+        button.classList.add('btn-success');
+        
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy to clipboard');
+    });
+}
+
+// Auto-submit when 6 digits are entered
+document.getElementById('code')?.addEventListener('input', function(e) {
+    if (this.value.length === 6) {
+        this.form.submit();
+    }
+});
+
+// Format input to only allow numbers
+document.getElementById('code')?.addEventListener('keypress', function(e) {
+    if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

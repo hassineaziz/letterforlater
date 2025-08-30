@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>letterforlater.com | Coming Soon</title>
+    <meta name="description" content="letterforlater.com helps you send meaningful messages to loved ones at the right time. Secure, thoughtful, and delivered with care.">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: 'Inter', 'Manrope', Arial, sans-serif;
+            background: linear-gradient(135deg, #EDF1F7 0%, #FFFFFF 100%);
+            min-height: 100vh;
+            color: #222;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 800px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(193, 211, 254, 0.18);
+            border-radius: 50%;
+            padding: 30px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(112, 146, 190, 0.18);
+            border: 1.5px solid #C1D3FE;
+        }
+
+        .logo-icon svg {
+            width: 60px;
+            height: 60px;
+            stroke: #7092BE;
+            stroke-width: 2.2;
+        }
+
+        .hero-title {
+            font-family: 'Manrope', 'Inter', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            color: #7092BE;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-family: 'Manrope', 'Inter', Arial, sans-serif;
+            font-size: 1.4rem;
+            color: #A2A8B5;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            color: #4A5A7A;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .subscription-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            box-shadow: 0 8px 32px rgba(112, 146, 190, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid #C1D3FE;
+            padding: 3rem;
+            margin: 0 auto;
+            max-width: 500px;
+        }
+
+        .subscription-title {
+            font-size: 1.8rem;
+            color: #7092BE;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .subscription-description {
+            color: #4A5A7A;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            border-radius: 0.7rem;
+            font-size: 1.1rem;
+            padding: 0.8rem 1.2rem;
+            border: 1.5px solid #e9ecef;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #C1D3FE;
+            box-shadow: 0 0 0 0.3rem rgba(193, 211, 254, 0.25);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #C1D3FE, #7092BE);
+            color: #fff;
+            border: none;
+            border-radius: 0.7rem;
+            font-size: 1.1rem;
+            padding: 0.8rem 2.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(112, 146, 190, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(112, 146, 190, 0.4);
+        }
+
+        .features-section {
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .features-title {
+            font-size: 1.8rem;
+            color: #7092BE;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(193, 211, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(112, 146, 190, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(193, 211, 254, 0.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-icon svg {
+            width: 30px;
+            height: 30px;
+            stroke: #7092BE;
+            stroke-width: 2;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            color: #7092BE;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .feature-description {
+            color: #4A5A7A;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: #A2A8B5;
+            font-size: 1rem;
+        }
+
+        .social-links {
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: #7092BE;
+            margin: 0 0.5rem;
+            font-size: 1.2rem;
+            transition: color 0.2s ease;
+        }
+
+        .social-links a:hover {
+            color: #4A5A7A;
+        }
+
+        /* Floating elements for visual interest */
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .subscription-card {
+                padding: 2rem;
+                margin: 0 1rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .subscription-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background elements -->
+    <div class="floating-element">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="1">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+    </div>
+    <div class="floating-element">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="1">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
+    <div class="floating-element">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7092BE" stroke-width="1">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+        </svg>
+    </div>
+
+    <div class="hero-section">
+        <div class="hero-container">
+            <!-- Logo and Branding -->
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <path d="M13 8H7"></path>
+                        <path d="M17 12H7"></path>
+                    </svg>
+                </div>
+                <h1 class="hero-title">Letter For Later</h1>
+                <p class="hero-subtitle">Your words, delivered at the right time</p>
+                <p class="hero-description">
+                    Create meaningful messages for your loved ones that will be delivered with care and security. 
+                    Whether it's wisdom, love, or guidance, ensure your voice lives on.
+                </p>
+            </div>
+
+      
+
+            <!-- Features Preview -->
+            <div class="features-section">
+                <h3 class="features-title">What to Expect</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="feature-title">Secure Storage</h4>
+                        <p class="feature-description">Your messages are encrypted and stored with bank-level security</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <h4 class="feature-title">Trusted Delivery</h4>
+                        <p class="feature-description">Messages delivered only when verified by trusted contacts</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="feature-title">Flexible Scheduling</h4>
+                        <p class="feature-description">Choose immediate delivery or set custom delays after verification</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 12l2 2 4-4"></path>
+                                <path d="M21 12c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"></path>
+                                <path d="M3 12c1 0 2-1 2-2s-1-2-2-2-2 1-2 2 1 2 2 2z"></path>
+                                <path d="M12 3c0 1-1 2-2 2s-2 1-2 2 1 2 2 2 2 1 2 2 1-1 2-2 2-1 2-2-1-2-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="feature-title">Two-Factor Security</h4>
+                        <p class="feature-description">Enhanced account protection with 2FA and backup codes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>&copy; 2025 letterforlater.com. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    
+    <script>
+        // Form validation and enhancement
+        document.getElementById('mc-embedded-subscribe-form').addEventListener('submit', function(e) {
+            const email = document.getElementById('mce-EMAIL').value;
+            if (!email || !email.includes('@')) {
+                e.preventDefault();
+                alert('Please enter a valid email address.');
+                document.getElementById('mce-EMAIL').focus();
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Sending...';
+            submitBtn.disabled = true;
+        });
+
+        // Smooth scroll animation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

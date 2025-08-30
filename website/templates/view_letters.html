@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block title %}View Letters{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow glass-card-ui mb-6 p-4">
+        <div class="card-header bg-white border-0" style="background: transparent !important;">
+            <h4 class="mb-0 headline-calm" style="font-family: 'Manrope', 'Inter', Arial, sans-serif; color: #7092BE; font-size: 2rem;">View Letters</h4>
+            <p class="headline-reassure" style="color: #A2A8B5; font-size: 1.2rem;">Your messages are safe and will be delivered with care.</p>
+        </div>
+        <div class="card-body">
+            {% if contact %}
+            <div class="alert alert-info">
+                <h5>Letters for {{ contact.user.first_name }} {{ contact.user.last_name }}</h5>
+                <p>As a trusted contact, you have access to the following letters.</p>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <h5>Your Letters</h5>
+                <p>Below are all the letters you have written.</p>
+            </div>
+            {% endif %}
+            
+            <div class="d-flex align-items-center mb-4">
+                <input type="text" class="form-control glass-search" id="letterSearch" placeholder="Type a letter title or recipient..." autocomplete="off" style="max-width: 350px; border-radius: 1.5rem; margin-right: 1rem; font-size: 1.1rem;">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Letter Title</th>
+                            <th>Recipient</th>
+                            {% set show_scheduled_date = letters|selectattr('delivery_type', 'equalto', 'date')|list|length > 0 %}
+                            {% if show_scheduled_date %}
+                            <th>Scheduled Date</th>
+                            {% endif %}
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for letter in letters %}
+                        <tr>
+                            <td>{{ letter.title }}</td>
+                            <td>{{ letter.recipient_name }}</td>
+                            {% if show_scheduled_date %}
+                            <td>
+                                    {% if letter.delivery_type == 'date' and letter.delivery_date %}
+                                        {{ letter.delivery_date.strftime('%Y-%m-%d') }}
+                                    {% elif letter.delivery_type == 'date' %}
+                                        Not scheduled
+                                {% else %}
+                                        <!-- Empty cell for non-date letters -->
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            <td>
+                                {% if letter.status == 'draft' %}
+                                    <span class="badge badge-secondary" data-toggle="tooltip" data-placement="top" title="Still being written">✍️ Draft</span>
+                                {% elif letter.status == 'scheduled' %}
+                                    <span class="badge badge-info" data-toggle="tooltip" data-placement="top" title="Waiting for delivery date">⏳ Scheduled</span>
+                                {% elif letter.status == 'pending_verification' %}
+                                    <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" title="Waiting for death verification">🕊️ Waiting Confirmation</span>
+                                {% elif letter.status == 'delivered' %}
+                                    <span class="badge badge-success" data-toggle="tooltip" data-placement="top" title="Successfully delivered">📩 Delivered</span>
+                                {% elif letter.status == 'cancelled' %}
+                                    <span class="badge badge-danger" data-toggle="tooltip" data-placement="top" title="Delivery was cancelled">❌ Cancelled</span>
+                                {% else %}
+                                    <span class="badge badge-secondary" data-toggle="tooltip" data-placement="top" title="Status: {{ letter.status }}">{{ letter.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if is_owner %}
+                                    <button type="button" class="btn btn-sm btn-info mr-1" data-toggle="modal" data-target="#editLetterModal{{ letter.id }}">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-warning mr-1" onclick="toggleDeliveryEdit({{ letter.id }})">Change Delivery</button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-letter-id="{{ letter.id }}" onclick="deleteLetter({{ letter.id }})">Delete</button>
+                                {% elif letter.delivery_type == 'date' and letter.status == 'delivered' %}
+                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#viewLetterModal{{ letter.id }}">View Letter</button>
+                                {% else %}
+                                    <span class="text-muted">Not yet delivered</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr id="deliveryEditRow{{ letter.id }}" style="display:none; background:#f8fafc;">
+                            <td colspan="5">
+                                <form class="w-100" id="inlineDeliveryForm{{ letter.id }}" method="post" action="/update-letter-status" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                    <input type="hidden" name="letterId" value="{{ letter.id }}">
+                                    <div class="form-group mb-2" style="width: 100%; max-width: 320px;">
+                                        <label for="inline_delivery_type_{{ letter.id }}" class="mr-2">Delivery Type</label>
+                                        <select class="form-control" name="delivery_type" id="inline_delivery_type_{{ letter.id }}" required>
+                                            <option value="date" {% if letter.delivery_type == 'date' %}selected{% endif %}>By Date</option>
+                                            <option value="death_verification" {% if letter.delivery_type == 'death_verification' %}selected{% endif %}>By Death Verification</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-2" id="inline_scheduled_date_group_{{ letter.id }}" {% if letter.delivery_type != 'date' %}style="display:none;"{% else %}style="width: 100%; max-width: 320px;"{% endif %}>
+                                        <label for="inline_scheduled_date_{{ letter.id }}" class="mr-2">Scheduled Date</label>
+                                        <input type="date" class="form-control" name="scheduled_date" id="inline_scheduled_date_{{ letter.id }}" value="{% if letter.delivery_date %}{{ letter.delivery_date.strftime('%Y-%m-%d') }}{% endif %}" min="{{ now.strftime('%Y-%m-%d') }}">
+                                    </div>
+                                    <div class="d-flex justify-content-end w-100 mt-2">
+                                        <button type="submit" class="btn btn-primary mr-2">Save</button>
+                                        <button type="button" class="btn btn-secondary" onclick="toggleDeliveryEdit({{ letter.id }}, true)">Cancel</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if not letters %}
+            <div class="text-center py-4">
+                <p class="text-muted">No letters available.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Render all modals outside the table for proper stacking -->
+{% for letter in letters %}
+<!-- View Letter Modal -->
+<div class="modal fade" id="viewLetterModal{{ letter.id }}" tabindex="-1" role="dialog" aria-labelledby="viewLetterModalLabel{{ letter.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewLetterModalLabel{{ letter.id }}">{{ letter.title }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="letter-metadata mb-4">
+          <p><strong>Recipient:</strong> {{ letter.recipient_name }}</p>
+          {% if letter.delivery_schedule and letter.delivery_schedule.delivery_date %}
+          <p><strong>Delivery Date:</strong> {{ letter.delivery_schedule.delivery_date.strftime('%Y-%m-%d') }}</p>
+          {% endif %}
+        </div>
+        <div class="letter-content">
+          {{ letter.content|safe }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">Print Letter</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Edit Letter Modal -->
+<div class="modal fade" id="editLetterModal{{ letter.id }}" tabindex="-1" role="dialog" aria-labelledby="editLetterModalLabel{{ letter.id }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" action="/edit-letter" id="editLetterForm{{ letter.id }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editLetterModalLabel{{ letter.id }}">Edit Letter</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="letterId" value="{{ letter.id }}">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" name="title" value="{{ letter.title }}" required>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea class="form-control" name="content" required>{{ letter.content }}</textarea>
+          </div>
+          <div class="form-group">
+            <label>Recipient Name</label>
+            <input type="text" class="form-control" name="recipient_name" value="{{ letter.recipient_name }}" required>
+          </div>
+          <div class="form-group">
+            <label>Recipient Email</label>
+            <input type="email" class="form-control" name="recipient_email" value="{{ letter.recipient_email }}" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script type="text/javascript">
+function deleteLetter(letterId) {
+    // Get the letter title for the popup
+    var letterTitle = '';
+    var btn = document.querySelector('button[data-letter-id="' + letterId + '"]');
+    var row = btn ? btn.closest('tr') : null;
+    if (row) {
+        var td = row.querySelector('td');
+        if (td) letterTitle = td.textContent.trim();
+    }
+    // Create modal if not already present
+    let modal = document.getElementById('deleteLetterConfirmModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = 'deleteLetterConfirmModal';
+        modal.tabIndex = -1;
+        modal.role = 'dialog';
+        modal.innerHTML = `
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="deleteLetterModalBody">
+                <p>Are you sure you want to delete the letter <strong>""</strong>?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelDeleteLetterBtn">No</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteLetterBtn">Yes</button>
+              </div>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+        $(modal).modal({ show: false });
+    }
+    // Set the message with the letter title
+    const modalBody = document.getElementById('deleteLetterModalBody');
+    if (modalBody) {
+        modalBody.innerHTML = `<p>Are you sure you want to delete the letter <strong>"${letterTitle}"</strong>?`;
+    }
+    // Show modal
+    $(modal).modal('show');
+    // Remove previous listeners
+    document.getElementById('confirmDeleteLetterBtn').onclick = null;
+    document.getElementById('cancelDeleteLetterBtn').onclick = null;
+    // On confirm, delete the letter
+    document.getElementById('confirmDeleteLetterBtn').onclick = function() {
+        $(modal).modal('hide');
+        fetch("/delete-letter", {
+            method: "POST",
+            body: JSON.stringify({ letterId: letterId }),
+        }).then((_res) => {
+            window.location.reload();
+        });
+    };
+    // On cancel, just hide
+    document.getElementById('cancelDeleteLetterBtn').onclick = function() {
+        $(modal).modal('hide');
+    };
+}
+// Toggle inline delivery edit row
+function toggleDeliveryEdit(letterId, cancel) {
+    // Hide all other edit rows
+    document.querySelectorAll('[id^="deliveryEditRow"]').forEach(function(row) {
+        row.style.display = 'none';
+    });
+    if (cancel) return;
+    var row = document.getElementById('deliveryEditRow' + letterId);
+    if (row) {
+        row.style.display = '';
+        // Attach change event for delivery type
+        var select = document.getElementById('inline_delivery_type_' + letterId);
+        var dateGroup = document.getElementById('inline_scheduled_date_group_' + letterId);
+        var dateInput = document.getElementById('inline_scheduled_date_' + letterId);
+        var form = document.getElementById('inlineDeliveryForm' + letterId);
+        var errorMsgId = 'inline_date_error_' + letterId;
+        // Remove any previous error message
+        var prevError = document.getElementById(errorMsgId);
+        if (prevError) prevError.remove();
+        if (select && dateGroup) {
+            select.onchange = function() {
+                if (this.value === 'date') {
+                    dateGroup.style.display = '';
+                } else {
+                    dateGroup.style.display = 'none';
+                }
+            };
+            // Trigger change to set initial state
+            select.dispatchEvent(new Event('change'));
+        }
+        // Add submit handler for validation
+        if (form) {
+            form.onsubmit = function(e) {
+                // Remove any previous error message
+                var prevError = document.getElementById(errorMsgId);
+                if (prevError) prevError.remove();
+                if (select.value === 'date' && (!dateInput.value || dateInput.value.trim() === '')) {
+                    e.preventDefault();
+                    var error = document.createElement('div');
+                    error.className = 'text-danger mb-2';
+                    error.id = errorMsgId;
+                    error.textContent = 'Please pick a scheduled date.';
+                    dateGroup.appendChild(error);
+                    dateInput.focus();
+                    return false;
+                }
+            };
+        }
+    }
+}
+// Initialize tooltips with better options
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip({
+        placement: 'top',
+        trigger: 'hover',
+        html: true
+    });
+});
+
+// Letter search filter
+document.getElementById('letterSearch').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('table tbody tr');
+    for (let i = 0; i < rows.length; i += 2) {
+        const mainRow = rows[i];
+        const editRow = rows[i + 1];
+        if (mainRow && mainRow.querySelector('td')) {
+            const title = mainRow.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            const recipient = mainRow.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const match = title.includes(filter) || recipient.includes(filter);
+            mainRow.style.display = match ? '' : 'none';
+            if (editRow) editRow.style.display = match ? editRow.style.display : 'none';
+        }
+    }
+});
+</script>
+{% endblock %} 

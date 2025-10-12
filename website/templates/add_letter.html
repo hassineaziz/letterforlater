@@ -1254,13 +1254,6 @@
                             </svg>
                             Preview
                         </button>
-                        <button onclick="downloadMedia('${fileData.id}')" 
-                                class="text-green-600 hover:text-green-800 text-xs font-medium">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            Download
-                        </button>
                         <button onclick="deleteMedia('${fileData.id}')" 
                                 class="text-red-600 hover:text-red-800 text-xs font-medium">
                             <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1309,13 +1302,6 @@
                             </svg>
                             Play
                         </button>
-                        <button onclick="downloadMedia('${fileData.id}')" 
-                                class="text-green-600 hover:text-green-800 text-xs font-medium">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            Download
-                        </button>
                         <button onclick="deleteMedia('${fileData.id}')" 
                                 class="text-red-600 hover:text-red-800 text-xs font-medium">
                             <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1359,13 +1345,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             Play
-                        </button>
-                        <button onclick="downloadMedia('${fileData.id}')" 
-                                class="text-green-600 hover:text-green-800 text-xs font-medium">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            Download
                         </button>
                         <button onclick="deleteMedia('${fileData.id}')" 
                                 class="text-red-600 hover:text-red-800 text-xs font-medium">
@@ -1464,7 +1443,7 @@
                            oncanplay="console.log('Video can play in preview:', this.src); this.nextElementSibling.style.display='none';">
                     </video>
                     <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500" style="display:none;">
-                        Video playback error. Try downloading the file.
+                        Video playback error. Try open it from view letter.
                     </div>
                 `;
             } else if (fileData.file_type === 'audio') {
@@ -1615,22 +1594,8 @@
         }
     }
 
-    function downloadMedia(fileId) {
-        const fileData = uploadedFiles.find(f => f.id == fileId);
-        if (!fileData) return;
 
-        const link = document.createElement('a');
-        link.href = `/media/${fileData.media_id}`;
-        link.download = fileData.file_name;
-        link.click();
-    }
 
-    // Download function for current preview media
-    function downloadCurrentPreviewMedia() {
-        if (window.currentPreviewMedia) {
-            downloadMedia(window.currentPreviewMedia.id);
-        }
-    }
 
     // Use the unified modal system
     function createModal(config) {
@@ -2402,7 +2367,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-modal="mediaPreviewModal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="downloadCurrentPreviewMedia()">Download</button>
         </div>
     </div>
 </div>

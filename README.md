@@ -1,97 +1,152 @@
-# 📜 Legacy Letter Web App
+# Legacy Letter - Production Ready
 
-A full-stack web application that allows users to write heartfelt letters to loved ones and schedule them to be delivered after their death — verified by trusted contacts. Uses AI to assist in letter drafting and includes secure mechanisms to ensure letters are only sent under appropriate conditions.
+A Flask-based SaaS application for creating and scheduling legacy letters to be delivered after death verification.
 
----
+## Features
 
-## 🧠 Project Purpose
+- 📧 Email-based letter delivery system
+- 🔐 Two-factor authentication (2FA)
+- 👥 Trusted contact management
+- 📁 Media attachments (images, videos, audio) via AWS S3
+- 📝 Rich text editor for letter composition
+- 🔔 Notification system
+- 📰 Blog functionality
+- 🔒 Death verification workflow
 
-Legacy Letter enables people to leave behind meaningful, personalized messages for friends and family. It ensures these messages are:
+## Tech Stack
 
-- Authored thoughtfully (with optional AI help),
-- Stored securely,
-- Delivered only upon verified death or a set future date.
+- **Backend**: Flask (Python)
+- **Database**: PostgreSQL
+- **Storage**: AWS S3
+- **Authentication**: Flask-Login, PyOTP
+- **Email**: Flask-Mail
+- **Media Processing**: Pillow, OpenCV, MoviePy
 
----
+## Production Setup
 
-## 👑 Admin Access
+### Prerequisites
 
-The application includes a blog admin system for content management:
+- Python 3.8+
+- PostgreSQL database
+- AWS S3 bucket
+- SMTP email server
 
-- **Admin Email**: `hassineaziz@icloud.com`
-- **Admin Password**: `admin123!`
-- **Admin Dashboard**: `/admin`
+### Environment Variables
 
-### After Database Reset
-
-If you reset the database, the admin user will be automatically recreated. You can also manually ensure admin access by running:
+Create a `.env` file with the following variables:
 
 ```bash
-python ensure_admin.py
+# Flask
+SECRET_KEY=your-secret-key-here
+FLASK_ENV=production
+
+# Database
+DATABASE_URL=postgresql://user:password@host:port/database
+
+# AWS S3
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=your-region
+S3_BUCKET=your-bucket-name
+
+# Email
+MAIL_SERVER=smtp.your-provider.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@domain.com
+MAIL_PASSWORD=your-email-password
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 ```
 
----
+### Installation
 
-## ✨ Core Features
+1. Clone the repository
+2. Create a virtual environment:
 
-### ✅ User Authentication
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-- Secure signup, login, logout
-- Password reset functionality
-- JWT-based sessions
-- (Optional 2FA for future)
+3. Install dependencies:
 
-### 💌 Letter Creation & AI Drafting
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- Multi-step letter creation wizard
-- Collect recipient info, tone, topics, advice
-- GPT-powered letter draft generation
-- Manual editing and saving of drafts
+4. Set up the database:
 
-### 📅 Scheduling & Delivery
+   ```bash
+   flask db upgrade
+   ```
 
-- Schedule delivery by fixed date or death verification
-- Periodic inactivity checks ("Are you still alive?" emails)
-- Delivery triggered by date or by trusted contact confirmation
+5. Run the application:
+   ```bash
+   gunicorn -w 4 -b 0.0.0.0:8000 main:app
+   ```
 
-### 🤝 Trusted Contacts Management
+## Production Deployment
 
-- Add/edit/remove trusted contacts
-- Trusted contacts receive secure confirmation links
-- Death verification must be confirmed by trusted contacts
+### Using Gunicorn (Recommended)
 
-### 📬 Email Delivery & Notifications
+```bash
+gunicorn -w 4 -b 0.0.0.0:8000 --timeout 120 main:app
+```
 
-- Secure email delivery of letters (inline or attachments)
-- Email notifications for users and contacts
-- Reminder emails for inactivity or unconfirmed letters
+### Using Docker (Optional)
 
-### 🧾 User Dashboard
+```dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "main:app"]
+```
 
-- See all letters (draft, scheduled, delivered)
-- Manage trusted contacts
-- Update personal settings and preferences
+## Scheduled Tasks
 
----
+The application includes scheduled tasks that should be run via cron:
 
-## 🧑‍💻 Target Users & User Stories
+1. **Send Scheduled Letters**: `send_scheduled_letters.py`
 
-### User Types
+   - Run daily to check and send scheduled letters
 
-- 🧍 Regular Users (create/send letters)
-- 🧑‍🤝‍🧑 Trusted Contacts (verify death)
-- 📩 Recipients (receive letters)
+2. **Cleanup Expired Media**: `cleanup_expired_media.py`
+   - Run daily to clean up temporary media files
 
-### Example User Stories
+Example crontab:
 
-| User                 | Goal                                                                      |
-| -------------------- | ------------------------------------------------------------------------- |
-| As a user            | I want to write letters with AI help to leave messages for my loved ones. |
-| As a user            | I want to schedule these messages to be sent after I pass away.           |
-| As a user            | I want to assign trusted contacts to confirm my death.                    |
-| As a trusted contact | I want to securely verify a user’s death.                                 |
-| As a recipient       | I want to receive a meaningful message after my loved one’s passing.      |
+```bash
+0 0 * * * cd /path/to/app && /path/to/venv/bin/python send_scheduled_letters.py
+0 2 * * * cd /path/to/app && /path/to/venv/bin/python cleanup_expired_media.py
+```
 
----
+## Security Considerations
 
-## 🏗️ Architecture Overview
+- Always use HTTPS in production
+- Keep SECRET_KEY secure and random
+- Use environment variables for sensitive data
+- Enable 2FA for admin accounts
+- Regularly update dependencies
+- Monitor application logs
+- Set up database backups
+- Use AWS S3 bucket policies to restrict access
+
+## Monitoring
+
+- Check application logs regularly
+- Monitor S3 storage usage
+- Track email delivery rates
+- Monitor database performance
+- Set up uptime monitoring
+
+## Support
+
+For issues or questions, please contact the development team.
+
+## License
+
+Proprietary - All rights reserved

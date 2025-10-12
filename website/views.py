@@ -2807,7 +2807,8 @@ def cleanup_expired_media():
     })
 
 # Google OAuth Configuration
-GOOGLE_CLIENT_ID = "813056295005-bn0fbr2og5vgmv39cu07m4nasfrvnlgr.apps.googleusercontent.com"  # Replace with your actual client ID
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', 'your-google-client-id.apps.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', 'your-google-client-secret')
 
 @views.route('/auth/google')
 def google_auth():
@@ -2866,7 +2867,7 @@ def google_callback():
         base_url = request.url_root.replace('127.0.0.1', 'localhost')
         token_data = {
             'client_id': GOOGLE_CLIENT_ID,
-            'client_secret': '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',  # Replace with your actual client secret
+            'client_secret': GOOGLE_CLIENT_SECRET,
             'code': code,
             'grant_type': 'authorization_code',
             'redirect_uri': f"{base_url}auth/google/callback"

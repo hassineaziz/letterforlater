@@ -75,9 +75,12 @@ Thumbs.db
 htmlcov/
 .tox/
 
-# Documentation (keep only README.md)
+# Documentation (keep only README.md and deployment docs)
 *.md
 !README.md
+!DEPLOYMENT.md
+!GOOGLE_OAUTH_SETUP.md
+!CLEANUP_SUMMARY.md
 
 # Migration scripts (keep migrations folder structure)
 # But ignore specific migration files if needed

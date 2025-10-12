@@ -2023,7 +2023,7 @@ console.log('Loading existing media attachments for letter:', {{ letter_to_edit.
 
 // Set the current letter ID for editing
 currentLetterId = {{ letter_to_edit.id }};
-isEditingDraft = true;
+isEditingDraft = false; // This is editing an existing letter, not a draft
 
 // Clear any existing uploaded files
 uploadedFiles = [];
@@ -2226,6 +2226,11 @@ if (uploadedFiles.length > 0) {
                 } else if (currentLetterId && isEditingDraft) {
                     // We're editing a draft letter
                     console.log('Editing draft letter:', currentLetterId);
+                    formData.append('letter_id', currentLetterId);
+                } else if (currentLetterId && !isEditingDraft) {
+                    // We're editing an existing letter (not a draft) - this shouldn't happen
+                    // because letter_to_edit should be set, but just in case
+                    console.log('Editing existing letter via currentLetterId:', currentLetterId);
                     formData.append('letter_id', currentLetterId);
                 } else if (currentLetterId) {
                     // We're working with a draft but not editing it (shouldn't happen)

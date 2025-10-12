@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{{ post.meta_title or post.title }}{% endblock %}
+
+{% block meta_description %}{{ post.meta_description or post.excerpt or "Read this article about preserving your legacy with digital letters and family communication." }}{% endblock %}
+
+{% block meta_keywords %}{% if post.tags %}{{ post.tags|join(', ') }}, legacy letters, digital inheritance{% else %}legacy letters, digital inheritance, family communication{% endif %}{% endblock %}
+
+{% block og_title %}{{ post.meta_title or post.title }}{% endblock %}
+{% block og_description %}{{ post.meta_description or post.excerpt or "Read this article about preserving your legacy with digital letters and family communication." }}{% endblock %}
+{% block og_image %}{% if post.cover_image_url %}{{ post.cover_image_url }}{% else %}{{ url_for('static', filename='logo.png', _external=True) }}{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ post.meta_title or post.title }}{% endblock %}
+{% block twitter_description %}{{ post.meta_description or post.excerpt or "Read this article about preserving your legacy with digital letters and family communication." }}{% endblock %}
+{% block twitter_image %}{% if post.cover_image_url %}{{ post.cover_image_url }}{% else %}{{ url_for('static', filename='logo.png', _external=True) }}{% endif %}{% endblock %}
+
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/blog-content.css') }}">
 {% endblock %}

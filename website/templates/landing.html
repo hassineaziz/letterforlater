@@ -1,6 +1,41 @@
 {% extends "base.html" %}
 {% block title %}LetterForLater - Preserve Your Legacy{% endblock %}
+
+{% block meta_description %}Create heartfelt letters that will be delivered to your loved ones when the time is right. Secure digital legacy service for preserving memories and messages.{% endblock %}
+
+{% block meta_keywords %}legacy letters, digital letters, family messages, memorial letters, future letters, personal legacy, digital inheritance, family communication{% endblock %}
+
 {% block content %}
+
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "LetterForLater",
+  "description": "Preserve your legacy with heartfelt letters delivered to loved ones at the right time. Secure, private, and meaningful digital letter service.",
+  "url": "{{ request.url_root }}",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Start free with 1 letter"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "LetterForLater"
+  },
+  "featureList": [
+    "Secure letter storage",
+    "Scheduled delivery",
+    "Media attachments",
+    "Death verification system",
+    "Trusted contacts"
+  ]
+}
+</script>
 
 <!-- Hero Section -->
 <div class="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-16 lg:py-24">

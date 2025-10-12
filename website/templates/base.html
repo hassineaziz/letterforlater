@@ -4,6 +4,33 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}Preserve your legacy with heartfelt letters delivered to loved ones at the right time. Secure, private, and meaningful Legacy letter service.{% endblock %}" />
+    <meta name="keywords" content="{% block meta_keywords %}legacy letter, digital letter, family message, memorial letters, future letters, personal legacy{% endblock %}" />
+    <meta name="author" content="LetterForLater" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ request.url }}" />
+    <meta property="og:title" content="{% block og_title %}LetterForLater - Preserve Your Legacy{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Preserve your legacy with heartfelt letters delivered to loved ones at the right time. Secure, private, and meaningful digital letter service.{% endblock %}" />
+    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="{{ request.url }}" />
+    <meta property="twitter:title" content="{% block twitter_title %}LetterForLater - Preserve Your Legacy{% endblock %}" />
+    <meta property="twitter:description" content="{% block twitter_description %}Preserve your legacy with heartfelt letters delivered to loved ones at the right time. Secure, private, and meaningful digital letter service.{% endblock %}" />
+    <meta property="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.url }}" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}" />
+    
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
     <script src="https://cdn.tailwindcss.com"></script>

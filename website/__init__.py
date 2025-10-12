@@ -53,12 +53,17 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    
+    # Initialize Flask-Sitemap
+    from .sitemap_config import sitemap, seo_bp
+    sitemap.init_app(app)
 
     from .views import views
     from .auth import auth
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(seo_bp, url_prefix='/')
 
     from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment
     

@@ -804,6 +804,10 @@
                 document.getElementById('mediaPreview').classList.add('hidden');
                 document.getElementById('mediaItems').innerHTML = '';
 
+                // Reset draft editing flags
+                currentLetterId = null;
+                isEditingDraft = false;
+
                 // Show notification
                 showNotification('Starting fresh with a new letter', 'info');
 
@@ -835,6 +839,10 @@
                 uploadedFiles = [];
                 document.getElementById('mediaPreview').classList.add('hidden');
                 document.getElementById('mediaItems').innerHTML = '';
+
+                // Reset draft editing flags
+                currentLetterId = null;
+                isEditingDraft = false;
 
                 showNotification('Starting fresh with a new letter', 'info');
                 markAsSaved();
@@ -2215,8 +2223,13 @@ if (uploadedFiles.length > 0) {
                 if (letter_to_edit) {
                     // We're editing an existing letter, don't override letter_id
                     console.log('Editing existing letter:', letter_to_edit.id);
+                } else if (currentLetterId && isEditingDraft) {
+                    // We're editing a draft letter
+                    console.log('Editing draft letter:', currentLetterId);
+                    formData.append('letter_id', currentLetterId);
                 } else if (currentLetterId) {
-                    // We're working with a draft
+                    // We're working with a draft but not editing it (shouldn't happen)
+                    console.log('Working with draft but not editing:', currentLetterId);
                     formData.append('letter_id', currentLetterId);
                 }
 

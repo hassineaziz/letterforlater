@@ -2029,6 +2029,7 @@ def get_draft():
         })
     
     draft_data = {
+        'letter_id': draft.id,  # Include the actual letter ID
         'title': draft.title,
         'content': draft.content,
         'recipient_name': draft.recipient_name,

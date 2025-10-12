@@ -16,17 +16,20 @@ seo_bp = Blueprint('seo', __name__)
 def sitemap_generator():
     """Generate sitemap entries automatically"""
     
-    # Static pages
-    yield 'views.home', {}, datetime.now(timezone.utc), 'daily', 1.0
-    yield 'views.blog_index', {}, datetime.now(timezone.utc), 'daily', 0.8
-    yield 'views.privacy_policy', {}, datetime.now(timezone.utc), 'monthly', 0.3
-    yield 'views.terms_of_service', {}, datetime.now(timezone.utc), 'monthly', 0.3
+    # Static pages - using proper ISO 8601 format
+    now_iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+    yield 'views.home', {}, now_iso, 'daily', 1.0
+    yield 'views.blog_index', {}, now_iso, 'daily', 0.8
+    yield 'views.privacy_policy', {}, now_iso, 'monthly', 0.3
+    yield 'views.terms_of_service', {}, now_iso, 'monthly', 0.3
     
-    # Dynamic blog posts
+    # Dynamic blog posts - using proper ISO 8601 format
     blog_posts = BlogPost.query.filter_by(status='published').all()
     for post in blog_posts:
         lastmod = post.updated_at or post.published_at or post.created_at
-        yield 'views.blog_post', {'slug': post.slug}, lastmod, 'weekly', 0.6
+        # Convert to ISO 8601 without microseconds
+        lastmod_iso = lastmod.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+        yield 'views.blog_post', {'slug': post.slug}, lastmod_iso, 'weekly', 0.6
 
 @seo_bp.route('/robots.txt')
 def robots_txt():

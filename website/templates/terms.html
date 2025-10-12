@@ -10,40 +10,391 @@
 
 {% block twitter_title %}Terms of Service - LetterForLater{% endblock %}
 {% block twitter_description %}Read LetterForLater's Terms of Service to understand your rights and responsibilities when using our digital legacy letter service.{% endblock %}
+
 {% block content %}
-<div class="max-w-3xl mx-auto py-10 px-4">
-  <h1 class="text-3xl font-bold text-gray-900 mb-6">Terms of Service</h1>
+<div class="max-w-4xl mx-auto py-12 px-4">
+  <!-- Header -->
+  <div class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Terms of Service</span>
+    </h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Clear, fair terms that protect both you and your legacy letters.</p>
+    <p class="text-sm text-gray-500 mt-2">Last updated: January 2025</p>
+  </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">1. Agreement</h2>
-  <p class="text-gray-700">By using this service, you agree to these Terms and our Privacy Policy.</p>
+  <!-- Trust Indicators -->
+  <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-1">Fair & Transparent</h3>
+        <p class="text-sm text-gray-600">Clear terms with no hidden surprises</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-1">Your Content, Your Rights</h3>
+        <p class="text-sm text-gray-600">You retain full ownership of your letters</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-1">Cancel Anytime</h3>
+        <p class="text-sm text-gray-600">No long-term commitments required</p>
+      </div>
+    </div>
+  </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">2. Use of Service</h2>
-  <ul class="list-disc pl-6 text-gray-700">
-    <li>You are responsible for your account and content.</li>
-    <li>No unlawful, harmful, or infringing content.</li>
-    <li>We may modify or discontinue features with notice when reasonable.</li>
-  </ul>
+  <!-- Content -->
+  <div class="prose prose-lg max-w-none">
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-blue-600 font-bold text-sm">1</span>
+        </div>
+        Agreement to Terms
+      </h2>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        By creating an account or using LetterForLater, you agree to be bound by these Terms of Service and our Privacy Policy. 
+        If you don't agree to these terms, please don't use our service.
+      </p>
+      <p class="text-gray-700 leading-relaxed">
+        These terms apply to all users of our digital legacy letter service, including free and premium subscribers.
+      </p>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">3. Content</h2>
-  <p class="text-gray-700">You retain ownership of your content. You grant us a limited license to host and process it to provide the service.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-green-600 font-bold text-sm">2</span>
+        </div>
+        Our Service
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">What We Provide</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Secure letter storage and management</li>
+            <li>• Scheduled delivery system</li>
+            <li>• Trusted contact verification</li>
+            <li>• Media attachment support</li>
+            <li>• Draft saving and editing</li>
+          </ul>
+        </div>
+        
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Service Levels</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• <strong>Free:</strong> 1 letter, text only</li>
+            <li>• <strong>Premium:</strong> Unlimited letters + media</li>
+            <li>• <strong>Lifetime:</strong> One-time payment</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-400">
+        <p class="text-sm text-gray-700">
+          <strong>Important:</strong> We provide the platform and delivery system, but you are responsible for the content and timing of your letters.
+        </p>
+      </div>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">4. Accounts & Security</h2>
-  <p class="text-gray-700">Keep your credentials secure. Notify us of any unauthorized use.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-purple-600 font-bold text-sm">3</span>
+        </div>
+        Your Responsibilities
+      </h2>
+      
+      <div class="space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Account Security</h3>
+            <p class="text-sm text-gray-700">Keep your login credentials secure and notify us of any unauthorized access</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Appropriate Content</h3>
+            <p class="text-sm text-gray-700">Only create letters with lawful, respectful content that doesn't infringe on others' rights</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Trusted Contacts</h3>
+            <p class="text-sm text-gray-700">Choose reliable trusted contacts who will act responsibly in verification</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Accurate Information</h3>
+            <p class="text-sm text-gray-700">Provide accurate contact information for yourself and trusted contacts</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">5. Payments</h2>
-  <p class="text-gray-700">If paid features exist, fees and refund terms will be displayed at purchase.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-orange-600 font-bold text-sm">4</span>
+        </div>
+        Content Ownership & Rights
+      </h2>
+      
+      <div class="bg-green-50 rounded-xl p-4 mb-4">
+        <h3 class="font-semibold text-gray-900 mb-2 text-green-800">You Own Your Content</h3>
+        <p class="text-sm text-gray-700">You retain full ownership of all letters, media, and content you create. We never claim ownership of your personal messages.</p>
+      </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">6. Disclaimer; Limitation of Liability</h2>
-  <p class="text-gray-700">Service is provided “as is.” To the maximum extent permitted by law, we disclaim warranties and limit liability.</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">License to Us</h3>
+      <p class="text-gray-700 mb-4">To provide our service, you grant us a limited license to:</p>
+      
+      <ul class="list-disc pl-6 text-gray-700 space-y-2 mb-4">
+        <li>Store and encrypt your letters securely</li>
+        <li>Deliver messages according to your schedule</li>
+        <li>Process verification requests with trusted contacts</li>
+        <li>Provide technical support when requested</li>
+      </ul>
+      
+      <div class="p-4 bg-blue-50 rounded-xl">
+        <p class="text-sm text-gray-700">
+          <strong>Important:</strong> This license is limited to providing our service. We cannot and will not use your content for any other purpose without your explicit consent.
+        </p>
+      </div>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">7. Termination</h2>
-  <p class="text-gray-700">You may stop using the service at any time. We may suspend or terminate accounts for violations.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-teal-600 font-bold text-sm">5</span>
+        </div>
+        Payment & Billing
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Pricing</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• <strong>Free:</strong> $0 - 1 letter</li>
+            <li>• <strong>Premium:</strong> $5.99/month or $59/year</li>
+            <li>• <strong>Lifetime:</strong> $99.99 one-time</li>
+          </ul>
+        </div>
+        
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Billing</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Monthly/yearly billing for Premium</li>
+            <li>• Automatic renewal (can be cancelled)</li>
+            <li>• 30-day money-back guarantee</li>
+            <li>• No hidden fees</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="p-4 bg-yellow-50 rounded-xl">
+        <p class="text-sm text-gray-700">
+          <strong>Refund Policy:</strong> We offer a 30-day money-back guarantee for all paid plans. Contact support for refund requests.
+        </p>
+      </div>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">8. Changes</h2>
-  <p class="text-gray-700">We may update these Terms. Continued use constitutes acceptance of changes.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-indigo-600 font-bold text-sm">6</span>
+        </div>
+        Service Availability & Changes
+      </h2>
+      
+      <div class="space-y-4">
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Uptime Commitment</h3>
+          <p class="text-sm text-gray-700">We strive for 99.9% uptime and maintain enterprise-grade infrastructure to ensure your letters are always accessible.</p>
+        </div>
+        
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Service Updates</h3>
+          <p class="text-sm text-gray-700">We may update features and functionality to improve the service. We'll notify you of significant changes that affect your experience.</p>
+        </div>
+        
+        <div class="bg-purple-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Maintenance</h3>
+          <p class="text-sm text-gray-700">Scheduled maintenance will be announced in advance when possible. Emergency maintenance may occur without notice.</p>
+        </div>
+      </div>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">9. Contact</h2>
-  <p class="text-gray-700">Questions about these Terms? Contact legal@letterforlater.com.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-pink-600 font-bold text-sm">7</span>
+        </div>
+        Termination
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Your Right to Cancel</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Cancel anytime from your account</li>
+            <li>• No cancellation fees</li>
+            <li>• Data export available</li>
+            <li>• 30-day refund guarantee</li>
+          </ul>
+        </div>
+        
+        <div class="bg-red-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Our Right to Suspend</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Violation of these terms</li>
+            <li>• Fraudulent activity</li>
+            <li>• Non-payment (after grace period)</li>
+            <li>• Legal requirements</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+        <p class="text-sm text-gray-700">
+          <strong>Data After Termination:</strong> You can export your data before cancellation. We'll retain data for 30 days after termination, then securely delete it.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-cyan-600 font-bold text-sm">8</span>
+        </div>
+        Disclaimers & Limitations
+      </h2>
+      
+      <div class="space-y-4">
+        <div class="bg-yellow-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Service "As Is"</h3>
+          <p class="text-sm text-gray-700">We provide the service as-is. While we strive for reliability, we cannot guarantee perfect uptime or delivery in all circumstances.</p>
+        </div>
+        
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Delivery Responsibility</h3>
+          <p class="text-sm text-gray-700">We facilitate delivery through trusted contacts and email systems, but cannot guarantee delivery if contacts are unreachable or email systems fail.</p>
+        </div>
+        
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Limitation of Liability</h3>
+          <p class="text-sm text-gray-700">Our liability is limited to the amount you've paid for the service in the 12 months preceding any claim. We're not liable for indirect or consequential damages.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-gray-600 font-bold text-sm">9</span>
+        </div>
+        Changes to Terms
+      </h2>
+      
+      <p class="text-gray-700 mb-4">
+        We may update these Terms of Service to reflect changes in our service or legal requirements. 
+        We'll notify you of significant changes via email or through the service.
+      </p>
+      
+      <div class="bg-blue-50 rounded-xl p-4">
+        <h3 class="font-semibold text-gray-900 mb-2">Your Options</h3>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Continue using the service (accepts new terms)</li>
+          <li>• Cancel your account if you disagree</li>
+          <li>• Contact us with questions about changes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-red-600 font-bold text-sm">10</span>
+        </div>
+        Contact & Support
+      </h2>
+      
+      <p class="text-gray-700 mb-6">
+        Questions about these Terms or need help with your account? We're here to assist you.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">Legal Questions</h3>
+          <p class="text-sm text-gray-700 mb-2">legal@letterforlater.com</p>
+          <p class="text-xs text-gray-600">For terms, legal, and compliance questions</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">General Support</h3>
+          <p class="text-sm text-gray-700 mb-2">support@letterforlater.com</p>
+          <p class="text-xs text-gray-600">For account help and technical support</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+        <p class="text-sm text-gray-600">
+          <strong>Response Time:</strong> We typically respond to inquiries within 24-48 hours.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer CTA -->
+  <div class="text-center mt-12">
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+      <h3 class="text-2xl font-bold mb-4">Questions About Our Terms?</h3>
+      <p class="text-blue-100 mb-6">We believe in clear, fair terms that protect both you and your legacy.</p>
+      <a href="mailto:legal@letterforlater.com" 
+         class="inline-flex items-center bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+        Contact Legal Team
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}
 

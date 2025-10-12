@@ -10,42 +10,378 @@
 
 {% block twitter_title %}Privacy Policy - LetterForLater{% endblock %}
 {% block twitter_description %}Learn how LetterForLater protects your privacy and secures your personal data. Our comprehensive privacy policy explains data collection, usage, and your rights.{% endblock %}
+
 {% block content %}
-<div class="max-w-3xl mx-auto py-10 px-4">
-  <h1 class="text-3xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
-  <p class="text-gray-600 mb-4">Effective date: {{ (now() if false) or '' }}</p>
+<div class="max-w-4xl mx-auto py-12 px-4">
+  <!-- Header -->
+  <div class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Privacy Policy</span>
+    </h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Your privacy is our top priority. We protect your most precious memories with enterprise-grade security.</p>
+    <p class="text-sm text-gray-500 mt-2">Last updated: January 2025</p>
+  </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">1. Introduction</h2>
-  <p class="text-gray-700">We respect your privacy. This policy explains what data we collect, how we use it, and your choices.</p>
+  <!-- Trust Indicators -->
+  <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-1">Enterprise Security</h3>
+        <p class="text-sm text-gray-600">Bank-level encryption protects your letters</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-1">No Data Selling</h3>
+        <p class="text-sm text-gray-600">We never sell or share your personal data</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+          <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-1">Complete Control</h3>
+        <p class="text-sm text-gray-600">You own and control your content</p>
+      </div>
+    </div>
+  </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">2. Data We Collect</h2>
-  <ul class="list-disc pl-6 text-gray-700">
-    <li>Account data: name, email, and settings</li>
-    <li>Content you create (letters, media, blog posts if applicable)</li>
-    <li>Usage data: device, IP, and logs for security and analytics</li>
-  </ul>
+  <!-- Content -->
+  <div class="prose prose-lg max-w-none">
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-blue-600 font-bold text-sm">1</span>
+        </div>
+        Introduction
+      </h2>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        At LetterForLater, we understand that your letters contain your most precious memories and messages for loved ones. 
+        We are committed to protecting your privacy with enterprise-grade security and transparent practices.
+      </p>
+      <p class="text-gray-700 leading-relaxed">
+        This Privacy Policy explains how we collect, use, protect, and share your information when you use our digital legacy letter service.
+      </p>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">3. How We Use Data</h2>
-  <ul class="list-disc pl-6 text-gray-700">
-    <li>Provide and improve the service</li>
-    <li>Security, fraud prevention, and diagnostics</li>
-    <li>Transactional emails (account notices). Marketing emails only with consent</li>
-  </ul>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-green-600 font-bold text-sm">2</span>
+        </div>
+        Information We Collect
+      </h2>
+      
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Account Information</h3>
+      <ul class="list-disc pl-6 text-gray-700 mb-4 space-y-2">
+        <li>Name, email address, and account settings</li>
+        <li>Two-factor authentication data (if enabled)</li>
+        <li>Password (encrypted and never stored in plain text)</li>
+      </ul>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">4. Sharing</h2>
-  <p class="text-gray-700">We do not sell personal data. We share with service providers under contract, and when required by law.</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Your Content</h3>
+      <ul class="list-disc pl-6 text-gray-700 mb-4 space-y-2">
+        <li>Letters and messages you create</li>
+        <li>Photos, videos, and audio attachments</li>
+        <li>Delivery schedules and recipient information</li>
+        <li>Trusted contact details for verification</li>
+      </ul>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">5. Data Retention</h2>
-  <p class="text-gray-700">We retain data for as long as your account is active or as needed to provide the service and comply with legal obligations.</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Technical Data</h3>
+      <ul class="list-disc pl-6 text-gray-700 space-y-2">
+        <li>Device information and IP address for security</li>
+        <li>Usage logs for service improvement and security</li>
+        <li>Analytics data (only with your consent)</li>
+      </ul>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">6. Your Rights</h2>
-  <p class="text-gray-700">You can request access, correction, deletion, or export of your data. Contact support to exercise rights.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-purple-600 font-bold text-sm">3</span>
+        </div>
+        How We Use Your Information
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Service Delivery</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Store and protect your letters</li>
+            <li>• Deliver messages at scheduled times</li>
+            <li>• Manage trusted contact verification</li>
+            <li>• Provide customer support</li>
+          </ul>
+        </div>
+        
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Security & Safety</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Prevent fraud and unauthorized access</li>
+            <li>• Monitor for security threats</li>
+            <li>• Maintain service reliability</li>
+            <li>• Comply with legal requirements</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="mt-6 p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-400">
+        <p class="text-sm text-gray-700">
+          <strong>Important:</strong> We never access the content of your letters unless required for technical support you've requested. 
+          Your messages remain private and encrypted.
+        </p>
+      </div>
+    </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">7. Cookies</h2>
-  <p class="text-gray-700">We use essential cookies for auth and functionality; optional analytics cookies only with consent.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-orange-600 font-bold text-sm">4</span>
+        </div>
+        Information Sharing
+      </h2>
+      
+      <div class="bg-red-50 rounded-xl p-4 mb-4">
+        <h3 class="font-semibold text-gray-900 mb-2 text-red-800">We Never Sell Your Data</h3>
+        <p class="text-sm text-gray-700">We do not sell, rent, or trade your personal information to third parties for marketing purposes.</p>
+      </div>
 
-  <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-2">8. Contact</h2>
-  <p class="text-gray-700">Questions? Contact support@letterforlater.com.</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Limited Sharing</h3>
+      <p class="text-gray-700 mb-4">We only share your information in these specific circumstances:</p>
+      
+      <ul class="list-disc pl-6 text-gray-700 space-y-2">
+        <li><strong>Trusted Contacts:</strong> Only when you've designated them to receive verification requests</li>
+        <li><strong>Service Providers:</strong> Secure cloud storage and email delivery services under strict contracts</li>
+        <li><strong>Legal Requirements:</strong> When required by law or to protect our rights and safety</li>
+        <li><strong>Your Consent:</strong> When you explicitly authorize sharing</li>
+      </ul>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-teal-600 font-bold text-sm">5</span>
+        </div>
+        Data Security
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Encryption</h3>
+          <p class="text-sm text-gray-700">All data is encrypted in transit and at rest using industry-standard encryption protocols.</p>
+        </div>
+        
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Access Controls</h3>
+          <p class="text-sm text-gray-700">Strict access controls ensure only authorized personnel can access systems.</p>
+        </div>
+        
+        <div class="bg-purple-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Regular Backups</h3>
+          <p class="text-sm text-gray-700">Automatic backups protect your data with multiple redundant systems.</p>
+        </div>
+        
+        <div class="bg-orange-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">99.9% Uptime</h3>
+          <p class="text-sm text-gray-700">Enterprise-grade infrastructure ensures your letters are always accessible.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-indigo-600 font-bold text-sm">6</span>
+        </div>
+        Your Rights & Choices
+      </h2>
+      
+      <div class="space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Access & Download</h3>
+            <p class="text-sm text-gray-700">Request a copy of all your data at any time</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Correction & Updates</h3>
+            <p class="text-sm text-gray-700">Update or correct your information anytime</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Account Deletion</h3>
+            <p class="text-sm text-gray-700">Request complete deletion of your account and data</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <svg class="w-3 h-3 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Marketing Preferences</h3>
+            <p class="text-sm text-gray-700">Opt out of marketing emails while keeping essential notifications</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+        <p class="text-sm text-gray-700">
+          <strong>To exercise any of these rights:</strong> Contact us at privacy@letterforlater.com or through your account settings.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-pink-600 font-bold text-sm">7</span>
+        </div>
+        Data Retention
+      </h2>
+      
+      <p class="text-gray-700 mb-4">
+        We retain your data for as long as your account is active and as needed to provide our service. 
+        This ensures your letters can be delivered according to your wishes.
+      </p>
+      
+      <div class="bg-gray-50 rounded-xl p-4">
+        <h3 class="font-semibold text-gray-900 mb-2">Retention Periods</h3>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• <strong>Active Accounts:</strong> Data retained while account is active</li>
+          <li>• <strong>Delivered Letters:</strong> Kept for 7 years for delivery confirmation</li>
+          <li>• <strong>Account Deletion:</strong> Complete removal within 30 days of request</li>
+          <li>• <strong>Legal Requirements:</strong> Some data may be retained longer if required by law</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-cyan-600 font-bold text-sm">8</span>
+        </div>
+        Cookies & Tracking
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-green-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Essential Cookies</h3>
+          <p class="text-sm text-gray-700">Required for authentication, security, and core functionality. Cannot be disabled.</p>
+        </div>
+        
+        <div class="bg-blue-50 rounded-xl p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Analytics Cookies</h3>
+          <p class="text-sm text-gray-700">Optional cookies for service improvement. Only used with your explicit consent.</p>
+        </div>
+      </div>
+      
+      <div class="mt-4 p-4 bg-yellow-50 rounded-xl">
+        <p class="text-sm text-gray-700">
+          You can manage cookie preferences in your browser settings or through our cookie consent banner.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-gray-600 font-bold text-sm">9</span>
+        </div>
+        International Users
+      </h2>
+      
+      <p class="text-gray-700 mb-4">
+        LetterForLater is designed to serve families worldwide. We comply with international privacy laws including GDPR, CCPA, and other applicable regulations.
+      </p>
+      
+      <div class="bg-blue-50 rounded-xl p-4">
+        <h3 class="font-semibold text-gray-900 mb-2">GDPR Compliance</h3>
+        <p class="text-sm text-gray-700">
+          European users have additional rights under GDPR, including data portability, the right to be forgotten, 
+          and the right to object to processing. Contact us to exercise these rights.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+          <span class="text-red-600 font-bold text-sm">10</span>
+        </div>
+        Contact Us
+      </h2>
+      
+      <p class="text-gray-700 mb-6">
+        Questions about this Privacy Policy or how we handle your data? We're here to help.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">Privacy Questions</h3>
+          <p class="text-sm text-gray-700 mb-2">privacy@letterforlater.com</p>
+          <p class="text-xs text-gray-600">For privacy-specific inquiries and data requests</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">General Support</h3>
+          <p class="text-sm text-gray-700 mb-2">support@letterforlater.com</p>
+          <p class="text-xs text-gray-600">For account help and technical support</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+        <p class="text-sm text-gray-600">
+          <strong>Response Time:</strong> We typically respond to privacy inquiries within 48 hours.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer CTA -->
+  <div class="text-center mt-12">
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+      <h3 class="text-2xl font-bold mb-4">Questions About Your Privacy?</h3>
+      <p class="text-blue-100 mb-6">We're committed to transparency and protecting your most important messages.</p>
+      <a href="mailto:privacy@letterforlater.com" 
+         class="inline-flex items-center bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+        Contact Privacy Team
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}
 

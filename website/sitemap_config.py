@@ -1,6 +1,7 @@
 """
 Sitemap and robots.txt configuration for Flask-Sitemap
 """
+import os
 from flask import Blueprint, request
 from flask_sitemap import Sitemap
 from datetime import datetime, timezone
@@ -41,10 +42,9 @@ def sitemap_generator():
 @seo_bp.route('/robots.txt')
 def robots_txt():
     """Generate robots.txt file"""
-    base_url = request.url_root.rstrip('/')
-    
-    # Force HTTPS URLs
-    if base_url.startswith('http://'):
+    # Force HTTPS for production
+    base_url = os.getenv('SITE_DOMAIN', request.url_root.rstrip('/'))
+    if not base_url.startswith('https://'):
         base_url = base_url.replace('http://', 'https://')
     
     robots_content = f"""User-agent: *
@@ -140,8 +140,12 @@ def sitemap_manual():
             # Generate URL with HTTPS
             try:
                 url = url_for(entry[0], **entry[1], _external=True)
-                # Force HTTPS
-                if url.startswith('http://'):
+                # Force HTTPS - use SITE_DOMAIN if available
+                if os.getenv('SITE_DOMAIN'):
+                    base_domain = os.getenv('SITE_DOMAIN').rstrip('/')
+                    path = url_for(entry[0], **entry[1])
+                    url = f"{base_domain}{path}"
+                elif url.startswith('http://'):
                     url = url.replace('http://', 'https://')
                 loc_elem = ET.SubElement(url_elem, 'loc')
                 loc_elem.text = url

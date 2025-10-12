@@ -2823,7 +2823,9 @@ def google_auth():
     # For development, we'll use a simple redirect to Google's OAuth
     # In production, you'd want to use proper OAuth flow with state parameter
     # Use localhost instead of 127.0.0.1 for consistency
-    base_url = request.url_root.replace('127.0.0.1', 'localhost')
+    base_url = request.url_root
+    if '127.0.0.1' in base_url:
+        base_url = base_url.replace('127.0.0.1', 'localhost')
     redirect_uri = f"{base_url}auth/google/callback"
     google_oauth_url = (
         f"https://accounts.google.com/o/oauth2/v2/auth?"
@@ -2864,7 +2866,9 @@ def google_callback():
         # Exchange code for token
         token_url = "https://oauth2.googleapis.com/token"
         # Use localhost instead of 127.0.0.1 for consistency
-        base_url = request.url_root.replace('127.0.0.1', 'localhost')
+        base_url = request.url_root
+        if '127.0.0.1' in base_url:
+            base_url = base_url.replace('127.0.0.1', 'localhost')
         token_data = {
             'client_id': GOOGLE_CLIENT_ID,
             'client_secret': GOOGLE_CLIENT_SECRET,

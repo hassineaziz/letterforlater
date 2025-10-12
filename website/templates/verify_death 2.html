@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Verify Death{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Death Verification Status
+                </span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Review and manage death verification requests from trusted contacts
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Verification Requests -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+            {% if verifications and verifications|length > 0 %}
+                <div class="space-y-6">
+                    {% for item in verifications %}
+                    <div class="bg-white/60 backdrop-blur-sm border border-white/50 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                            <div class="flex-1 mb-4 lg:mb-0">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-semibold text-lg mr-4 shadow-lg">
+                                        {{ item.user.first_name[0] }}{{ item.user.last_name[0] }}
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-semibold text-gray-900">{{ item.user.first_name }} {{ item.user.last_name }}</h3>
+                                        <p class="text-gray-600">{{ item.user.email }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <p><strong>Invited:</strong> {{ item.trusted_contact.created_date.strftime('%Y-%m-%d') }}</p>
+                                    
+                                    {% if item.status == 'pending' %}
+                                        <div class="mt-3">
+                                            <p class="text-blue-600 font-medium">Requested verification of death</p>
+                                            {% if item.verification %}
+                                                {% set total_contacts = item.verification.user.trusted_contacts_list.filter_by(is_confirmed=True).count() %}
+                                                {% set required = (total_contacts + 1) // 2 %}
+                                                <div class="mt-2">
+                                                    <div class="flex items-center justify-between text-sm mb-1">
+                                                        <span class="text-gray-600">Progress</span>
+                                                        <span class="text-blue-600 font-medium">{{ item.verification.confirmations_count }}/{{ required }}</span>
+                                                    </div>
+                                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                                        <div class="bg-blue-600 h-2 rounded-full" style="width: {{ (item.verification.confirmations_count / required * 100) if required > 0 else 0 }}%"></div>
+                                                    </div>
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        {{ required }} confirmations needed (50% of {{ total_contacts }} trusted contacts)
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% elif item.status == 'verified' or item.status == 'confirmed' %}
+                                        <div class="flex items-center text-green-600">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span class="font-medium">Death verified</span>
+                                        </div>
+                                    {% elif item.status == 'rejected' %}
+                                        <div class="flex items-center text-red-600">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            <span class="font-medium">Verification rejected</span>
+                                        </div>
+                                    {% elif item.status == 'cooldown' %}
+                                        <div class="flex items-center text-yellow-600">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span class="font-medium">You are in a 7-day cooldown period and cannot confirm death for this user.</span>
+                                        </div>
+                                    {% elif item.status == 'no_letters' %}
+                                        <div class="flex items-center text-gray-600">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <div>
+                                                <span class="font-medium">No letters requiring death verification have been created yet.</span>
+                                                <p class="text-sm mt-1">Verification will begin once the user creates a letter for after-death delivery.</p>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-gray-600">Status: {{ item.status|title }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 lg:ml-4">
+                                {% if item.status == 'pending' %}
+                                    {% if item.verification %}
+                                        {% set total_contacts = item.verification.user.trusted_contacts_list.filter_by(is_confirmed=True).count() %}
+                                        {% set required = (total_contacts + 1) // 2 %}
+                                        {% set current = item.verification.confirmations_count %}
+                                        
+                                        {% if current < required %}
+                                            <form method="POST" class="flex gap-3">
+                                                <input type="hidden" name="verification_id" value="{{ item.verification.id }}">
+                                                <input type="hidden" name="trusted_contact_id" value="{{ item.trusted_contact.id }}">
+                                                <button type="submit" 
+                                                        name="action" 
+                                                        value="confirm" 
+                                                        class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    Confirm Death
+                                                </button>
+                                                <button type="submit" 
+                                                        name="action" 
+                                                        value="reject" 
+                                                        class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                Threshold Reached
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                            </svg>
+                                            No Verification Record
+                                        </span>
+                                    {% endif %}
+                                {% elif item.status == 'cooldown' %}
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        In Cooldown
+                                    </span>
+                                {% elif item.status == 'no_letters' %}
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Waiting for Letters
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium 
+                                        {% if item.status == 'verified' or item.status == 'confirmed' %}bg-green-100 text-green-800
+                                        {% elif item.status == 'rejected' %}bg-red-100 text-red-800
+                                        {% else %}bg-gray-100 text-gray-800
+                                        {% endif %}">
+                                        {{ item.status|capitalize }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">No Verification Requests</h3>
+                    <p class="text-gray-600 text-lg mb-8 max-w-md mx-auto">You are not a trusted contact for any users at this time.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

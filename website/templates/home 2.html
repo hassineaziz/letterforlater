@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-2 sm:py-4 lg:py-8">
+    <!-- Main Content Container -->
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        
+        <!-- Death Verification Notifications -->
+{% if user.death_verifications.filter_by(status='verified').first() %}
+<div class="bg-red-50 border border-red-200 rounded-xl shadow-lg mb-8">
+    <div class="bg-red-100 text-red-900 px-6 py-4 rounded-t-xl">
+        <h5 class="text-lg font-semibold flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            Death Verification Complete - Letters Processed
+        </h5>
+    </div>
+    <div class="p-6">
+        {% for verification in user.death_verifications.filter_by(status='verified') %}
+        <div class="bg-red-100 border border-red-300 rounded-lg p-4 mb-4">
+            <h6 class="text-lg font-semibold text-red-900 mb-2">Letters Have Been Processed</h6>
+            <p class="text-red-800 mb-4">{{ verification.confirmations_count }} of your trusted contacts have confirmed your death. 
+            Your letters have been processed according to their delivery settings. If you are still alive, you can reject this verification to stop any scheduled deliveries.</p>
+            
+            <form method="POST" action="/respond-to-death-verification" class="inline-flex space-x-2">
+                <input type="hidden" name="verification_id" value="{{ verification.id }}">
+                <button type="submit" name="action" value="deny" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    I'm Alive - Stop Deliveries
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Dashboard Header -->
+<div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="mb-6 lg:mb-0">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                Welcome back, <span class="text-primary">{{ user.first_name }}</span>!
+            </h1>
+            <p class="text-lg text-gray-600">
+                Manage your legacy letters and trusted contacts from your personal dashboard.
+            </p>
+        </div>
+        <div class="flex-shrink-0">
+            <a href="{{ url_for('views.add_letter') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-colors flex items-center shadow-lg hover:shadow-xl">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+                Write New Letter
+            </a>
+        </div>
+    </div>
+</div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
+            <a href="{{ url_for('views.view_letters', user_id=user.id) }}" class="bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl shadow-xl border border-white/50 p-2 sm:p-4 lg:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-1 sm:mb-2 lg:mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors duration-300">{{ user.letters.count() }}</h3>
+                <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-medium group-hover:text-blue-500 transition-colors duration-300">Total Letters</p>
+            </a>
+            
+            <a href="{{ url_for('views.view_letters', user_id=user.id, status='scheduled') }}" class="bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl shadow-xl border border-white/50 p-2 sm:p-4 lg:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-1 sm:mb-2 lg:mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-yellow-600 transition-colors duration-300">{{ user.letters.filter_by(status='scheduled').count() }}</h3>
+                <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-medium group-hover:text-yellow-500 transition-colors duration-300">Scheduled</p>
+            </a>
+            
+            <a href="{{ url_for('views.view_letters', user_id=user.id, status='delivered') }}" class="bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl shadow-xl border border-white/50 p-2 sm:p-4 lg:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-1 sm:mb-2 lg:mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-green-600 transition-colors duration-300">{{ user.letters.filter_by(status='delivered').count() }}</h3>
+                <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-medium group-hover:text-green-500 transition-colors duration-300">Delivered</p>
+            </a>
+            
+            <a href="{{ url_for('views.trusted_contacts') }}" class="bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl shadow-xl border border-white/50 p-2 sm:p-4 lg:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-1 sm:mb-2 lg:mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-purple-600 transition-colors duration-300">{{ user.trusted_contacts_list.count() }}</h3>
+                <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-medium group-hover:text-purple-500 transition-colors duration-300">Trusted Contacts</p>
+            </a>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mb-6 sm:mb-8">
+            <div class="flex items-center mb-4 sm:mb-6">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Quick Actions</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">Access your most important features</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-start space-x-3 sm:space-x-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h5 class="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">Write New Letter</h5>
+                            <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                                Create a heartfelt message with photos, videos, and audio.
+                            </p>
+                            <a href="{{ url_for('views.add_letter') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span class="hidden sm:inline">Start Writing</span>
+                                <span class="sm:hidden">Write</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-start space-x-3 sm:space-x-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h5 class="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">View All Letters</h5>
+                            <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                                See all your letters and their delivery status.
+                            </p>
+                            <a href="{{ url_for('views.view_letters', user_id=user.id) }}" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                </svg>
+                                <span class="hidden sm:inline">View Letters</span>
+                                <span class="sm:hidden">Letters</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-start space-x-3 sm:space-x-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h5 class="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">Manage Contacts</h5>
+                            <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                                Add or manage your trusted contacts.
+                            </p>
+                            <a href="{{ url_for('views.trusted_contacts') }}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                                <span class="hidden sm:inline">Manage Contacts</span>
+                                <span class="sm:hidden">Contacts</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+    </div>
+</div>
+
+        <!-- Recent Letters -->
+        <div class="mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Recent Letters</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">Your latest legacy messages</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('views.view_letters', user_id=user.id) }}" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit sm:w-auto">
+                    View All
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+    
+            {% if user.letters.count() > 0 %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {% for letter in user.letters.order_by(Letter.last_modified.desc()).limit(3) %}
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex justify-between items-start mb-3 sm:mb-4">
+                        <h6 class="text-base sm:text-lg font-semibold text-gray-900 flex-1 mr-2 sm:mr-4">{{ letter.title }}</h6>
+                        <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium {% if letter.status == 'scheduled' %}bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800{% elif letter.status == 'delivered' %}bg-gradient-to-r from-green-100 to-emerald-100 text-green-800{% elif letter.status == 'draft' %}bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800{% else %}bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800{% endif %}">
+                            {{ letter.status|title }}
+                        </span>
+                    </div>
+                    <div class="mb-3 sm:mb-4">
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ letter.content[:80] }}{% if letter.content|length > 80 %}...{% endif %}</p>
+                        <div class="mt-2 sm:mt-3">
+                            <small class="text-gray-500 flex items-center text-xs sm:text-sm">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ letter.last_modified.strftime('%B %d, %Y') }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <a href="{{ url_for('views.view_letters', user_id=user.id) }}" class="bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 sm:py-16 bg-white/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-dashed border-gray-300">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h5 class="text-lg sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">No letters yet</h5>
+                <p class="text-gray-600 text-sm sm:text-lg mb-6 sm:mb-8 max-w-md mx-auto">Start creating your legacy by writing your first letter.</p>
+                <a href="{{ url_for('views.add_letter') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center mx-auto w-fit">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Write Your First Letter</span>
+                    <span class="sm:hidden">Write Letter</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Trusted Contacts Overview -->
+        <div class="mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Trusted Contacts</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">People who can verify your letters</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('views.trusted_contacts') }}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit sm:w-auto">
+                    Manage All
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+    
+            {% if user.trusted_contacts_list.count() > 0 %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {% for contact in user.trusted_contacts_list.limit(3) %}
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center space-x-3 sm:space-x-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-sm sm:text-lg shadow-lg">
+                            {{ contact.full_name[0] }}{{ contact.full_name.split(' ')[1][0] if contact.full_name.split(' ')|length > 1 else '' }}
+                        </div>
+                        <div class="flex-1">
+                            <h6 class="text-base sm:text-lg font-semibold text-gray-900">{{ contact.full_name }}</h6>
+                            <p class="text-gray-600 text-xs sm:text-sm">{{ contact.email }}</p>
+                            {% if contact.is_confirmed %}
+                            <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 mt-2">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Verified
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 mt-2">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Pending
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 sm:py-16 bg-white/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-dashed border-gray-300">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h6 class="text-lg sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">No trusted contacts yet</h6>
+                <p class="text-gray-600 text-sm sm:text-lg mb-6 sm:mb-8 max-w-md mx-auto">Add trusted contacts to help verify delivery of your letters.</p>
+                <a href="{{ url_for('views.trusted_contacts') }}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center mx-auto w-fit">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Add Contacts</span>
+                    <span class="sm:hidden">Add</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

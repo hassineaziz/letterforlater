@@ -1,0 +1,44 @@
+# Core Flask Framework
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.3
+Flask-Migrate==4.0.5
+Flask-Mail==0.9.1
+
+# Database
+psycopg2-binary==2.9.7
+SQLAlchemy==2.0.21
+sqlalchemy-utils==0.41.1
+
+# Authentication & Security
+pyotp==2.9.0
+qrcode[pil]==7.4.2
+bleach==6.0.0
+
+# Media Processing
+Pillow==10.0.1
+opencv-python==4.8.1.78
+moviepy==1.0.3
+numpy==1.24.3
+
+# AWS Integration
+boto3==1.28.62
+botocore==1.31.62
+
+# Utilities
+requests==2.31.0
+python-dotenv==1.0.0
+markdown==3.5.1
+
+# Google OAuth (found in your code)
+google-auth==2.23.3
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+
+# Production Dependencies
+gunicorn==21.2.0
+whitenoise==6.6.0
+
+# Development Dependencies (optional)
+pytest==7.4.2
+pytest-flask==1.2.0

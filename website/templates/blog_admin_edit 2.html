@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New Post' if not post else 'Edit Post' }}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tinymce-custom.css') }}">
+{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto py-8 px-4">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">{{ 'New Post' if not post else 'Edit Post' }}</h1>
+      <p class="text-gray-600 mt-2">{{ 'Create a new blog post' if not post else 'Edit your blog post' }}</p>
+    </div>
+    <div class="flex space-x-3">
+      <a href="{{ url_for('views.blog_dashboard') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+        Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <form method="POST" class="space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Title -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+          <input name="title" type="text" required value="{{ post.title if post else '' }}" 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="Enter post title...">
+        </div>
+
+        <!-- Slug -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">URL Slug</label>
+          <input name="slug" type="text" value="{{ post.slug if post else '' }}" 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="url-friendly-slug">
+          <p class="text-sm text-gray-500 mt-1">Leave empty to auto-generate from title</p>
+        </div>
+
+        <!-- Content Editor -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Content *</label>
+          <div id="editor-container">
+            <textarea name="content_html" id="content-editor" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" style="min-height: 400px;">{{ post.content_html if post else '' }}</textarea>
+          </div>
+          <div class="mt-3">
+            <button type="button" id="upload-inline-image" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Upload & insert image</button>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">Rich text editor will load here. If it doesn't appear, you can write HTML directly in the textarea above.</p>
+        </div>
+
+        <!-- Excerpt -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Excerpt</label>
+          <textarea name="excerpt" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Brief description of your post...">{{ post.excerpt if post else '' }}</textarea>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Publish Settings -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Publish Settings</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="draft" {% if post and post.status=='draft' %}selected{% endif %}>Draft</option>
+                <option value="published" {% if post and post.status=='published' %}selected{% endif %}>Published</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Publish Date</label>
+              <input name="publish_date" type="datetime-local" 
+                     value="{{ post.published_at.strftime('%Y-%m-%dT%H:%M') if post and post.published_at else '' }}"
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-sm text-gray-500 mt-1">Leave empty to publish immediately</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Tags</h3>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Add Tags</label>
+            <input name="tags" type="text" 
+                   value="{{ post.get_tags_list()|join(', ') if post else '' }}"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="tag1, tag2, tag3">
+            <p class="text-sm text-gray-500 mt-1">Separate tags with commas</p>
+          </div>
+        </div>
+
+        <!-- Cover Image -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Cover Image</h3>
+          <div class="space-y-3">
+            <!-- Store uploaded URL in hidden field; we prioritize uploads -->
+            <input id="cover_image_url" name="cover_image_url" type="hidden" value="{{ (post.cover_image_url or '') if post else '' }}">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Upload file</label>
+              <input id="cover_image_file" type="file" accept="image/*"
+                     class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+              <p class="text-sm text-gray-500 mt-1">Choose an image to upload as the cover.</p>
+            </div>
+            <div id="cover_image_preview_wrapper" class="{{ '' if (post and post.cover_image_url) else 'hidden' }}">
+              <img id="cover_image_preview" src="{{ (post.cover_image_url or '') if post else '' }}" alt="Cover preview" class="w-full rounded-lg border border-gray-200">
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO Settings -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">SEO Settings</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
+              <input name="meta_title" type="text" value="{{ post.meta_title if post else '' }}" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                     placeholder="SEO title for search engines">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+              <textarea name="meta_description" rows="3" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="SEO description for search engines">{{ post.meta_description if post else '' }}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+      <a href="{{ url_for('views.blog_dashboard') }}" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+        Cancel
+      </a>
+      <div class="flex space-x-3">
+        <button type="submit" name="action" value="save_draft" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">
+          Save Draft
+        </button>
+        <button type="submit" name="action" value="publish" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          {{ 'Publish' if not post else 'Update' }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Include S3 Media Handler -->
+<script src="{{ url_for('static', filename='js/s3-media-handler.js') }}"></script>
+
+<!-- TinyMCE Self-Hosted -->
+<script>
+  // Robust TinyMCE loader so edit and new both work reliably
+  document.addEventListener('DOMContentLoaded', function() {
+    function initTinyMCE() {
+      if (!document.getElementById('content-editor')) return;
+    tinymce.init({
+      selector: '#content-editor',
+      height: 500,
+      menubar: false,
+      base_url: '{{ url_for("static", filename="js/tinymce") }}',
+      suffix: '.min',
+      skin: 'oxide',
+      content_css: 'default',
+      automatic_uploads: true,
+      file_picker_types: 'image',
+      paste_data_images: true,
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+      ],
+      toolbar: 'undo redo | blocks | code | ' +
+        'bold italic forecolor | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | help | image | link',
+      content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; line-height: 1.6; }',
+      branding: false,
+      promotion: false,
+      /* Accept HTML tags/attributes (be cautious; server should still sanitize) */
+      valid_elements: '*[*]',
+      extended_valid_elements: 'iframe[src|width|height|frameborder|allow|allowfullscreen],figure[class],figcaption[class],pre[class],code[class]',
+      images_upload_handler: function (blobInfo, progress) {
+        return new Promise(function(resolve, reject) {
+          // Use S3 upload for blog images
+          var file = new File([blobInfo.blob()], blobInfo.filename(), { type: blobInfo.blob().type });
+          
+          // Upload to S3 using the blog image uploader
+          blogImageUploader.uploadImage(file)
+            .then(function(result) {
+              if (result.success) {
+                resolve(result.url);
+              } else {
+                reject(result.error);
+              }
+            })
+            .catch(function(error) {
+              reject(error.message);
+            });
+        });
+      },
+      file_picker_callback: function (cb, value, meta) {
+        if (meta.filetype !== 'image') {
+          return;
+        }
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.onchange = function () {
+          var file = this.files[0];
+          
+          // Step 1: Get presigned URL from backend
+          fetch("{{ url_for('views.blog_upload_image_url') }}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              filename: file.name
+            })
+          })
+          .then(function(res){ return res.json(); })
+          .then(function(json){
+            if (json.success) {
+              // Step 2: Upload directly to S3 using presigned URL
+              var formData = new FormData();
+              
+              // Add all fields from presigned URL
+              Object.keys(json.upload_fields).forEach(function(key) {
+                formData.append(key, json.upload_fields[key]);
+              });
+              
+              // Add the file
+              formData.append('file', file);
+              
+              // Upload to S3
+              return fetch(json.upload_url, {
+                method: 'POST',
+                body: formData
+              }).then(function() { return json; });
+            } else {
+              throw new Error(json.error || 'Failed to get upload URL');
+            }
+          })
+          .then(function(json) {
+            // Step 3: Return the public URL for TinyMCE
+            success(json.image_url);
+          })
+          .catch(function(err){ 
+            console.error('Upload error:', err); 
+            failure('Upload failed: ' + err.message); 
+          });
+        };
+        input.click();
+      },
+      setup: function (editor) {
+        editor.on('change', function () {
+          editor.save();
+        });
+      },
+      init_instance_callback: function (editor) {
+        console.log('TinyMCE editor initialized successfully');
+      }
+    });
+    }
+
+    // If TinyMCE is already present, init immediately
+    if (typeof window.tinymce !== 'undefined') {
+      initTinyMCE();
+      return;
+    }
+
+    // Otherwise, inject the script and init onload
+    var script = document.createElement('script');
+    script.src = "{{ url_for('static', filename='js/tinymce/tinymce.min.js') }}";
+    script.onload = initTinyMCE;
+    script.onerror = function() {
+      console.error('TinyMCE failed to load');
+      var wrap = document.getElementById('editor-container');
+      if (wrap) {
+        wrap.innerHTML = `<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4"><p class="text-yellow-800">Rich text editor failed to load. You can write HTML directly in the textarea below.</p></div><textarea name="content_html" id="content-editor" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-4" style="min-height: 400px;">{{ post.content_html if post else '' }}</textarea>`;
+      }
+    };
+    document.head.appendChild(script);
+  });
+
+  // Handle form submission
+  document.querySelector('form').addEventListener('submit', function(e) {
+    // Update status based on button clicked
+    const submitButton = e.submitter;
+    if (submitButton && submitButton.name === 'action') {
+      const statusInput = document.querySelector('select[name="status"]');
+      if (submitButton.value === 'publish') {
+        statusInput.value = 'published';
+      } else if (submitButton.value === 'save_draft') {
+        statusInput.value = 'draft';
+      }
+    }
+  });
+
+  // Cover image direct upload handler
+  (function() {
+    var fileInput = document.getElementById('cover_image_file');
+    var urlInput = document.getElementById('cover_image_url');
+    var previewImg = document.getElementById('cover_image_preview');
+    var previewWrap = document.getElementById('cover_image_preview_wrapper');
+    if (!fileInput) return;
+    fileInput.addEventListener('change', function() {
+      var file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      
+      // Step 1: Get presigned URL from backend
+      fetch("{{ url_for('views.blog_upload_image_url') }}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          filename: file.name
+        })
+      }).then(function(res){
+        if (!res.ok) { return res.text().then(function(t){ throw new Error(t || ('HTTP '+res.status)); }); }
+        return res.json();
+      })
+        .then(function(json){
+          if (json.success) {
+            // Step 2: Upload directly to S3 using presigned URL
+            var formData = new FormData();
+            
+            // Add all fields from presigned URL
+            Object.keys(json.upload_fields).forEach(function(key) {
+              formData.append(key, json.upload_fields[key]);
+            });
+            
+            // Add the file
+            formData.append('file', file);
+            
+            // Upload to S3
+            return fetch(json.upload_url, {
+              method: 'POST',
+              body: formData
+            }).then(function() { return json; });
+          } else {
+            throw new Error(json.error || 'Failed to get upload URL');
+          }
+        })
+        .then(function(json){
+          if (json && json.image_url) {
+            urlInput.value = json.image_url;
+            if (previewImg && previewWrap) {
+              previewImg.src = json.image_url;
+              if (previewWrap.classList && previewWrap.classList.contains('hidden')) previewWrap.classList.remove('hidden');
+            }
+          } else {
+            showNotificationToast('❌ Cover upload failed', 'error');
+          }
+        }).catch(function(err){
+          console.error(err);
+          showNotificationToast('❌ Cover upload error: ' + err.message, 'error');
+        });
+    });
+  })();
+
+  // Inline image upload button
+  (function(){
+    var btn = document.getElementById('upload-inline-image');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = function(){
+        var file = input.files && input.files[0];
+        if (!file) return;
+        // Step 1: Get presigned URL from backend
+        fetch("{{ url_for('views.blog_upload_image_url') }}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            filename: file.name
+          })
+        })
+          .then(function(res){
+            if (!res.ok) {
+              return res.text().then(function(t){ throw new Error('Upload failed: ' + res.status + ' ' + t); });
+            }
+            return res.json().catch(function(){ return {}; });
+          })
+          .then(function(json){
+            if (json.success) {
+              // Step 2: Upload directly to S3 using presigned URL
+              var formData = new FormData();
+              
+              // Add all fields from presigned URL
+              Object.keys(json.upload_fields).forEach(function(key) {
+                formData.append(key, json.upload_fields[key]);
+              });
+              
+              // Add the file
+              formData.append('file', file);
+              
+              // Upload to S3
+              return fetch(json.upload_url, {
+                method: 'POST',
+                body: formData
+              }).then(function() { return json; });
+            } else {
+              throw new Error(json.error || 'Failed to get upload URL');
+            }
+          })
+          .then(function(json){
+            if (!json || !json.image_url) { showNotificationToast('❌ Upload failed', 'error'); return; }
+            var editor = (window.tinymce && (tinymce.activeEditor || tinymce.get('content-editor'))) ? (tinymce.activeEditor || tinymce.get('content-editor')) : null;
+            var imgHtml = '<img src="' + json.image_url + '" />';
+            if (editor && !editor.destroyed) {
+              try {
+                editor.focus();
+                editor.execCommand('mceInsertContent', false, imgHtml);
+                if (typeof editor.save === 'function') { editor.save(); }
+                if (typeof editor.fire === 'function') { editor.fire('change'); }
+              } catch (e) {
+                console.error('TinyMCE insert error', e);
+                try { editor.insertContent(imgHtml); if (editor.save) editor.save(); } catch (_) {}
+              }
+            } else {
+              var textarea = document.getElementById('content-editor');
+              if (textarea) { textarea.value += '\n' + imgHtml + '\n'; }
+            }
+          }).catch(function(err){ console.error(err); showNotificationToast('❌ Upload error: ' + err.message, 'error'); });
+      };
+      document.body.appendChild(input);
+      input.click();
+      setTimeout(function(){ if (input && input.parentNode) input.parentNode.removeChild(input); }, 0);
+    });
+  })();
+</script>
+{% endblock %}
+
+

@@ -96,7 +96,8 @@
                         <span class="hidden lg:inline">My Letters</span>
                         <span class="lg:hidden">Letters</span>
                     </a>
-                    <!-- Received Letters -->
+                    <!-- Received Letters (only show if user has received letters) -->
+                    {% if has_received_letters(user) %}
                     <a href="{{ url_for('views.received_letters') }}"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,6 +106,7 @@
                         <span class="hidden lg:inline">Received</span>
                         <span class="lg:hidden">Inbox</span>
                     </a>
+                    {% endif %}
                     <!-- Contacts dropdown -->
                     <div class="relative">
                         <button id="contactsDropdown" class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base" onclick="toggleContactsDropdown(event)">
@@ -205,8 +207,10 @@
                         class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Create Letter</a>
                     <a href="{{ url_for('views.view_letters', user_id=user.id) }}"
                         class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">My Letters</a>
+                    {% if has_received_letters(user) %}
                     <a href="{{ url_for('views.received_letters') }}"
                         class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Received Letters</a>
+                    {% endif %}
                     <details id="mobile-contacts" class="px-1 group">
                         <summary class="flex items-center justify-between px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800 cursor-pointer">
                             <span>Contacts</span>

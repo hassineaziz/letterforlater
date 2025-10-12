@@ -299,7 +299,18 @@ def utility_processor():
             return False
         return has_active_trusted_relationships(user)
     
-    return dict(check_trusted_contact_status=check_trusted_contact_status)
+    def has_received_letters(user):
+        """Check if user has received any letters"""
+        if not user or not user.is_authenticated:
+            return False
+        from website.models import RecipientInvite
+        received_count = RecipientInvite.query.filter(
+            RecipientInvite.recipient_user_id == user.id,
+            RecipientInvite.registered_at.isnot(None)
+        ).count()
+        return received_count > 0
+    
+    return dict(check_trusted_contact_status=check_trusted_contact_status, has_received_letters=has_received_letters)
 
 def generate_unique_slug(base_title: str) -> str:
     import re

@@ -54,9 +54,8 @@ def create_app():
     migrate.init_app(app, db)
     mail.init_app(app)
     
-    # Initialize Flask-Sitemap
-    from .sitemap_config import sitemap, seo_bp
-    sitemap.init_app(app)
+    # Initialize SEO routes (custom sitemap)
+    from .sitemap_config import seo_bp
 
     from .views import views
     from .auth import auth

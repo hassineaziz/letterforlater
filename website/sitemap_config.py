@@ -7,20 +7,20 @@ from flask_sitemap import Sitemap
 from datetime import datetime, timezone
 from .models import BlogPost
 
-# Initialize sitemap
-sitemap = Sitemap()
+# Initialize sitemap (disabled - using custom route instead)
+# sitemap = Sitemap()
 
-# Configure sitemap settings
-sitemap.config = {
-    'SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS': True,
-    'SITEMAP_URL_SCHEME': 'https',
-    'SITEMAP_FORCE_HTTPS': True
-}
+# Configure sitemap settings (disabled - using custom route instead)
+# sitemap.config = {
+#     'SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS': True,
+#     'SITEMAP_URL_SCHEME': 'https',
+#     'SITEMAP_FORCE_HTTPS': True,
+#     'SITEMAP_URL_SCHEME': 'https'
+# }
 
 # Create blueprint for SEO-related routes
 seo_bp = Blueprint('seo', __name__)
 
-@sitemap.register_generator
 def sitemap_generator():
     """Generate sitemap entries automatically"""
     
@@ -85,10 +85,8 @@ Allow: /sitemap.xml
 Allow: /sitemap-manual.xml
 Allow: /static/sitemap.xml
 
-# Sitemap locations
+# Sitemap location
 Sitemap: {base_url}/sitemap.xml
-Sitemap: {base_url}/sitemap-manual.xml
-Sitemap: {base_url}/static/sitemap.xml
 
 # RSS Feed
 Sitemap: {base_url}/blog/feed.xml
@@ -121,9 +119,9 @@ def sitemap_debug():
         from flask import jsonify
         return jsonify({'error': str(e)}), 500
 
-@seo_bp.route('/sitemap-manual.xml')
-def sitemap_manual():
-    """Manual sitemap generation as fallback"""
+@seo_bp.route('/sitemap.xml')
+def sitemap_xml():
+    """Dynamic sitemap generation with HTTPS support"""
     from flask import Response, url_for
     import xml.etree.ElementTree as ET
     
@@ -139,14 +137,17 @@ def sitemap_manual():
             
             # Generate URL with HTTPS
             try:
-                url = url_for(entry[0], **entry[1], _external=True)
-                # Force HTTPS - use SITE_DOMAIN if available
+                # Use SITE_DOMAIN environment variable for HTTPS
                 if os.getenv('SITE_DOMAIN'):
                     base_domain = os.getenv('SITE_DOMAIN').rstrip('/')
                     path = url_for(entry[0], **entry[1])
                     url = f"{base_domain}{path}"
-                elif url.startswith('http://'):
-                    url = url.replace('http://', 'https://')
+                else:
+                    # Fallback to Flask's url_for with HTTPS conversion
+                    url = url_for(entry[0], **entry[1], _external=True)
+                    if url.startswith('http://'):
+                        url = url.replace('http://', 'https://')
+                
                 loc_elem = ET.SubElement(url_elem, 'loc')
                 loc_elem.text = url
                 
@@ -177,3 +178,5 @@ def sitemap_manual():
         
     except Exception as e:
         return f"Error generating sitemap: {str(e)}", 500
+
+# Manual sitemap route removed - using Flask-Sitemap only

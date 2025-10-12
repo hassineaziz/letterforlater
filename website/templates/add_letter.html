@@ -578,7 +578,14 @@
             scheduled_date: document.getElementById('scheduled_date').value,
             delay_option: document.querySelector('input[name="delay_option"]:checked')?.value || 'immediate',
             custom_delay_days: document.getElementById('custom_delay_days').value,
-            // Media files are handled separately through the media upload system
+            media_files: uploadedFiles.map(file => ({
+                id: file.id,
+                media_id: file.media_id,
+                file_name: file.file_name,
+                file_type: file.file_type,
+                file_size: file.file_size,
+                mime_type: file.mime_type || 'application/octet-stream'
+            }))
         };
 
         // Check if form is completely empty (including media files)
@@ -2203,8 +2210,13 @@ if (uploadedFiles.length > 0) {
                 // Collect form data
                 const formData = new FormData(letterForm);
 
-                // Add the current letter ID for updating the draft letter
-                if (currentLetterId) {
+                // For editing existing letters, use the letter_id from the template
+                // For drafts, use currentLetterId
+                if (letter_to_edit) {
+                    // We're editing an existing letter, don't override letter_id
+                    console.log('Editing existing letter:', letter_to_edit.id);
+                } else if (currentLetterId) {
+                    // We're working with a draft
                     formData.append('letter_id', currentLetterId);
                 }
 

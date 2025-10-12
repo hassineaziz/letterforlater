@@ -732,20 +732,47 @@ def add_letter():
                         flash('Please enter a valid number of days for custom delay.', 'error')
                         return redirect(url_for('views.add_letter', letter_id=letter.id))
 
-            # Attach any newly uploaded temporary media to this letter
+            # Handle media attachments for edited letters
+            # First, get the list of media IDs that should be attached to this letter
             media_attachments_data = request.form.get('media_attachments')
+            current_media_ids = set()
+            
             if media_attachments_data:
                 try:
                     media_attachments = json.loads(media_attachments_data)
-                    media_ids = [media_info.get('media_id') for media_info in media_attachments if media_info.get('media_id')]
-                    if media_ids:
-                        result = production_media_handlers.media_handler.attach_media_to_letter(
-                            current_user.id,
-                            letter.id,
-                            media_ids
-                        )
-                        if not result.json.get('success'):
-                            print(f"Warning: Failed to attach some media files to edited letter {letter.id}: {result.json.get('error')}")
+                    current_media_ids = {media_info.get('media_id') for media_info in media_attachments if media_info.get('media_id')}
+                except Exception as e:
+                    print(f"Error parsing media attachments during edit: {e}")
+            
+            # Get existing media attachments for this letter
+            existing_media = MediaAttachment.query.filter_by(letter_id=letter.id).all()
+            existing_media_ids = {media.id for media in existing_media}
+            
+            # Find media to remove (existing media not in current list)
+            media_to_remove = existing_media_ids - current_media_ids
+            if media_to_remove:
+                try:
+                    result = production_media_handlers.media_handler.remove_media_from_letter(
+                        current_user.id,
+                        letter.id,
+                        list(media_to_remove)
+                    )
+                    if not result.json.get('success'):
+                        print(f"Warning: Failed to remove some media files from edited letter {letter.id}: {result.json.get('error')}")
+                except Exception as e:
+                    print(f"Error removing media attachments during edit: {e}")
+            
+            # Find media to add (current media not in existing list)
+            media_to_add = current_media_ids - existing_media_ids
+            if media_to_add:
+                try:
+                    result = production_media_handlers.media_handler.attach_media_to_letter(
+                        current_user.id,
+                        letter.id,
+                        list(media_to_add)
+                    )
+                    if not result.json.get('success'):
+                        print(f"Warning: Failed to attach some media files to edited letter {letter.id}: {result.json.get('error')}")
                 except Exception as e:
                     print(f"Error processing media attachments during edit: {e}")
 
@@ -1919,8 +1946,23 @@ def save_draft():
         draft.recipient_name = recipient_name or ''
         draft.recipient_email = recipient_email or ''
         draft.delivery_type = delivery_type or 'date'
-        draft.media_attachments = media_files  # Save media files
         draft.last_modified = datetime.now(timezone.utc)
+        
+        # Handle media files - attach them to the draft
+        if media_files:
+            try:
+                media_ids = [media_info.get('media_id') for media_info in media_files if media_info.get('media_id')]
+                if media_ids:
+                    result = production_media_handlers.media_handler.attach_media_to_letter(
+                        current_user.id,
+                        draft.id,
+                        media_ids
+                    )
+                    if not result.json.get('success'):
+                        print(f"Warning: Failed to attach some media files to draft {draft.id}: {result.json.get('error')}")
+            except Exception as e:
+                print(f"Error processing media attachments during draft save: {e}")
+        
         db.session.commit()
         # Update or create delivery schedule if needed
         if delivery_type == 'date' and scheduled_date:
@@ -1940,11 +1982,26 @@ def save_draft():
             recipient_email=recipient_email or '',
             delivery_type=delivery_type or 'date',
             status='draft',
-            user_id=current_user.id,
-            media_attachments=media_files  # Save media files
+            user_id=current_user.id
         )
         db.session.add(draft)
         db.session.commit()
+        
+        # Handle media files - attach them to the new draft
+        if media_files:
+            try:
+                media_ids = [media_info.get('media_id') for media_info in media_files if media_info.get('media_id')]
+                if media_ids:
+                    result = production_media_handlers.media_handler.attach_media_to_letter(
+                        current_user.id,
+                        draft.id,
+                        media_ids
+                    )
+                    if not result.json.get('success'):
+                        print(f"Warning: Failed to attach some media files to new draft {draft.id}: {result.json.get('error')}")
+            except Exception as e:
+                print(f"Error processing media attachments during new draft creation: {e}")
+        
         # Save scheduled date if present
         if delivery_type == 'date' and scheduled_date:
             # Set delivery time to 8 PM (20:00) in user's local timezone

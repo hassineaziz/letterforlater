@@ -20,6 +20,11 @@ def update_static_sitemap():
     app = create_app()
     
     with app.app_context():
+        # Get the actual domain from environment or use placeholder
+        domain = os.getenv('SITE_DOMAIN', 'yourdomain.com')
+        if not domain.startswith('https://'):
+            domain = f'https://{domain}'
+        
         # Create XML sitemap
         urlset = ET.Element('urlset')
         urlset.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
@@ -40,7 +45,7 @@ def update_static_sitemap():
             url_elem = ET.SubElement(urlset, 'url')
             
             loc_elem = ET.SubElement(url_elem, 'loc')
-            loc_elem.text = f'https://yourdomain.com{path}'
+            loc_elem.text = f'{domain}{path}'
             
             lastmod_elem = ET.SubElement(url_elem, 'lastmod')
             lastmod_elem.text = now_iso
@@ -57,7 +62,7 @@ def update_static_sitemap():
             url_elem = ET.SubElement(urlset, 'url')
             
             loc_elem = ET.SubElement(url_elem, 'loc')
-            loc_elem.text = f'https://yourdomain.com/blog/{post.slug}'
+            loc_elem.text = f'{domain}/blog/{post.slug}'
             
             # Use post's last modified date
             lastmod = post.updated_at or post.published_at or post.created_at

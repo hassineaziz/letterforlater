@@ -12,8 +12,8 @@ sitemap = Sitemap()
 # Configure sitemap settings
 sitemap.config = {
     'SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS': True,
-    'SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS': True,
-    'SITEMAP_URL_SCHEME': 'https'
+    'SITEMAP_URL_SCHEME': 'https',
+    'SITEMAP_FORCE_HTTPS': True
 }
 
 # Create blueprint for SEO-related routes
@@ -42,6 +42,10 @@ def sitemap_generator():
 def robots_txt():
     """Generate robots.txt file"""
     base_url = request.url_root.rstrip('/')
+    
+    # Force HTTPS URLs
+    if base_url.startswith('http://'):
+        base_url = base_url.replace('http://', 'https://')
     
     robots_content = f"""User-agent: *
 Allow: /
@@ -133,9 +137,12 @@ def sitemap_manual():
         for entry in entries:
             url_elem = ET.SubElement(urlset, 'url')
             
-            # Generate URL
+            # Generate URL with HTTPS
             try:
                 url = url_for(entry[0], **entry[1], _external=True)
+                # Force HTTPS
+                if url.startswith('http://'):
+                    url = url.replace('http://', 'https://')
                 loc_elem = ET.SubElement(url_elem, 'loc')
                 loc_elem.text = url
                 

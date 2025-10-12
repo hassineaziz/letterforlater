@@ -37,9 +37,9 @@ Allow: /sitemap-manual.xml
 Allow: /static/sitemap.xml
 
 # Sitemap locations
-Sitemap: https://yourdomain.com/sitemap.xml
-Sitemap: https://yourdomain.com/sitemap-manual.xml
-Sitemap: https://yourdomain.com/static/sitemap.xml
+Sitemap: https://letterforlater.com/sitemap.xml
+Sitemap: https://letterforlater.com/sitemap-manual.xml
+Sitemap: https://letterforlater.com/static/sitemap.xml
 
 # RSS Feed
-Sitemap: https://yourdomain.com/blog/feed.xml
+Sitemap: https://letterforlater.com/blog/feed.xml

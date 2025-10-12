@@ -2009,56 +2009,95 @@
         document.getElementById('draftBtnText').textContent = 'Save as Draft';
     }
 
-    // Load existing media attachments when editing a letter
-    function loadExistingMediaAttachments() {
-        // This function will be called from the template with the necessary data
-        console.log('Loading existing media attachments...');
+    // Load existing letter data into the form (similar to loadDraft but for existing letters)
+    function loadExistingLetter(letterData, mediaAttachments) {
+        console.log('Loading existing letter:', letterData);
+        console.log('Media attachments:', mediaAttachments);
+        
+        // Set the current letter ID
+        currentLetterId = letterData.id;
+        isEditingDraft = false; // This is editing an existing letter, not a draft
+        
+        // Load form data
+        if (letterData.title) document.getElementById('title').value = letterData.title;
+        if (letterData.content) document.getElementById('content').value = letterData.content;
+        if (letterData.recipient_name) document.getElementById('recipient_name').value = letterData.recipient_name;
+        if (letterData.recipient_email) document.getElementById('recipient_email').value = letterData.recipient_email;
+        if (letterData.delivery_type) document.getElementById('delivery_type').value = letterData.delivery_type;
+        if (letterData.delivery_date) {
+            const dateStr = letterData.delivery_date.split(' ')[0]; // Get just the date part
+            document.getElementById('scheduled_date').value = dateStr;
+        }
+        
+        // Load media files
+        if (mediaAttachments && mediaAttachments.length > 0) {
+            uploadedFiles = [];
+            mediaAttachments.forEach(attachment => {
+                const fileData = {
+                    id: 'existing_' + attachment.id,
+                    media_id: attachment.id,
+                    file_name: attachment.file_name,
+                    file_type: attachment.file_type,
+                    file_size: attachment.file_size,
+                    dataUrl: '/media/' + attachment.id,
+                    file: null
+                };
+                uploadedFiles.push(fileData);
+                addMediaItem(fileData);
+            });
+            
+            // Show media preview
+            document.getElementById('mediaPreview').classList.remove('hidden');
+            document.getElementById('mediaUploadContainer').classList.remove('hidden');
+            
+            // Update the button text to "Hide Media"
+            const button = document.getElementById('toggleMediaBtn');
+            if (button) {
+                button.innerHTML = `
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                    Hide Media
+                `;
+            }
+        }
+        
+        // Mark as saved since we loaded existing data
+        markAsSaved();
+        
+        console.log('Existing letter loaded successfully');
     }
 </script>
 
 <!-- Template-specific script for loading existing media -->
 <script>
 {% if letter_to_edit and media_attachments %}
-console.log('Loading existing media attachments for letter:', {{ letter_to_edit.id }});
-
-// Set the current letter ID for editing
-currentLetterId = {{ letter_to_edit.id }};
-isEditingDraft = false; // This is editing an existing letter, not a draft
-
-// Clear any existing uploaded files
-uploadedFiles = [];
-
-// Load each media attachment
-{% for attachment in media_attachments %}
-const fileData = {
-    id: 'existing_{{ attachment.id }}',
-    media_id: {{ attachment.id }},
-    file_name: '{{ attachment.file_name }}',
-    file_type: '{{ attachment.file_type }}',
-    file_size: {{ attachment.file_size }},
-    dataUrl: '/media/{{ attachment.id }}',
-    file: null // We don't have the actual File object for existing media
-};
-
-uploadedFiles.push(fileData);
-addMediaItem(fileData);
-{% endfor %}
-
-// Show media preview if there are files
-if (uploadedFiles.length > 0) {
-    document.getElementById('mediaPreview').classList.remove('hidden');
-    document.getElementById('mediaUploadContainer').classList.remove('hidden');
-    // Update the button text to "Hide Media"
-    const button = document.getElementById('toggleMediaBtn');
-    if (button) {
-        button.innerHTML = `
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-            Hide Media
-        `;
-    }
-}
+// Load existing letter data when editing
+document.addEventListener('DOMContentLoaded', function() {
+    const letterData = {
+        id: {{ letter_to_edit.id }},
+        title: '{{ letter_to_edit.title }}',
+        content: '{{ letter_to_edit.content }}',
+        recipient_name: '{{ letter_to_edit.recipient_name }}',
+        recipient_email: '{{ letter_to_edit.recipient_email }}',
+        delivery_type: '{{ letter_to_edit.delivery_type }}',
+        delivery_date: '{{ letter_to_edit.delivery_date }}'
+    };
+    
+    const mediaAttachments = [
+        {% for attachment in media_attachments %}
+        {
+            id: {{ attachment.id }},
+            file_name: '{{ attachment.file_name }}',
+            file_type: '{{ attachment.file_type }}',
+            file_size: {{ attachment.file_size }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Call the loadExistingLetter function
+    loadExistingLetter(letterData, mediaAttachments);
+});
 {% endif %}
 </script>
 

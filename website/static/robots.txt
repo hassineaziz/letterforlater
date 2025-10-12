@@ -1,0 +1,45 @@
+User-agent: *
+Allow: /
+
+# Block private user areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /add-letter
+Disallow: /view-letters/
+Disallow: /received-letters
+Disallow: /settings
+Disallow: /trusted-contacts
+Disallow: /verify-death
+Disallow: /verify-2fa
+Disallow: /setup-2fa
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /sign-up-with-invite
+Disallow: /confirm-trusted-contact
+Disallow: /pending-trusted-contact
+
+# Block media files (they're served via S3)
+Disallow: /media/
+Disallow: /download-media/
+
+# Block debug and test routes
+Disallow: /sitemap-debug
+Disallow: /test/
+
+# Allow important public pages
+Allow: /blog
+Allow: /privacy
+Allow: /terms
+Allow: /robots.txt
+Allow: /sitemap.xml
+Allow: /sitemap-manual.xml
+Allow: /static/sitemap.xml
+
+# Sitemap locations
+Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://yourdomain.com/sitemap-manual.xml
+Sitemap: https://yourdomain.com/static/sitemap.xml
+
+# RSS Feed
+Sitemap: https://yourdomain.com/blog/feed.xml

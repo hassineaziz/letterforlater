@@ -131,6 +131,28 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@views.route('/admin/update-sitemap')
+@admin_required
+def admin_update_sitemap():
+    """Update static sitemap manually"""
+    try:
+        import subprocess
+        import os
+        
+        # Run the sitemap update script
+        script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'update_sitemap.py')
+        result = subprocess.run(['python', script_path], capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            flash('Sitemap updated successfully!', 'success')
+        else:
+            flash(f'Error updating sitemap: {result.stderr}', 'error')
+            
+    except Exception as e:
+        flash(f'Error updating sitemap: {str(e)}', 'error')
+    
+    return redirect(url_for('views.blog_dashboard'))
+
 @views.route('/admin/newsletter/export.csv')
 @admin_required
 def admin_export_newsletter():

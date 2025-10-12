@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Create Account - LetterForLater{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <div class="mx-auto h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <h2 class="mt-6 text-center text-3xl font-bold text-gray-900">
+        Create Your Account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        You've received a special letter from <strong>{{ invite.letter.author.first_name }} {{ invite.letter.author.last_name }}</strong>
+      </p>
+    </div>
+    
+    <form class="mt-8 space-y-6" method="POST">
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div>
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" required 
+                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                 placeholder="Email address" value="{{ invite.recipient_email }}" readonly>
+        </div>
+        <div>
+          <label for="firstName" class="sr-only">First name</label>
+          <input id="firstName" name="firstName" type="text" autocomplete="given-name" required 
+                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                 placeholder="First name" value="{{ invite.recipient_name.split()[0] if invite.recipient_name else '' }}">
+        </div>
+        <div>
+          <label for="lastName" class="sr-only">Last name</label>
+          <input id="lastName" name="lastName" type="text" autocomplete="family-name" required 
+                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                 placeholder="Last name" value="{{ invite.recipient_name.split()[-1] if invite.recipient_name and ' ' in invite.recipient_name else '' }}">
+        </div>
+        <div>
+          <label for="password1" class="sr-only">Password</label>
+          <input id="password1" name="password1" type="password" autocomplete="new-password" required 
+                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                 placeholder="Password">
+        </div>
+        <div>
+          <label for="password2" class="sr-only">Confirm password</label>
+          <input id="password2" name="password2" type="password" autocomplete="new-password" required 
+                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                 placeholder="Confirm password">
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" 
+                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5">
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-blue-300 group-hover:text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+            </svg>
+          </span>
+          Create Account & Read Letter
+        </button>
+      </div>
+      
+      <div class="text-center">
+        <p class="text-sm text-gray-600">
+          Already have an account? 
+          <a href="{{ url_for('auth.login') }}" class="font-medium text-blue-600 hover:text-blue-500">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </form>
+    
+    <!-- Letter Preview -->
+    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Letter Preview</h3>
+      <div class="text-sm text-gray-600">
+        <p><strong>From:</strong> {{ invite.letter.author.first_name }} {{ invite.letter.author.last_name }}</p>
+        <p><strong>Title:</strong> {{ invite.letter.title }}</p>
+        <p><strong>Sent:</strong> {{ invite.letter.delivery_date.strftime('%B %d, %Y') if invite.letter.delivery_date else 'Recently' }}</p>
+      </div>
+      <div class="mt-3 text-xs text-gray-500">
+        <p>Once you create your account, you'll be able to read the full letter and access any photos, videos, or audio recordings that were included.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

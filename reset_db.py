@@ -33,6 +33,21 @@ def reset_database():
             db.session.commit()
             print('Test user created!')
 
+            print('Creating admin user...')
+            admin_user = User(
+                email='hassineaziz@icloud.com',
+                password=generate_password_hash('admin123!', method='pbkdf2:sha256'),
+                first_name='Hassine',
+                last_name='Aziz',
+                notification_preferences={'email_notifications': True},
+                delivery_preferences={'delivery_method': 'email'},
+                role='admin',
+                is_active=True
+            )
+            db.session.add(admin_user)
+            db.session.commit()
+            print('Admin user created!')
+
             print('Creating unconfirmed trusted contact...')
             trusted_contact = TrustedContact(
                 user_id=test_user.id,

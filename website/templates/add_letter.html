@@ -1,0 +1,2344 @@
+{% extends "base.html" %}
+{% block title %}Add Letter{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {% if letter_to_edit %}Edit Your Legacy Letter{% else %}Write a Legacy Letter{% endif %}
+                </span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                {% if letter_to_edit %}Update your letter and save the changes.{% else %}Your message will be safe here, and delivered with care when the time is right.{% endif %}
+            </p>
+            
+            
+        </div>
+    </div>
+
+    <!-- Letter Creation Form -->
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8 mb-8">
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">{% if letter_to_edit %}Edit Your Letter{% else %}Create Your Legacy Letter{% endif %}</h2>
+                    <p class="text-gray-600">{% if letter_to_edit %}Update your letter details and content{% else %}Write a meaningful message that will touch hearts for generations{% endif %}</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="letterForm" method="POST" class="space-y-4">
+            {% if letter_to_edit %}
+            <input type="hidden" name="letter_id" value="{{ letter_to_edit.id }}">
+            {% endif %}
+            <!-- Letter Title -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-blue-100">
+                <label for="title" class="block text-lg font-semibold text-gray-900 mb-3">Letter Title</label>
+                <input type="text"
+                    class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
+                    id="title" name="title" required
+                    value="{% if letter_to_edit %}{{ letter_to_edit.title }}{% endif %}"
+                    placeholder="Enter a meaningful title for your letter">
+            </div>
+
+            <!-- Letter Content -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-purple-100">
+                <label for="content" class="block text-lg font-semibold text-gray-900 mb-3">Letter Content</label>
+                <textarea
+                    class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-serif leading-relaxed bg-white/80 backdrop-blur-sm transition-all duration-300 resize-none"
+                    id="content" name="content" rows="8" required
+                    placeholder="Write your letter here... Share your thoughts, memories, wisdom, or love for your recipient.">{% if letter_to_edit %}{{ letter_to_edit.content }}{% endif %}</textarea>
+            </div>
+
+            <!-- Media Attachments Section -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-pink-100">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Media Attachments</h3>
+                            <p class="text-sm text-gray-600">Add photos, videos, or audio to make your letter more personal</p>
+                        </div>
+                    </div>
+                    <button type="button"
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-sm font-medium flex items-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+                        id="toggleMediaBtn">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Media
+                    </button>
+                </div>
+
+                <!-- Collapsible Media Upload Container -->
+                <div class="media-upload-container hidden" id="mediaUploadContainer">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <!-- Upload Options Tabs -->
+                        <div class="mb-6">
+                            <div class="flex space-x-1 bg-gray-200 p-1 rounded-lg" role="tablist">
+                                <button type="button"
+                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-primary shadow-sm"
+                                    id="upload-tab" onclick="switchTab('upload')">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                        </path>
+                                    </svg>
+                                    Upload Files
+                                </button>
+                                <button type="button"
+                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-primary"
+                                    id="record-tab" onclick="switchTab('record')">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                                        </path>
+                                    </svg>
+                                    Record Audio
+                                </button>
+                                <button type="button"
+                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-primary"
+                                    id="video-tab" onclick="switchTab('video')">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    Record Video
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Upload Files Tab -->
+                        <div id="upload-pane" class="tab-content">
+                            <div class="text-center">
+                                <div
+                                    class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-400 transition-colors">
+                                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                        </path>
+                                    </svg>
+                                    <p class="text-lg text-gray-600 mb-2">Upload photos, videos, or audio files</p>
+                                    <p class="text-sm text-gray-500 mb-4">Drag and drop files here, or click to browse
+                                    </p>
+                                    <button type="button"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+                                        onclick="document.getElementById('mediaFileInput').click()">
+                                        Choose Files
+                                    </button>
+                                    <input type="file" id="mediaFileInput" name="media_files" multiple
+                                        accept="image/*,video/*,audio/*" class="hidden"
+                                        onchange="handleFileUpload(this)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Record Audio Tab -->
+                        <div id="record-pane" class="tab-content hidden">
+                            <div class="text-center">
+                                <div class="bg-gray-100 rounded-lg p-8">
+                                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                                        </path>
+                                    </svg>
+                                    <p class="text-lg text-gray-600 mb-4">Record an audio message</p>
+                                    <div class="space-x-2">
+                                        <button type="button"
+                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium"
+                                            id="startAudioRecord" onclick="startAudioRecording()">
+                                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"></path>
+                                            </svg>
+                                            Start Recording
+                                        </button>
+                                        <button type="button"
+                                            class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium hidden"
+                                            id="pauseAudioRecord" onclick="pauseAudioRecording()">
+                                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path>
+                                            </svg>
+                                            Pause
+                                        </button>
+                                        <button type="button"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium hidden"
+                                            id="stopAudioRecord" onclick="stopAudioRecording()">
+                                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M6 6h12v12H6z"></path>
+                                            </svg>
+                                            Stop
+                                        </button>
+                                        <button type="button"
+                                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium hidden"
+                                            id="cancelAudioRecord" onclick="cancelAudioRecording()">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                    <div id="audioVisualizer" class="mt-4 hidden">
+                                        <div class="flex justify-center items-end space-x-1 h-16">
+                                            <div class="w-1 bg-blue-500 rounded-t"></div>
+                                            <div class="w-1 bg-blue-500 rounded-t"></div>
+                                            <div class="w-1 bg-blue-500 rounded-t"></div>
+                                            <div class="w-1 bg-blue-500 rounded-t"></div>
+                                            <div class="w-1 bg-blue-500 rounded-t"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Record Video Tab -->
+                        <div id="video-pane" class="tab-content hidden">
+                            <div class="text-center">
+                                <div class="bg-gray-100 rounded-lg p-8">
+                                    <div id="videoPreview" class="hidden mb-4">
+                                        <video id="liveVideoPreview" class="w-full max-w-md mx-auto rounded-lg" autoplay
+                                            muted></video>
+                                    </div>
+                                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <p class="text-lg text-gray-600 mb-4">Record a video message</p>
+                                    <div class="space-x-2">
+                                        <button type="button"
+                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium"
+                                            id="startVideoRecord" onclick="startVideoRecording()">
+                                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"></path>
+                                            </svg>
+                                            Start Recording
+                                        </button>
+                                        <button type="button"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium hidden"
+                                            id="stopVideoRecord" onclick="stopVideoRecording()">
+                                            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M6 6h12v12H6z"></path>
+                                            </svg>
+                                            Stop Recording
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media Preview -->
+                        <div id="mediaPreview" class="mt-6 hidden">
+                            <h4 class="text-lg font-semibold text-primary mb-4">Attached Media</h4>
+                            <div id="mediaItems" class="space-y-4">
+                                <!-- Media items will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recipient Information -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-green-100">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Recipient Information</h3>
+                        <p class="text-sm text-gray-600">Who will receive this meaningful message?</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="recipient_name" class="block text-lg font-semibold text-gray-900 mb-3">Recipient Name</label>
+                        <input type="text"
+                            class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
+                            id="recipient_name" name="recipient_name" required
+                            value="{% if letter_to_edit %}{{ letter_to_edit.recipient_name }}{% endif %}"
+                            placeholder="Enter recipient's full name">
+                    </div>
+                    <div>
+                        <label for="recipient_email" class="block text-lg font-semibold text-gray-900 mb-3">Recipient Email</label>
+                        <input type="email"
+                            class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
+                            id="recipient_email" name="recipient_email" required
+                            value="{% if letter_to_edit %}{{ letter_to_edit.recipient_email }}{% endif %}"
+                            placeholder="Enter recipient's email address">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Settings -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-orange-100">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Delivery Settings</h3>
+                        <p class="text-sm text-gray-600">Choose when and how your letter will be delivered</p>
+                    </div>
+                </div>
+
+                <!-- Delivery Type Selection -->
+                <div class="mb-4">
+                    <label for="delivery_type" class="block text-lg font-semibold text-gray-900 mb-3">Delivery Type</label>
+                    <select
+                        class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
+                        id="delivery_type" name="delivery_type" required>
+                        <option value="">Select delivery type</option>
+                        <option value="date" {% if letter_to_edit and letter_to_edit.delivery_type=='date' %}selected{%
+                            endif %}>On a Chosen Date</option>
+                        <option value="death_verification" {% if letter_to_edit and
+                            letter_to_edit.delivery_type=='death_verification' %}selected{% endif %}>When Verified by
+                            Trusted Contacts</option>
+                    </select>
+                </div>
+
+                <!-- Date Settings (stays in place) -->
+                <div id="dateSettings" class="hidden">
+                    <div class="glass-card-ui rounded-xl p-6 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-primary font-heading">Delivery Date</h3>
+                        </div>
+                        <p class="text-gray-700 text-sm mb-6">Choose the specific date when your letter should be
+                            delivered.</p>
+
+                        <div class="bg-white/50 rounded-lg border border-primary-light p-6">
+                            <label for="scheduled_date" class="block text-sm font-medium text-primary mb-3">Select
+                                Date</label>
+                            <input type="date"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg"
+                                id="scheduled_date" name="scheduled_date"
+                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}">
+                            <p class="text-xs text-gray-600 mt-3 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Letters are delivered at 8:00 PM on the selected date
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Settings (moved below) -->
+                <div id="verificationSettings" class="hidden">
+                    <div class="glass-card-ui rounded-xl p-6 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-primary font-heading">Delivery Timing</h3>
+                        </div>
+                        <p class="text-gray-700 text-sm mb-6">Choose when your letter should be sent after verification
+                            is confirmed by your trusted contacts.</p>
+
+                        <div class="space-y-4">
+                            <label
+                                class="flex items-center p-4 bg-white/50 rounded-xl border border-primary-light hover:border-primary cursor-pointer transition-all duration-200">
+                                <input type="radio" name="delay_option" value="immediate"
+                                    class="mr-4 text-primary focus:ring-primary" checked>
+                                <div class="flex-1">
+                                    <span class="text-gray-800 font-medium">Send immediately after verification</span>
+                                    <p class="text-sm text-gray-600">Letter is sent as soon as 50% of trusted contacts
+                                        confirm</p>
+                                </div>
+                            </label>
+
+                            <label
+                                class="flex items-center p-4 bg-white/50 rounded-xl border border-primary-light hover:border-primary cursor-pointer transition-all duration-200">
+                                <input type="radio" name="delay_option" value="1_day"
+                                    class="mr-4 text-primary focus:ring-primary">
+                                <div class="flex-1">
+                                    <span class="text-gray-800 font-medium">Send 1 day after verification</span>
+                                    <p class="text-sm text-gray-600">24-hour delay to allow for any corrections</p>
+                                </div>
+                            </label>
+
+                            <label
+                                class="flex items-center p-4 bg-white/50 rounded-xl border border-primary-light hover:border-primary cursor-pointer transition-all duration-200">
+                                <input type="radio" name="delay_option" value="1_week"
+                                    class="mr-4 text-primary focus:ring-primary">
+                                <div class="flex-1">
+                                    <span class="text-gray-800 font-medium">Send 1 week after verification</span>
+                                    <p class="text-sm text-gray-600">7-day delay for family arrangements</p>
+                                </div>
+                            </label>
+
+                            <label
+                                class="flex items-center p-4 bg-white/50 rounded-xl border border-primary-light hover:border-primary cursor-pointer transition-all duration-200">
+                                <input type="radio" name="delay_option" value="1_month"
+                                    class="mr-4 text-primary focus:ring-primary">
+                                <div class="flex-1">
+                                    <span class="text-gray-800 font-medium">Send 1 month after verification</span>
+                                    <p class="text-sm text-gray-600">30-day delay for extended family notification</p>
+                                </div>
+                            </label>
+
+                            <label
+                                class="flex items-center p-4 bg-white/50 rounded-xl border border-primary-light hover:border-primary cursor-pointer transition-all duration-200">
+                                <input type="radio" name="delay_option" value="custom"
+                                    class="mr-4 text-primary focus:ring-primary">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-gray-800 font-medium">Custom delay:</span>
+                                        <input type="number" id="custom_delay_days" name="custom_delay_days"
+                                            class="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary w-20 text-center"
+                                            min="1" max="365" placeholder="days">
+                                        <span class="text-gray-600 text-sm">days (1-365)</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">Set your own delay period</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row justify-end gap-4 pt-4 border-t border-gray-200">
+                <button type="button" id="saveDraftBtn"
+                    class="px-8 py-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-semibold transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12">
+                        </path>
+                    </svg>
+                    <span id="draftBtnText">Save as Draft</span>
+                </button>
+                <button type="submit"
+                    class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    {% if letter_to_edit %}Update Letter{% else %}Create Letter{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-xl p-6 shadow-lg border border-blue-100 mt-6">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Need Help Creating Your Legacy?</span>
+            </h3>
+            <p class="text-gray-600 max-w-2xl mx-auto">Everything you need to know to create meaningful letters that will touch hearts for generations</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Writing Tips -->
+            <div class="group bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-3">Writing Tips</h4>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <p>• <strong>Be personal and heartfelt</strong> - Share your authentic voice</p>
+                    <p>• <strong>Include specific memories</strong> - Details make it special</p>
+                    <p>• <strong>Express your love openly</strong> - Don't hold back</p>
+                    <p>• <strong>Share life lessons</strong> - Your wisdom matters</p>
+                    <p>• <strong>Write like you're talking</strong> - Keep it conversational</p>
+                </div>
+            </div>
+            
+            <!-- Media Guidelines -->
+            <div class="group bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-3">Media Guidelines</h4>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <p>• <strong>Photos:</strong> Family moments, special occasions</p>
+                    <p>• <strong>Videos:</strong> Record your voice, show your smile</p>
+                    <p>• <strong>Audio:</strong> Tell stories, sing songs, give advice</p>
+                    <p>• <strong>Keep it meaningful</strong> - Every file should add value</p>
+                    <p>• <strong>High quality preferred</strong> - Clear, well-lit content</p>
+                </div>
+            </div>
+            
+            <!-- Delivery Options -->
+            <div class="group bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-3">Delivery Options</h4>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <p>• <strong>Specific Date:</strong> Choose exact delivery time</p>
+                    <p>• <strong>Verification:</strong> Trusted contacts confirm timing</p>
+                    <p>• <strong>Delay Protection:</strong> Built-in safety against false reports</p>
+                    <p>• <strong>Change Anytime:</strong> Update delivery method later</p>
+                    <p>• <strong>Multiple Contacts:</strong> Ensure reliable delivery</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Help -->
+        <div class="mt-8 text-center">
+            <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50">
+                <h4 class="text-lg font-semibold text-gray-900 mb-3">💡 Pro Tips for Your Legacy Letters</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div class="text-left">
+                        <p><strong>Save as Draft:</strong> Take your time, edit multiple times until perfect</p>
+                        <p><strong>Be Specific:</strong> Mention names, dates, and places they'll remember</p>
+                    </div>
+                    <div class="text-left">
+                        <p><strong>Include Everyone:</strong> Write letters for different life stages and occasions</p>
+                        <p><strong>Test Technology:</strong> Record a test video to ensure quality</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Media section toggle
+    function toggleMediaSection() {
+        const container = document.getElementById('mediaUploadContainer');
+        const button = document.getElementById('toggleMediaBtn');
+
+        if (!container || !button) {
+            showNotificationToast('❌ Media elements not found!', 'error');
+            return;
+        }
+
+        if (container.classList.contains('hidden')) {
+            container.classList.remove('hidden');
+            button.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            Hide Media
+        `;
+        } else {
+            container.classList.add('hidden');
+            button.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add Media
+        `;
+        }
+    }
+
+    // Save Draft functionality
+    function saveDraft() {
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        const draftBtnText = document.getElementById('draftBtnText');
+        const originalText = draftBtnText.textContent;
+
+        // Collect form data
+        const formData = {
+            title: document.getElementById('title').value,
+            content: document.getElementById('content').value,
+            recipient_name: document.getElementById('recipient_name').value,
+            recipient_email: document.getElementById('recipient_email').value,
+            delivery_type: document.getElementById('delivery_type').value,
+            scheduled_date: document.getElementById('scheduled_date').value,
+            delay_option: document.querySelector('input[name="delay_option"]:checked')?.value || 'immediate',
+            custom_delay_days: document.getElementById('custom_delay_days').value,
+            // Media files are handled separately through the media upload system
+        };
+
+        // Check if form is completely empty (including media files)
+        const isEmpty = !formData.title.trim() && !formData.content.trim() &&
+            !formData.recipient_name.trim() && !formData.recipient_email.trim() &&
+            !formData.delivery_type && uploadedFiles.length === 0;
+
+        if (isEmpty) {
+            // Show message for empty form
+            draftBtnText.textContent = 'Nothing to save';
+            saveDraftBtn.classList.add('bg-gray-100', 'border-gray-300', 'text-gray-500');
+
+            // Reset after 2 seconds
+            setTimeout(() => {
+                draftBtnText.textContent = originalText;
+                saveDraftBtn.classList.remove('bg-gray-100', 'border-gray-300', 'text-gray-500');
+            }, 2000);
+            return;
+        }
+
+        // Show loading state
+        saveDraftBtn.disabled = true;
+        draftBtnText.textContent = 'Saving...';
+        saveDraftBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        // Debug: Log what we're sending
+        console.log('Saving draft with data:', formData);
+        console.log('Media files count:', uploadedFiles.length);
+
+        // Send draft to server
+        fetch('/save-draft', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update current letter ID if we got one
+                    if (data.draft_id) {
+                        currentLetterId = data.draft_id;
+                    }
+                    
+                    // Show success state
+                    draftBtnText.textContent = 'Saved!';
+                    saveDraftBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    saveDraftBtn.classList.add('bg-green-100', 'border-green-300', 'text-green-700');
+
+                    // Mark as saved
+                    markAsSaved();
+
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        draftBtnText.textContent = originalText;
+                        saveDraftBtn.classList.remove('bg-green-100', 'border-green-300', 'text-green-700');
+                        saveDraftBtn.disabled = false;
+                    }, 2000);
+                } else {
+                    // Handle server-side empty response gracefully
+                    if (data.reason === 'empty') {
+                        draftBtnText.textContent = 'Nothing to save';
+                        saveDraftBtn.classList.add('bg-gray-100', 'border-gray-300', 'text-gray-500');
+
+                        setTimeout(() => {
+                            draftBtnText.textContent = originalText;
+                            saveDraftBtn.classList.remove('bg-gray-100', 'border-gray-300', 'text-gray-500', 'opacity-50', 'cursor-not-allowed');
+                            saveDraftBtn.disabled = false;
+                        }, 2000);
+                    } else {
+                        throw new Error(data.reason || 'Failed to save draft');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error saving draft:', error);
+                draftBtnText.textContent = 'Error';
+                saveDraftBtn.classList.add('bg-red-100', 'border-red-300', 'text-red-700');
+
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    draftBtnText.textContent = originalText;
+                    saveDraftBtn.classList.remove('bg-red-100', 'border-red-300', 'text-red-700', 'opacity-50', 'cursor-not-allowed');
+                    saveDraftBtn.disabled = false;
+                }, 3000);
+            });
+    }
+
+    // Check for existing draft and show modal to user
+    function checkForDraft() {
+        // Don't check for drafts when editing an existing letter
+        {% if letter_to_edit %}
+        return;
+        {% else %}
+        fetch('/get-draft')
+            .then(response => response.json())
+            .then(data => {
+                if (data.draft) {
+                    // Show modal asking user what to do with the draft
+                    showDraftLoadModal(data.draft);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking for draft:', error);
+            });
+        {% endif %}
+    }
+
+    // Load draft data into the form
+    function loadDraft(draft) {
+        console.log('Loading draft:', draft);
+        
+        // Set the current letter ID
+        currentLetterId = draft.letter_id || null;
+        isEditingDraft = true;
+        
+        // Load form data
+        if (draft.title) document.getElementById('title').value = draft.title;
+        if (draft.content) document.getElementById('content').value = draft.content;
+        if (draft.recipient_name) document.getElementById('recipient_name').value = draft.recipient_name;
+        if (draft.recipient_email) document.getElementById('recipient_email').value = draft.recipient_email;
+        if (draft.delivery_type) document.getElementById('delivery_type').value = draft.delivery_type;
+        if (draft.scheduled_date) document.getElementById('scheduled_date').value = draft.scheduled_date;
+        
+        // Load media files
+        if (draft.media_files && draft.media_files.length > 0) {
+            uploadedFiles = [];
+            draft.media_files.forEach(mediaData => {
+                const fileData = {
+                    id: 'draft_' + mediaData.id,
+                    media_id: mediaData.media_id,
+                    file_name: mediaData.name,
+                    file_type: mediaData.file_type,
+                    file_size: mediaData.size,
+                    dataUrl: '/media/' + mediaData.media_id,
+                    file: null
+                };
+                uploadedFiles.push(fileData);
+                addMediaItem(fileData);
+            });
+            
+            // Show media preview
+            document.getElementById('mediaPreview').classList.remove('hidden');
+            document.getElementById('mediaUploadContainer').classList.remove('hidden');
+        }
+        
+        // Mark as saved since we loaded existing data
+        markAsSaved();
+        
+        console.log('Draft loaded successfully');
+    }
+
+    // Show draft load modal using the unified modal system
+    function showDraftLoadModal(draft) {
+        console.log('showDraftLoadModal called with draft:', draft);
+
+        // Store draft data globally for button handlers
+        window.currentDraft = draft;
+
+        if (window.modalManager) {
+            console.log('Modal manager found, opening draft modal...');
+            window.modalManager.openModal('draftLoadModal');
+        } else {
+            console.log('Modal manager not found, using fallback');
+            // Fallback for when modal system isn't loaded
+            showConfirmationModal(
+                'Unsaved Draft Found',
+                'You have an unsaved draft. Would you like to load it?',
+                'Load Draft',
+                'Start New'
+            ).then(function(confirmed) {
+                if (confirmed) {
+                    loadDraft(draft);
+                } else {
+                    createNewLetter();
+                }
+            });
+        }
+    }
+
+
+
+    // Create new letter (delete existing draft)
+    function createNewLetter() {
+        // Delete existing draft
+        fetch('/delete-draft', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Clear form
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+                document.getElementById('recipient_name').value = '';
+                document.getElementById('recipient_email').value = '';
+                document.getElementById('delivery_type').value = '';
+                document.getElementById('scheduled_date').value = '';
+                document.getElementById('custom_delay_days').value = '';
+
+                // Reset radio buttons
+                document.querySelectorAll('input[name="delay_option"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                document.querySelector('input[name="delay_option"][value="immediate"]').checked = true;
+
+                // Hide all delivery settings
+                document.getElementById('dateSettings').classList.add('hidden');
+                document.getElementById('verificationSettings').classList.add('hidden');
+
+                // Clear media files
+                uploadedFiles = [];
+                document.getElementById('mediaPreview').classList.add('hidden');
+                document.getElementById('mediaItems').innerHTML = '';
+
+                // Show notification
+                showNotification('Starting fresh with a new letter', 'info');
+
+                // Mark as saved (no changes)
+                markAsSaved();
+            })
+            .catch(error => {
+                console.error('Error deleting draft:', error);
+                // Still proceed - clear everything
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+                document.getElementById('recipient_name').value = '';
+                document.getElementById('recipient_email').value = '';
+                document.getElementById('delivery_type').value = '';
+                document.getElementById('scheduled_date').value = '';
+                document.getElementById('custom_delay_days').value = '';
+
+                // Reset radio buttons
+                document.querySelectorAll('input[name="delay_option"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                document.querySelector('input[name="delay_option"][value="immediate"]').checked = true;
+
+                // Hide all delivery settings
+                document.getElementById('dateSettings').classList.add('hidden');
+                document.getElementById('verificationSettings').classList.add('hidden');
+
+                // Clear media files
+                uploadedFiles = [];
+                document.getElementById('mediaPreview').classList.add('hidden');
+                document.getElementById('mediaItems').innerHTML = '';
+
+                showNotification('Starting fresh with a new letter', 'info');
+                markAsSaved();
+            });
+    }
+
+    // Show notification helper
+    function showNotification(message, type = 'info') {
+        const colors = {
+            success: 'bg-green-100 border-green-300 text-green-700',
+            error: 'bg-red-100 border-red-300 text-red-700',
+            info: 'bg-blue-100 border-blue-300 text-blue-700',
+            warning: 'bg-yellow-100 border-yellow-300 text-yellow-700'
+        };
+
+        const icons = {
+            success: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+            error: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+            info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+            warning: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
+        };
+
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 ${colors[type]} px-4 py-2 rounded-lg shadow-lg z-50 border`;
+        notification.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${icons[type]}"></path>
+            </svg>
+            ${message}
+        </div>
+    `;
+        document.body.appendChild(notification);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Tab switching
+    function switchTab(tabName) {
+        // Prevent any default behavior
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        // Store current scroll position
+        const currentScrollY = window.scrollY;
+
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+
+        // Remove active class from all tabs
+        document.querySelectorAll('[role="tablist"] button').forEach(tab => {
+            tab.classList.remove('bg-white', 'text-primary', 'shadow-sm');
+            tab.classList.add('text-gray-600', 'hover:text-primary');
+        });
+
+        // Show selected tab content
+        document.getElementById(tabName + '-pane').classList.remove('hidden');
+
+        // Add active class to selected tab
+        const activeTab = document.getElementById(tabName + '-tab');
+        activeTab.classList.add('bg-white', 'text-primary', 'shadow-sm');
+        activeTab.classList.remove('text-gray-600', 'hover:text-primary');
+
+        // Restore scroll position using requestAnimationFrame to ensure it happens after DOM updates
+        requestAnimationFrame(() => {
+            window.scrollTo(0, currentScrollY);
+        });
+    }
+
+    // Delivery type change handler
+    document.getElementById('delivery_type').addEventListener('change', function () {
+        const dateSettings = document.getElementById('dateSettings');
+        const verificationSettings = document.getElementById('verificationSettings');
+        const noTrustedContactsWarning = document.getElementById('noTrustedContactsWarning');
+
+        // Hide all settings first
+        dateSettings.classList.add('hidden');
+        verificationSettings.classList.add('hidden');
+        if (noTrustedContactsWarning) {
+            noTrustedContactsWarning.classList.add('hidden');
+        }
+
+        // Show appropriate settings based on selection
+        if (this.value === 'date') {
+            dateSettings.classList.remove('hidden');
+        } else if (this.value === 'death_verification') {
+            // Check if user has confirmed trusted contacts
+            checkTrustedContactsAndShowSettings();
+        }
+    });
+
+    // Check if user has confirmed trusted contacts
+    function checkTrustedContactsAndShowSettings() {
+        fetch('/api/trusted-contacts-status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.has_confirmed_contacts) {
+                    // User has confirmed trusted contacts, show verification settings
+                    document.getElementById('verificationSettings').classList.remove('hidden');
+                } else {
+                    // No confirmed trusted contacts, show warning and prompt to add
+                    showNoTrustedContactsWarning();
+                }
+            })
+            .catch(error => {
+                console.error('Error checking trusted contacts:', error);
+                // On error, show warning to be safe
+                showNoTrustedContactsWarning();
+            });
+    }
+
+    // Show warning when no trusted contacts exist
+    function showNoTrustedContactsWarning() {
+        // Remove existing warning if any
+        const existingWarning = document.getElementById('noTrustedContactsWarning');
+        if (existingWarning) {
+            existingWarning.remove();
+        }
+
+        // Create warning element matching website design style
+        const warning = document.createElement('div');
+        warning.id = 'noTrustedContactsWarning';
+        warning.className = 'glass-card-ui rounded-xl p-6 mt-6 shadow-lg';
+        warning.innerHTML = `
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-primary-light rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-4 flex-1">
+                <h3 class="text-xl font-bold text-primary mb-3 font-heading">
+                    Trusted Contacts Required
+                </h3>
+                <p class="text-gray-700 mb-6 leading-relaxed">
+                    To use trusted contact delivery, you’ll need at least one confirmed trusted contact. 
+                    They’ll help confirm when it’s the right time for your message to be delivered.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="/trusted-contacts" 
+                       class="bg-primary hover:bg-primary-light text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 inline-flex items-center justify-center shadow-sm hover:shadow-md">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Trusted Contacts
+                    </a>
+                    <button type="button" 
+                            onclick="switchToDateDelivery()" 
+                            class="bg-secondary hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow-md">
+                        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Use Date Delivery Instead
+                    </button>
+                </div>
+                <div class="mt-6 p-4 bg-primary-light/30 rounded-lg border border-primary-light">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-primary mb-1">Why trusted contacts?</p>
+                            <p class="text-sm text-gray-700">
+                                They ensure your letters are only delivered when it's truly time, 
+                                providing an extra layer of security for your most important messages.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        // Insert after the delivery type select
+        const deliveryTypeDiv = document.getElementById('delivery_type').closest('div');
+        deliveryTypeDiv.parentNode.insertBefore(warning, deliveryTypeDiv.nextSibling);
+    }
+
+    // Switch to date delivery
+    function switchToDateDelivery() {
+        document.getElementById('delivery_type').value = 'date';
+        document.getElementById('delivery_type').dispatchEvent(new Event('change'));
+    }
+
+    // Simple and reliable media and draft system
+    let uploadedFiles = [];
+    let currentLetterId = null;
+    let isEditingDraft = false;
+
+    // Ensure a letter exists for media uploads
+    async function ensureLetterExists() {
+        if (currentLetterId) {
+            return currentLetterId;
+        }
+
+        try {
+            const response = await fetch('/create-draft-letter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                currentLetterId = data.letter_id;
+                console.log('Draft letter created for media upload:', currentLetterId);
+                return currentLetterId;
+            } else {
+                throw new Error(data.error || 'Failed to create draft letter');
+            }
+        } catch (error) {
+            console.error('Error creating draft letter:', error);
+            showNotificationToast('❌ Failed to initialize media upload. Please try again.', 'error');
+            throw error;
+        }
+    }
+
+    // File validation with updated format restrictions
+    function validateFile(file) {
+        const errors = [];
+        const maxSize = 100 * 1024 * 1024; // 100MB
+        
+        // Check file size
+        if (file.size > maxSize) {
+            errors.push(`File too large. Maximum size: 100MB`);
+        }
+        
+        // Check file extension
+        const extension = file.name.split('.').pop().toLowerCase();
+        const allowedExtensions = {
+            'image': ['png', 'jpg', 'jpeg', 'gif', 'webp'],
+            'video': ['mp4'],
+            'audio': ['mp3', 'wav', 'm4a']
+        };
+        
+        let fileType = null;
+        for (const [type, exts] of Object.entries(allowedExtensions)) {
+            if (exts.includes(extension)) {
+                fileType = type;
+                break;
+            }
+        }
+        
+        if (!fileType) {
+            errors.push(`Invalid file type. Allowed: ${Object.values(allowedExtensions).flat().join(', ')}`);
+        }
+        
+        return {
+            valid: errors.length === 0,
+            errors: errors,
+            fileType: fileType
+        };
+    }
+
+    function handleFileUpload(input) {
+        const files = Array.from(input.files);
+        const mediaItems = document.getElementById('mediaItems');
+        const mediaPreview = document.getElementById('mediaPreview');
+
+        console.log('File upload triggered, files count:', files.length);
+
+        files.forEach(file => {
+            console.log('Processing file:', file.name, file.type, file.size);
+
+            // Validate file before upload
+            const validation = validateFile(file);
+            if (!validation.valid) {
+                showNotificationToast(`❌ Invalid file ${file.name}: ${validation.errors.join(', ')}`, 'error');
+                return;
+            }
+
+            // Upload file to S3 with letter_id
+            uploadFileToS3(file, validation.fileType);
+        });
+    }
+
+    async function uploadFileToS3(file, mediaType) {
+        // Ensure we have a letter ID for media upload
+        if (!currentLetterId) {
+            await ensureLetterExists();
+        }
+
+        // Show loading state
+        const loadingId = 'loading_' + Date.now();
+        const loadingItem = document.createElement('div');
+        loadingItem.id = loadingId;
+        loadingItem.className = 'bg-yellow-50 rounded-lg p-4 border border-yellow-200 shadow-sm';
+        loadingItem.innerHTML = `
+        <div class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-yellow-800">Uploading ${file.name}...</span>
+        </div>
+    `;
+
+        const mediaItems = document.getElementById('mediaItems');
+        mediaItems.appendChild(loadingItem);
+        document.getElementById('mediaPreview').classList.remove('hidden');
+
+        // Upload to S3 using the S3MediaUploader
+        s3MediaUploader.uploadFile(file, mediaType, currentLetterId)
+            .then(result => {
+                // Remove loading item
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+
+                if (result.success) {
+                    console.log('File uploaded successfully:', result);
+
+                    // Create file data object
+                    const fileData = {
+                        file: file,
+                        id: result.media_id,
+                        media_id: result.media_id,
+                        file_name: result.file_name,
+                        file_type: result.file_type,
+                        file_size: result.file_size
+                    };
+
+                    // Add to uploaded files array
+                    uploadedFiles.push(fileData);
+
+                    // Add actual media item
+                    addMediaItem(fileData);
+                } else {
+                    // Show error
+                    const errorItem = document.createElement('div');
+                    errorItem.className = 'bg-red-50 rounded-lg p-4 border border-red-200 shadow-sm';
+                    errorItem.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-red-800">Failed to upload ${file.name}: ${result.error}</span>
+                        </div>
+                    `;
+                    mediaItems.appendChild(errorItem);
+                    
+                    console.error('❌ Upload failed:', result.error);
+                }
+            })
+            .catch(error => {
+                // Remove loading item
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+
+                // Show error
+                const errorItem = document.createElement('div');
+                errorItem.className = 'bg-red-50 rounded-lg p-4 border border-red-200 shadow-sm';
+                errorItem.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-red-800">Failed to upload ${file.name}: ${error.message}</span>
+                    </div>
+                `;
+                mediaItems.appendChild(errorItem);
+                
+                console.error('❌ Upload error:', error);
+            });
+    }
+
+    function addMediaItem(fileData) {
+        // Debug: Log when adding media item
+        console.log('Adding media item:', fileData);
+        console.log('Current uploadedFiles count:', uploadedFiles.length);
+
+        const mediaItem = document.createElement('div');
+        mediaItem.className = 'bg-white rounded-lg p-4 border border-gray-200 shadow-sm';
+        mediaItem.setAttribute('data-file-id', fileData.id);
+
+        if (fileData.file_type === 'image') {
+            mediaItem.innerHTML = `
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <img src="/media/${fileData.media_id}" 
+                         alt="${fileData.file_name}" 
+                         class="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" 
+                         onclick="previewMedia('${fileData.id}')"
+                         title="Click to preview">
+                        </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="text-sm font-medium text-gray-900 truncate">${fileData.file_name}</h5>
+                    <p class="text-xs text-gray-500">${(fileData.file_size / 1024 / 1024).toFixed(2)} MB</p>
+                    <div class="mt-2 flex space-x-2">
+                        <button onclick="previewMedia('${fileData.id}')" 
+                                class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Preview
+                        </button>
+                        <button onclick="downloadMedia('${fileData.id}')" 
+                                class="text-green-600 hover:text-green-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download
+                        </button>
+                        <button onclick="deleteMedia('${fileData.id}')" 
+                                class="text-red-600 hover:text-red-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Delete
+                    </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (fileData.file_type === 'video') {
+            mediaItem.innerHTML = `
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 relative">
+                    <video src="/media/${fileData.media_id}" 
+                           class="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" 
+                           onclick="previewMedia('${fileData.id}')"
+                           title="Click to play in full screen"
+                           preload="metadata"
+                           playsinline
+                           webkit-playsinline
+                           onerror="console.error('Video load error:', this.src, this.error); this.style.display='none'; this.nextElementSibling.style.display='block';"
+                           onloadstart="console.log('Video loading started:', this.src)"
+                           oncanplay="console.log('Video can play:', this.src); this.nextElementSibling.style.display='none';">
+                    </video>
+                    <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xs" style="display:none;">
+                        Video Error
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-lg opacity-0 hover:opacity-100 transition-opacity cursor-pointer" 
+                         onclick="previewMedia('${fileData.id}')"
+                         title="Click to play in full screen">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="text-sm font-medium text-gray-900 truncate">${fileData.file_name}</h5>
+                    <p class="text-xs text-gray-500">${(fileData.file_size / 1024 / 1024).toFixed(2)} MB</p>
+                    <div class="mt-2 flex space-x-2">
+                        <button onclick="previewMedia('${fileData.id}')" 
+                                class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Play
+                        </button>
+                        <button onclick="downloadMedia('${fileData.id}')" 
+                                class="text-green-600 hover:text-green-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download
+                        </button>
+                        <button onclick="deleteMedia('${fileData.id}')" 
+                                class="text-red-600 hover:text-red-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Delete
+                    </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (fileData.file_type === 'audio') {
+            mediaItem.innerHTML = `
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 relative">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity" 
+                         onclick="previewMedia('${fileData.id}')"
+                         title="Click to play in full screen">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                        </div>
+                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-lg opacity-0 hover:opacity-100 transition-opacity cursor-pointer" 
+                         onclick="previewMedia('${fileData.id}')"
+                         title="Click to play in full screen">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"></path>
+                        </svg>
+                        </div>
+                    </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="text-sm font-medium text-gray-900 truncate">${fileData.file_name}</h5>
+                    <p class="text-xs text-gray-500">${(fileData.file_size / 1024 / 1024).toFixed(2)} MB</p>
+                    <div class="mt-2">
+                        <audio src="/media/${fileData.media_id}" controls class="w-full h-8 mb-2"></audio>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="previewMedia('${fileData.id}')" 
+                                class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Play
+                        </button>
+                        <button onclick="downloadMedia('${fileData.id}')" 
+                                class="text-green-600 hover:text-green-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download
+                        </button>
+                        <button onclick="deleteMedia('${fileData.id}')" 
+                                class="text-red-600 hover:text-red-800 text-xs font-medium">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        mediaItems.appendChild(mediaItem);
+
+        // Show media preview section when first item is added
+        const mediaPreview = document.getElementById('mediaPreview');
+        if (uploadedFiles.length === 1) {
+            mediaPreview.classList.remove('hidden');
+        }
+    }
+
+    // Media preview modal using the same system as delete letter modal
+    function previewMedia(fileId) {
+        console.log('previewMedia called with fileId:', fileId);
+        
+        const fileData = uploadedFiles.find(f => f.id == fileId);
+        if (!fileData) {
+            console.error('File data not found for ID:', fileId);
+            return;
+        }
+
+        console.log('File data found:', fileData);
+        console.log('Modal manager available:', !!window.modalManager);
+
+        if (window.modalManager) {
+            // Store current media data globally for modal handlers
+            window.currentPreviewMedia = fileData;
+            
+            // Update modal content based on file type
+            updateMediaPreviewModal(fileData);
+            
+            // Open the modal
+            window.modalManager.openModal('mediaPreviewModal');
+            console.log('Opened media preview modal');
+        } else {
+            console.log('Modal manager not available, using fallback');
+            // Fallback for when modal system isn't loaded
+            if (fileData.file && (fileData.file.type.startsWith('image/') || fileData.file.type.startsWith('video/'))) {
+                window.open(fileData.dataUrl, '_blank');
+            } else if (fileData.file_type === 'image' || fileData.file_type === 'video') {
+                window.open(fileData.dataUrl, '_blank');
+            } else {
+                showNotificationToast('❌ Preview not available for this file type', 'error');
+            }
+        }
+    }
+
+    // Update the media preview modal content
+    function updateMediaPreviewModal(fileData) {
+        const mediaContainer = document.getElementById('mediaPreviewContainer');
+        const mediaTitle = document.getElementById('mediaPreviewTitle');
+        const mediaSize = document.getElementById('mediaPreviewSize');
+        
+        if (mediaTitle) {
+            mediaTitle.textContent = fileData.file_name;
+        }
+        
+        if (mediaSize) {
+            mediaSize.textContent = `${(fileData.file_size / 1024 / 1024).toFixed(2)} MB`;
+        }
+        
+        if (mediaContainer) {
+            let mediaContent = '';
+            
+            if (fileData.file_type === 'image') {
+                mediaContent = `
+                    <img src="/media/${fileData.media_id}" 
+                         alt="${fileData.file_name}" 
+                         class="max-w-full max-h-[70vh] object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity mx-auto"
+                         title="Click to toggle fullscreen"
+                         onclick="toggleFullscreen(this)">
+                `;
+            } else if (fileData.file_type === 'video') {
+                mediaContent = `
+                    <video src="/media/${fileData.media_id}" 
+                           controls 
+                           class="max-w-full max-h-[70vh] rounded-lg mx-auto"
+                           title="Click to toggle fullscreen"
+                           onclick="toggleFullscreen(this)"
+                           playsinline
+                           webkit-playsinline
+                           onerror="console.error('Video load error in preview:', this.src, this.error); this.style.display='none'; this.nextElementSibling.style.display='block';"
+                           onloadstart="console.log('Video loading started in preview:', this.src)"
+                           oncanplay="console.log('Video can play in preview:', this.src); this.nextElementSibling.style.display='none';">
+                    </video>
+                    <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500" style="display:none;">
+                        Video playback error. Try downloading the file.
+                    </div>
+                `;
+            } else if (fileData.file_type === 'audio') {
+                mediaContent = `
+                    <div class="bg-gray-100 rounded-lg p-8">
+                        <audio src="/media/${fileData.media_id}" 
+                               controls 
+                               class="w-full max-w-md mx-auto"
+                               title="Audio player"></audio>
+                    </div>
+                `;
+            }
+            
+            mediaContainer.innerHTML = mediaContent;
+        }
+    }
+
+    // Simple media modal fallback
+    function createSimpleMediaModal(fileData, fileId) {
+        console.log('Creating simple media modal for:', fileData.file_name);
+        
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        `;
+        
+        // Create close button
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '×';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        `;
+        closeBtn.onclick = () => {
+            document.body.removeChild(overlay);
+        };
+        
+        // Create media content
+        let mediaContent = '';
+        if (fileData.file_type === 'image') {
+            mediaContent = `<img src="/media/${fileData.media_id}" alt="${fileData.file_name}" style="max-width: 100%; max-height: 70vh; object-fit: contain;">`;
+        } else if (fileData.file_type === 'video') {
+            mediaContent = `<video src="/media/${fileData.media_id}" controls style="max-width: 100%; max-height: 70vh;"></video>`;
+        } else if (fileData.file_type === 'audio') {
+            mediaContent = `<audio src="/media/${fileData.media_id}" controls style="width: 100%;"></audio>`;
+        }
+        
+        modal.innerHTML = `
+            <h3 style="margin: 0 0 15px 0; color: #333;">${fileData.file_name}</h3>
+            <div style="text-align: center;">
+                ${mediaContent}
+                <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">
+                    ${(fileData.file_size / 1024 / 1024).toFixed(2)} MB
+                </p>
+            </div>
+        `;
+        
+        modal.appendChild(closeBtn);
+        overlay.appendChild(modal);
+        
+        // Close on overlay click
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+            }
+        };
+        
+        // Add to page
+        document.body.appendChild(overlay);
+    }
+
+    function setupMediaModalEvents(modal, modalId) {
+        const closeBtn = modal.querySelector(`#${modalId}-close`);
+        const fullscreenBtn = modal.querySelector(`#${modalId}-fullscreen`);
+        const mediaElement = modal.querySelector(`#${modalId}-container img, #${modalId}-container video`);
+
+        // Close button handler
+        closeBtn.addEventListener('click', () => {
+            closeActiveModal();
+        });
+
+        // Fullscreen button handler
+        fullscreenBtn.addEventListener('click', () => {
+            if (mediaElement) {
+                toggleFullscreen(mediaElement);
+            }
+        });
+
+        // Media element click handler for fullscreen
+        if (mediaElement) {
+            mediaElement.addEventListener('click', () => {
+                toggleFullscreen(mediaElement);
+            });
+        }
+
+        // Background click handler
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeActiveModal();
+            }
+        });
+
+        // Escape key handler
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && activeModal && activeModal.id === modalId) {
+                closeActiveModal();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        modal.escapeHandler = handleEscape;
+    }
+
+    function toggleFullscreen(element) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    }
+
+    function downloadMedia(fileId) {
+        const fileData = uploadedFiles.find(f => f.id == fileId);
+        if (!fileData) return;
+
+        const link = document.createElement('a');
+        link.href = `/media/${fileData.media_id}`;
+        link.download = fileData.file_name;
+        link.click();
+    }
+
+    // Download function for current preview media
+    function downloadCurrentPreviewMedia() {
+        if (window.currentPreviewMedia) {
+            downloadMedia(window.currentPreviewMedia.id);
+        }
+    }
+
+    // Use the unified modal system
+    function createModal(config) {
+        if (window.modalManager) {
+            return window.modalManager.createConfirmModal({
+                title: config.title,
+                message: config.message,
+                confirmText: config.confirmText || 'Confirm',
+                cancelText: 'Cancel',
+                confirmClass: config.confirmClass || 'btn-danger',
+                iconPath: config.iconPath || '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>',
+                iconColor: config.iconColor || 'text-red-600',
+                iconBg: config.iconBg || 'bg-red-100',
+                headerClass: config.headerClass || 'bg-red-50',
+                titleClass: config.titleClass || 'text-red-900',
+                onConfirm: config.onConfirm,
+                onCancel: config.onCancel
+            });
+        } else {
+            // Fallback for when modal system isn't loaded
+            showConfirmationModal(
+                config.title,
+                config.message,
+                config.confirmText || 'Confirm',
+                config.cancelText || 'Cancel'
+            ).then(function(confirmed) {
+                if (confirmed) {
+                    if (config.onConfirm) config.onConfirm();
+                } else {
+                    if (config.onCancel) config.onCancel();
+                }
+            });
+        }
+    }
+
+    function closeActiveModal() {
+        if (window.modalManager) {
+            window.modalManager.closeModal();
+        }
+    }
+
+    function deleteMedia(fileId) {
+        const fileData = uploadedFiles.find(f => f.id == fileId);
+        if (!fileData) return;
+
+        // Delete from server if it has a media_id
+        if (fileData.media_id) {
+            fetch('/delete-media-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ media_id: fileData.media_id })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Media deleted from server:', fileData.media_id);
+                    } else {
+                        console.error('Failed to delete media from server:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting media from server:', error);
+                });
+        }
+
+        // Remove from array
+        uploadedFiles = uploadedFiles.filter(f => f.id != fileId);
+
+        // Remove from DOM
+        const mediaItem = document.querySelector(`[data-file-id="${fileId}"]`);
+        if (mediaItem) {
+            mediaItem.remove();
+        }
+
+        // Hide preview if no files left
+        if (uploadedFiles.length === 0) {
+            document.getElementById('mediaPreview').classList.add('hidden');
+        }
+
+        // Update file input
+        updateFileInput();
+
+        // Show success notification
+        showNotification('Media file deleted successfully', 'success');
+    }
+
+    function updateFileInput() {
+        // Create new FileList with remaining files
+        const dt = new DataTransfer();
+        uploadedFiles.forEach(fileData => {
+            dt.items.add(fileData.file);
+        });
+        document.getElementById('mediaFileInput').files = dt.files;
+    }
+
+    function addRecordedMedia(blob, type) {
+        // Determine file extension based on actual MIME type
+        let fileExtension = 'mp4'; // default for video
+        if (type === 'audio') {
+            if (blob.type.includes('mp4') || blob.type.includes('m4a')) {
+                fileExtension = 'm4a';
+            } else if (blob.type.includes('wav')) {
+                fileExtension = 'wav';
+            } else if (blob.type.includes('webm') || blob.type.includes('ogg')) {
+                // Convert WebM/OGG audio to M4A for compatibility
+                fileExtension = 'm4a';
+            }
+        } else if (type === 'video') {
+            // Force MP4 for all video recordings for maximum compatibility
+            fileExtension = 'mp4';
+        }
+        
+        console.log(`Recording ${type}: blob.type=${blob.type}, fileExtension=${fileExtension}`);
+        
+        const fileName = `recorded_${type}_${Date.now()}.${fileExtension}`;
+        
+        // Ensure MIME type matches the file extension for validation
+        let mimeType = blob.type;
+        if (type === 'video' && fileExtension === 'mp4') {
+            mimeType = 'video/mp4';
+        } else if (type === 'audio' && fileExtension === 'm4a') {
+            mimeType = 'audio/mp4';
+        } else if (type === 'audio' && fileExtension === 'wav') {
+            mimeType = 'audio/wav';
+        } else if (type === 'audio' && fileExtension === 'mp3') {
+            mimeType = 'audio/mpeg';
+        }
+        
+        const file = new File([blob], fileName, { type: mimeType });
+
+        // Upload the recorded media to S3 immediately
+        uploadRecordedMediaToS3(file, type);
+    }
+
+    async function uploadRecordedMediaToS3(file, mediaType) {
+        // Ensure we have a letter ID for media upload
+        if (!currentLetterId) {
+            await ensureLetterExists();
+        }
+
+        // Show loading state
+        const loadingId = 'loading_' + Date.now();
+        const loadingItem = document.createElement('div');
+        loadingItem.id = loadingId;
+        loadingItem.className = 'bg-yellow-50 rounded-lg p-4 border border-yellow-200 shadow-sm';
+        loadingItem.innerHTML = `
+        <div class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-yellow-800">Saving ${mediaType} recording to S3...</span>
+        </div>
+    `;
+
+        const mediaItems = document.getElementById('mediaItems');
+        mediaItems.appendChild(loadingItem);
+        document.getElementById('mediaPreview').classList.remove('hidden');
+
+        // Upload to S3 using the S3MediaUploader
+        s3MediaUploader.uploadFile(file, mediaType, currentLetterId)
+            .then(result => {
+                // Remove loading item
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+
+                if (result.success) {
+                    console.log('Recorded media uploaded successfully:', result);
+
+                    // Create file data object
+                    const fileData = {
+                        file: file,
+                        id: result.media_id,
+                        media_id: result.media_id,
+                        file_name: result.file_name,
+                        file_type: result.file_type,
+                        file_size: result.file_size
+                    };
+
+                    // Add to uploaded files array
+                    uploadedFiles.push(fileData);
+
+                    // Add actual media item
+                    addMediaItem(fileData);
+
+                    // Show success message
+                    showNotification(`${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)} recording saved successfully!`, 'success');
+
+                } else {
+                    // Show error
+                    const errorItem = document.createElement('div');
+                    errorItem.className = 'bg-red-50 rounded-lg p-4 border border-red-200 shadow-sm';
+                    errorItem.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-red-800">Failed to save ${mediaType} recording: ${result.error}</span>
+                        </div>
+                    `;
+                    mediaItems.appendChild(errorItem);
+                    
+                    console.error('❌ Recording upload failed:', result.error);
+                }
+            })
+            .catch(error => {
+                // Remove loading item
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+
+                // Show error
+                const errorItem = document.createElement('div');
+                errorItem.className = 'bg-red-50 rounded-lg p-4 border border-red-200 shadow-sm';
+                errorItem.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-red-800">Failed to save ${mediaType} recording: ${error.message}</span>
+                    </div>
+                `;
+                mediaItems.appendChild(errorItem);
+                
+                console.error('❌ Recording upload error:', error);
+            });
+    }
+
+    // Audio recording functions (simplified)
+    let mediaRecorder;
+    let audioChunks = [];
+
+    function startAudioRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    // Use the actual MIME type from MediaRecorder
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                    // Add to uploaded files
+                    addRecordedMedia(audioBlob, 'audio');
+                };
+
+                mediaRecorder.start();
+
+                // Update UI
+                document.getElementById('startAudioRecord').classList.add('hidden');
+                document.getElementById('stopAudioRecord').classList.remove('hidden');
+                document.getElementById('audioVisualizer').classList.remove('hidden');
+            })
+            .catch(err => {
+                console.error('Error accessing microphone:', err);
+                showNotification('Could not access microphone. Please check permissions.', 'error');
+            });
+    }
+
+    function stopAudioRecording() {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+
+            // Update UI
+            document.getElementById('stopAudioRecord').classList.add('hidden');
+            document.getElementById('startAudioRecord').classList.remove('hidden');
+            document.getElementById('audioVisualizer').classList.add('hidden');
+        }
+    }
+
+    // Video recording functions (simplified)
+    let videoStream;
+    let videoRecorder;
+    let videoChunks = [];
+
+    function startVideoRecording() {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                videoStream = stream;
+                const videoPreview = document.getElementById('liveVideoPreview');
+                videoPreview.srcObject = stream;
+                document.getElementById('videoPreview').classList.remove('hidden');
+
+                // Force MP4 format for maximum browser compatibility
+                let videoMimeType = 'video/mp4';
+                const mp4Types = [
+                    'video/mp4;codecs=avc1.42E01E,mp4a.40.2', // H.264 + AAC
+                    'video/mp4;codecs=avc1.42E01E', // H.264 only
+                    'video/mp4;codecs=h264,aac', // H.264 + AAC (alternative)
+                    'video/mp4;codecs=h264', // H.264 only (alternative)
+                    'video/mp4' // Basic MP4
+                ];
+                
+                for (const type of mp4Types) {
+                    if (MediaRecorder.isTypeSupported(type)) {
+                        videoMimeType = type;
+                        break;
+                    }
+                }
+                
+                console.log('Using video MIME type:', videoMimeType);
+                
+                videoRecorder = new MediaRecorder(stream, {
+                    mimeType: videoMimeType,
+                    videoBitsPerSecond: 2500000, // 2.5 Mbps for good quality
+                    audioBitsPerSecond: 128000   // 128 kbps for good audio quality
+                });
+                videoChunks = [];
+
+                videoRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        videoChunks.push(event.data);
+                    }
+                };
+
+                videoRecorder.onstop = () => {
+                    // Use the actual MIME type from MediaRecorder for better compatibility
+                    const videoBlob = new Blob(videoChunks, { type: videoRecorder.mimeType });
+                    console.log('Video blob type:', videoBlob.type);
+                    // Add to uploaded files
+                    addRecordedMedia(videoBlob, 'video');
+                };
+
+                videoRecorder.start();
+
+                // Update UI
+                document.getElementById('startVideoRecord').classList.add('hidden');
+                document.getElementById('stopVideoRecord').classList.remove('hidden');
+            })
+            .catch(err => {
+                console.error('Error accessing camera:', err);
+                showNotification('Could not access camera. Please check permissions.', 'error');
+            });
+    }
+
+    function stopVideoRecording() {
+        if (videoRecorder && videoRecorder.state === 'recording') {
+            videoRecorder.stop();
+
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+
+            // Update UI
+            document.getElementById('stopVideoRecord').classList.add('hidden');
+            document.getElementById('startVideoRecord').classList.remove('hidden');
+            document.getElementById('videoPreview').classList.add('hidden');
+        }
+    }
+
+    // Track form changes
+    let hasUnsavedChanges = false;
+
+    function markAsChanged() {
+        hasUnsavedChanges = true;
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        if (!saveDraftBtn.classList.contains('bg-yellow-100')) {
+            saveDraftBtn.classList.add('bg-yellow-100', 'border-yellow-300', 'text-yellow-700');
+            document.getElementById('draftBtnText').textContent = 'Save as Draft *';
+        }
+    }
+
+    function markAsSaved() {
+        hasUnsavedChanges = false;
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        saveDraftBtn.classList.remove('bg-yellow-100', 'border-yellow-300', 'text-yellow-700');
+        document.getElementById('draftBtnText').textContent = 'Save as Draft';
+    }
+
+    // Load existing media attachments when editing a letter
+    function loadExistingMediaAttachments() {
+        // This function will be called from the template with the necessary data
+        console.log('Loading existing media attachments...');
+    }
+</script>
+
+<!-- Template-specific script for loading existing media -->
+<script>
+{% if letter_to_edit and media_attachments %}
+console.log('Loading existing media attachments for letter:', {{ letter_to_edit.id }});
+
+// Set the current letter ID for editing
+currentLetterId = {{ letter_to_edit.id }};
+isEditingDraft = true;
+
+// Clear any existing uploaded files
+uploadedFiles = [];
+
+// Load each media attachment
+{% for attachment in media_attachments %}
+const fileData = {
+    id: 'existing_{{ attachment.id }}',
+    media_id: {{ attachment.id }},
+    file_name: '{{ attachment.file_name }}',
+    file_type: '{{ attachment.file_type }}',
+    file_size: {{ attachment.file_size }},
+    dataUrl: '/media/{{ attachment.id }}',
+    file: null // We don't have the actual File object for existing media
+};
+
+uploadedFiles.push(fileData);
+addMediaItem(fileData);
+{% endfor %}
+
+// Show media preview if there are files
+if (uploadedFiles.length > 0) {
+    document.getElementById('mediaPreview').classList.remove('hidden');
+    document.getElementById('mediaUploadContainer').classList.remove('hidden');
+    // Update the button text to "Hide Media"
+    const button = document.getElementById('toggleMediaBtn');
+    if (button) {
+        button.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            Hide Media
+        `;
+    }
+}
+{% endif %}
+</script>
+
+<script>
+    // Initialize event listeners and check for draft
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add click event listener to save draft button
+        document.getElementById('saveDraftBtn').addEventListener('click', function () {
+            saveDraft();
+            markAsSaved();
+        });
+
+        // Add tab button event listeners to prevent form submission
+        document.querySelectorAll('[role="tablist"] button').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        // Load existing media attachments if editing a letter
+        {% if letter_to_edit and media_attachments %}
+        loadExistingMediaAttachments();
+        {% endif %}
+
+        // Add event listener for media toggle button
+        const toggleMediaBtn = document.getElementById('toggleMediaBtn');
+        if (toggleMediaBtn) {
+            toggleMediaBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMediaSection();
+            });
+        }
+
+        // Add change listeners to form fields
+        const formFields = ['title', 'content', 'recipient_name', 'recipient_email', 'delivery_type', 'scheduled_date', 'custom_delay_days'];
+        formFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', markAsChanged);
+                field.addEventListener('change', markAsChanged);
+            }
+        });
+
+        // Add change listeners to radio buttons
+        document.querySelectorAll('input[name="delay_option"]').forEach(radio => {
+            radio.addEventListener('change', markAsChanged);
+        });
+
+        // Add form submission validation
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const deliveryType = document.getElementById('delivery_type').value;
+
+            // Collect uploaded media IDs
+            const mediaAttachments = uploadedFiles.map(file => ({
+                media_id: file.media_id,
+                file_name: file.file_name,
+                file_type: file.file_type
+            }));
+            
+            // Add hidden input for media attachments
+            let mediaInput = document.getElementById('media_attachments_input');
+            if (!mediaInput) {
+                mediaInput = document.createElement('input');
+                mediaInput.type = 'hidden';
+                mediaInput.id = 'media_attachments_input';
+                mediaInput.name = 'media_attachments';
+                document.querySelector('form').appendChild(mediaInput);
+            }
+            mediaInput.value = JSON.stringify(mediaAttachments);
+
+            if (deliveryType === 'death_verification') {
+                // Check if user has confirmed trusted contacts before allowing submission
+                fetch('/api/trusted-contacts-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.has_confirmed_contacts) {
+                            e.preventDefault();
+                            showNoTrustedContactsWarning();
+                            showNotification('You need at least one confirmed trusted contact to use verification delivery.', 'error');
+                            return false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking trusted contacts:', error);
+                        e.preventDefault();
+                        showNotification('Unable to verify trusted contacts. Please try again.', 'error');
+                        return false;
+                    });
+            }
+        });
+
+        // Check for existing draft when page loads
+        checkForDraft();
+
+        // Auto-save removed - users must manually save drafts using the "Save as Draft" button
+
+        // Warn before leaving if there are unsaved changes
+        window.addEventListener('beforeunload', function (e) {
+            if (hasUnsavedChanges && !window.formSubmitting) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+    });
+
+    // Handle draft modal button clicks
+    document.addEventListener('DOMContentLoaded', function () {
+        // Load draft button
+        document.getElementById('draft-load-btn')?.addEventListener('click', function () {
+            console.log('Load draft button clicked');
+            // Get the current draft data from the global variable or fetch it
+            if (window.currentDraft) {
+                loadDraft(window.currentDraft);
+            }
+            window.modalManager.closeModal();
+        });
+
+        // Create new button
+        document.getElementById('draft-new-btn')?.addEventListener('click', function () {
+            console.log('Create new button clicked');
+            createNewLetter();
+            window.modalManager.closeModal();
+        });
+    });
+
+    // Initialize form for editing
+    document.addEventListener('DOMContentLoaded', function () {
+        // Trigger delivery type change to show appropriate settings if editing
+        const deliveryTypeSelect = document.getElementById('delivery_type');
+        if (deliveryTypeSelect && deliveryTypeSelect.value) {
+            deliveryTypeSelect.dispatchEvent(new Event('change'));
+        }
+
+        // Handle form submission via AJAX to prevent browser warning
+        const letterForm = document.getElementById('letterForm');
+        if (letterForm) {
+            letterForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Set flag to prevent auto-save during submission
+                window.formSubmitting = true;
+
+                // Show loading state
+                const submitBtn = letterForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {% if letter_to_edit %}Updating...{% else %}Creating...{% endif %}
+            `;
+
+                // Collect form data
+                const formData = new FormData(letterForm);
+
+                // Add the current letter ID for updating the draft letter
+                if (currentLetterId) {
+                    formData.append('letter_id', currentLetterId);
+                }
+
+                // Media is already attached to the letter, no need to process it here
+
+                // Submit via AJAX
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => {
+                        if (response.redirected) {
+                            // If redirected, follow the redirect
+                            window.location.href = response.url;
+                        } else {
+                            // If not redirected, reload the page to show any flash messages
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Reset button state and form submitting flag
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        window.formSubmitting = false;
+                        showNotificationToast('❌ An error occurred. Please try again.', 'error');
+                    });
+            });
+        }
+    });
+</script>
+
+<!-- All Modals -->
+
+<!-- Modal Backdrop -->
+<div id="modalBackdrop" class="modal-backdrop" style="display: none;"></div>
+
+<!-- Draft Load Modal -->
+<div id="draftLoadModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Existing Draft Found</h5>
+            <button type="button" class="modal-close" data-modal="draftLoadModal">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Existing Draft Found</h3>
+                <p class="text-gray-600">You have an unsaved draft. What would you like to do?</p>
+            </div>
+
+            <div class="space-y-3">
+                <button id="draft-load-btn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Load Existing Draft
+                </button>
+
+                <button id="draft-new-btn"
+                    class="w-full bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Create New Letter
+                </button>
+            </div>
+
+            <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                        </path>
+                    </svg>
+                    <p class="text-sm text-yellow-800">
+                        <strong>Warning:</strong> Creating a new letter will permanently delete your existing draft.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-modal="draftLoadModal">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Media Preview Modal -->
+<div id="mediaPreviewModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="mediaPreviewTitle">Media Preview</h5>
+            <button type="button" class="modal-close" data-modal="mediaPreviewModal">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="text-center">
+                <div id="mediaPreviewContainer">
+                    <!-- Media content will be inserted here -->
+                </div>
+                <div class="mt-4">
+                    <p class="text-sm text-gray-500" id="mediaPreviewSize">0 MB</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-modal="mediaPreviewModal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="downloadCurrentPreviewMedia()">Download</button>
+        </div>
+    </div>
+</div>
+
+<!-- Include S3 Media Handler -->
+<script src="{{ url_for('static', filename='js/s3-media-handler.js') }}"></script>
+
+{% endblock %}

@@ -16,6 +16,18 @@ import secrets
 
 auth = Blueprint('auth', __name__)
 
+@auth.context_processor
+def utility_processor():
+    """Make utility functions available to all templates"""
+    def check_trusted_contact_status(user):
+        """Check if user has active trusted contact relationships"""
+        if not user or not user.is_authenticated:
+            return False
+        from .views import has_active_trusted_relationships
+        return has_active_trusted_relationships(user)
+    
+    return dict(check_trusted_contact_status=check_trusted_contact_status)
+
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -28,6 +40,10 @@ def login():
         next_page = request.form.get('next') or next_page
         user = User.query.filter_by(email=email).first()
         if user:
+            # Require email confirmation before allowing login
+            if not user.is_active:
+                flash('Please confirm your email to activate your account. Check your inbox for the confirmation link.', 'error')
+                return render_template("login.html", user=current_user, next=next_page)
             if check_password_hash(user.password, password):
                 # Check if user has 2FA enabled
                 if user.two_factor_enabled:
@@ -40,6 +56,22 @@ def login():
                 else:
                     # No 2FA, proceed with normal login
                     login_user(user, remember=True)
+                    
+                    # Check for pending letter invites for this email
+                    from .models import RecipientInvite
+                    pending_invites = RecipientInvite.query.filter(
+                        RecipientInvite.recipient_email == user.email,
+                        RecipientInvite.registered_at.is_(None)
+                    ).all()
+                    
+                    if pending_invites:
+                        # Link all pending invites to this user
+                        for invite in pending_invites:
+                            invite.recipient_user_id = user.id
+                            invite.registered_at = datetime.now(timezone.utc)
+                        db.session.commit()
+                        flash(f'Welcome back! You have {len(pending_invites)} new letter(s) to read.', 'success')
+                    
                     # Check for pending trusted contact invitation
                     contact = TrustedContact.query.filter_by(email=user.email, is_confirmed=False).first()
                     if contact:
@@ -94,13 +126,29 @@ def login_2fa():
                 # Complete login
                 login_user(user, remember=session.get('pending_2fa_remember', True))
                 
+                # Check for pending letter invites for this email
+                from .models import RecipientInvite
+                pending_invites = RecipientInvite.query.filter(
+                    RecipientInvite.recipient_email == user.email,
+                    RecipientInvite.registered_at.is_(None)
+                ).all()
+                
+                if pending_invites:
+                    # Link all pending invites to this user
+                    for invite in pending_invites:
+                        invite.recipient_user_id = user.id
+                        invite.registered_at = datetime.now(timezone.utc)
+                    db.session.commit()
+                    flash(f'Welcome back! You have {len(pending_invites)} new letter(s) to read.', 'success')
+                
                 # Clear session
                 next_page = session.pop('pending_2fa_next', None)
                 session.pop('pending_2fa_user_id', None)
                 session.pop('pending_2fa_remember', None)
                 session.pop('pending_2fa_time', None)
                 
-                flash('Logged in successfully using backup code!', 'success')
+                if not pending_invites:
+                    flash('Logged in successfully using backup code!', 'success')
                 return redirect(next_page or url_for('views.home'))
             else:
                 flash('Invalid backup code.', 'error')
@@ -112,13 +160,29 @@ def login_2fa():
                     # Complete login
                     login_user(user, remember=session.get('pending_2fa_remember', True))
                     
+                    # Check for pending letter invites for this email
+                    from .models import RecipientInvite
+                    pending_invites = RecipientInvite.query.filter(
+                        RecipientInvite.recipient_email == user.email,
+                        RecipientInvite.registered_at.is_(None)
+                    ).all()
+                    
+                    if pending_invites:
+                        # Link all pending invites to this user
+                        for invite in pending_invites:
+                            invite.recipient_user_id = user.id
+                            invite.registered_at = datetime.now(timezone.utc)
+                        db.session.commit()
+                        flash(f'Welcome back! You have {len(pending_invites)} new letter(s) to read.', 'success')
+                    
                     # Clear session
                     next_page = session.pop('pending_2fa_next', None)
                     session.pop('pending_2fa_user_id', None)
                     session.pop('pending_2fa_remember', None)
                     session.pop('pending_2fa_time', None)
                     
-                    flash('Logged in successfully!', 'success')
+                    if not pending_invites:
+                        flash('Logged in successfully!', 'success')
                     return redirect(next_page or url_for('views.home'))
                 else:
                     flash('Invalid verification code.', 'error')
@@ -169,7 +233,8 @@ def sign_up():
                 last_name=last_name,
                 password=generate_password_hash(password1, method='pbkdf2:sha256'),
                 notification_preferences={'email_notifications': True},
-                delivery_preferences={'delivery_method': 'email'}
+                delivery_preferences={'delivery_method': 'email'},
+                is_active=False
             )
             db.session.add(new_user)
             db.session.commit()
@@ -210,9 +275,35 @@ def sign_up():
                     flash('Account created successfully! Your trusted contact role has been confirmed. Please login to access your features.', category='success')
                     return redirect(url_for('auth.login'))
 
-            login_user(new_user, remember=True)
-            flash('Account created!', category='success')
-            return redirect(next_page or url_for('views.home'))
+            # Generate email confirmation token using existing reset fields for simplicity
+            confirm_token = str(uuid.uuid4())
+            new_user.password_reset_token = confirm_token
+            new_user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+            db.session.commit()
+
+            # Send confirmation email
+            confirm_link = url_for('auth.confirm_email', token=confirm_token, _external=True)
+            msg = Message('Confirm your LetterForLater account', recipients=[email])
+            msg.body = f'''Hello {first_name},
+
+Welcome to LetterForLater! Please confirm your email to activate your account.
+
+Click the link below to confirm your account:
+{confirm_link}
+
+This link will expire in 48 hours.
+
+If you did not create this account, please ignore this email.
+
+Best regards,
+LetterForLater Team'''
+            try:
+                mail.send(msg)
+            except Exception as e:
+                print(f"Error sending confirmation email: {str(e)}")
+            
+            flash('Account created! Please check your email to confirm your account.', category='success')
+            return redirect(url_for('auth.login', next=next_page))
 
     # If this is a trusted contact signup, pre-fill the email
     trusted_contact_code = session.get('trusted_contact_code')
@@ -223,6 +314,89 @@ def sign_up():
             email = contact.email
 
     return render_template("sign_up.html", user=current_user, email=email, next=next_page)
+
+@auth.route('/sign-up-with-invite/<token>', methods=['GET', 'POST'])
+def sign_up_with_invite(token):
+    """Sign up using an invite token from a letter delivery"""
+    if current_user.is_authenticated:
+        return redirect(url_for('views.received_letters'))
+    
+    # Validate the invite token
+    from .models import RecipientInvite
+    invite = RecipientInvite.query.filter_by(invite_token=token).first()
+    
+    if not invite:
+        flash('Invalid or expired invite link.', 'error')
+        return redirect(url_for('auth.sign_up'))
+    
+    if invite.is_registered():
+        flash('This invite has already been used.', 'error')
+        return redirect(url_for('auth.login'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        first_name = request.form.get('firstName')
+        last_name = request.form.get('lastName')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+        
+        # Validate email matches invite
+        if email != invite.recipient_email:
+            flash('Email must match the invite recipient.', 'error')
+            return render_template("sign_up_with_invite.html", invite=invite, token=token)
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already exists. Please log in instead.', 'error')
+            return redirect(url_for('auth.login'))
+        elif len(email) < 4:
+            flash('Email must be greater than 3 characters.', 'error')
+        elif len(first_name) < 2:
+            flash('First name must be greater than 1 character.', 'error')
+        elif len(last_name) < 2:
+            flash('Last name must be greater than 1 character.', 'error')
+        elif password1 != password2:
+            flash('Passwords don\'t match.', 'error')
+        elif len(password1) < 7:
+            flash('Password must be at least 7 characters.', 'error')
+        else:
+            new_user = User(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=generate_password_hash(password1, method='pbkdf2:sha256'),
+                notification_preferences={'email_notifications': True},
+                delivery_preferences={'delivery_method': 'email'},
+                is_active=True  # Auto-activate for invite signups
+            )
+            db.session.add(new_user)
+            db.session.flush()
+            
+            # Link ALL invites for this email to the user
+            all_invites_for_email = RecipientInvite.query.filter_by(
+                recipient_email=email,
+                registered_at=None
+            ).all()
+            
+            for invite_to_link in all_invites_for_email:
+                invite_to_link.recipient_user_id = new_user.id
+                invite_to_link.registered_at = datetime.now(timezone.utc)
+            
+            db.session.commit()
+            
+            # Log the user in automatically
+            login_user(new_user, remember=True)
+            
+            # Count how many letters they now have access to
+            letter_count = len(all_invites_for_email)
+            if letter_count == 1:
+                flash(f'Welcome! You can now read your letter from {invite.letter.author.first_name} {invite.letter.author.last_name}.', 'success')
+            else:
+                flash(f'Welcome! You can now read {letter_count} letters that were sent to you.', 'success')
+            
+            return redirect(url_for('views.received_letters'))
+    
+    return render_template("sign_up_with_invite.html", invite=invite, token=token)
 
 @auth.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -246,7 +420,7 @@ def forgot_password():
                         recipients=[email])
             msg.body = f'''Hello {user.first_name},
 
-You have requested a password reset for your Legacy Letter account.
+You have requested a password reset for your LetterForLater account.
 
 Click the following link to reset your password:
 {reset_link}
@@ -256,7 +430,7 @@ This link will expire in 24 hours.
 If you did not request this reset, please ignore this email.
 
 Best regards,
-Legacy Letter Team'''
+LetterForLater Team'''
             
             try:
                 mail.send(msg)
@@ -303,6 +477,22 @@ def reset_password(token):
     
     return render_template('reset_password.html', token=token)
 
+@auth.route('/confirm-email/<token>')
+def confirm_email(token):
+    if current_user.is_authenticated and current_user.is_active:
+        return redirect(url_for('views.home'))
+    user = User.query.filter_by(password_reset_token=token).first()
+    if not user or not user.password_reset_expires or user.password_reset_expires < datetime.now(timezone.utc):
+        flash('Invalid or expired confirmation link.', 'error')
+        return redirect(url_for('auth.login'))
+    # Activate account and clear token
+    user.is_active = True
+    user.password_reset_token = None
+    user.password_reset_expires = None
+    db.session.commit()
+    flash('Your email has been confirmed. You can now log in.', 'success')
+    return redirect(url_for('auth.login'))
+
 @auth.route('/setup-2fa', methods=['GET', 'POST'])
 @login_required
 def setup_2fa():
@@ -325,7 +515,7 @@ def setup_2fa():
         totp = pyotp.TOTP(secret)
         provisioning_uri = totp.provisioning_uri(
             name=current_user.email,
-            issuer_name="Legacy Letter"
+            issuer_name="LetterForLater"
         )
         
         qr = qrcode.QRCode(version=1, box_size=10, border=5)

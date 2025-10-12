@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Received Letters - LetterForLater{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Received Letters</span>
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Letters sent to you with love and care
+            </p>
+        </div>
+
+        {% if received_invites %}
+            <!-- Letters Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for invite in received_invites %}
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 overflow-hidden">
+                        <!-- Letter Header -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-6 text-white">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-bold truncate">{{ invite.letter.title }}</h3>
+                                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-blue-100 text-sm">
+                                From {{ invite.letter.author.first_name }} {{ invite.letter.author.last_name }}
+                            </p>
+                        </div>
+
+                        <!-- Letter Content Preview -->
+                        <div class="p-6">
+                            <div class="mb-4">
+                                <p class="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                                    {{ invite.letter.content[:200] }}{% if invite.letter.content|length > 200 %}...{% endif %}
+                                </p>
+                            </div>
+
+                            <!-- Delivery Info -->
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Delivered {{ invite.letter.delivery_date.strftime('%B %d, %Y') if invite.letter.delivery_date else 'Recently' }}
+                                </div>
+                                
+                                {% if invite.letter.media_attachments %}
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ invite.letter.media_attachments|length }} media attachment{{ 's' if invite.letter.media_attachments|length != 1 else '' }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Action Button -->
+                            <a href="{{ url_for('views.view_received_letter', letter_id=invite.letter.id) }}" 
+                               class="block w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 text-center">
+                                Read Full Letter
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Letters Yet</h3>
+                <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                    You haven't received any letters yet. When someone sends you a letter, it will appear here.
+                </p>
+                <a href="{{ url_for('views.home') }}" 
+                   class="inline-flex items-center bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Create Your First Letter
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+
+{% endblock %}

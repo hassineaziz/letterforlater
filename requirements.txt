@@ -8,3 +8,11 @@ sqlalchemy-utils
 pyotp
 qrcode
 Pillow
+opencv-python
+moviepy
+numpy
+markdown
+bleach
+boto3
+python-dotenv
+requests

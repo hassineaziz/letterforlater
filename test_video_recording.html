@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Recording Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .video-container { margin: 20px 0; }
+        video { width: 100%; max-width: 400px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .status { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Recording Test</h1>
+        
+        <div class="video-container">
+            <h3>Live Preview</h3>
+            <video id="livePreview" autoplay muted playsinline></video>
+        </div>
+        
+        <div class="video-container">
+            <h3>Recorded Video</h3>
+            <video id="recordedVideo" controls playsinline></video>
+        </div>
+        
+        <div>
+            <button id="startBtn">Start Recording</button>
+            <button id="stopBtn" disabled>Stop Recording</button>
+            <button id="testBtn">Test Playback</button>
+        </div>
+        
+        <div id="status" class="status">Ready to record</div>
+        
+        <div id="codecInfo" class="status"></div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+        let stream;
+
+        // Check supported MP4 codecs for maximum compatibility
+        function checkCodecs() {
+            const mp4Codecs = [
+                'video/mp4;codecs=avc1.42E01E,mp4a.40.2', // H.264 + AAC
+                'video/mp4;codecs=avc1.42E01E', // H.264 only
+                'video/mp4;codecs=h264,aac', // H.264 + AAC (alternative)
+                'video/mp4;codecs=h264', // H.264 only (alternative)
+                'video/mp4' // Basic MP4
+            ];
+            
+            const supported = mp4Codecs.filter(codec => MediaRecorder.isTypeSupported(codec));
+            document.getElementById('codecInfo').innerHTML = 
+                `<strong>Supported MP4 codecs (H.264/AAC):</strong><br>${supported.join('<br>')}`;
+            
+            return supported[0] || 'video/mp4';
+        }
+
+        async function startRecording() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('livePreview').srcObject = stream;
+                
+                const mimeType = checkCodecs();
+                console.log('Using MIME type:', mimeType);
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: mimeType,
+                    videoBitsPerSecond: 2500000
+                });
+                
+                recordedChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
+                    console.log('Recorded blob:', blob.type, blob.size);
+                    
+                    const url = URL.createObjectURL(blob);
+                    const video = document.getElementById('recordedVideo');
+                    video.src = url;
+                    
+                    // Test if video can play
+                    video.oncanplay = () => {
+                        document.getElementById('status').textContent = '✅ Video recorded and can play!';
+                        document.getElementById('status').className = 'status success';
+                    };
+                    
+                    video.onerror = (e) => {
+                        document.getElementById('status').textContent = '❌ Video recorded but cannot play: ' + e.message;
+                        document.getElementById('status').className = 'status error';
+                    };
+                    
+                    video.load();
+                };
+                
+                mediaRecorder.start();
+                
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('status').textContent = 'Recording...';
+                document.getElementById('status').className = 'status';
+                
+            } catch (error) {
+                document.getElementById('status').textContent = 'Error: ' + error.message;
+                document.getElementById('status').className = 'status error';
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('status').textContent = 'Processing recording...';
+            }
+        }
+
+        function testPlayback() {
+            const video = document.getElementById('recordedVideo');
+            if (video.src) {
+                video.play().then(() => {
+                    document.getElementById('status').textContent = '✅ Video playback successful!';
+                    document.getElementById('status').className = 'status success';
+                }).catch(error => {
+                    document.getElementById('status').textContent = '❌ Video playback failed: ' + error.message;
+                    document.getElementById('status').className = 'status error';
+                });
+            } else {
+                document.getElementById('status').textContent = 'No video recorded yet';
+                document.getElementById('status').className = 'status error';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', startRecording);
+        document.getElementById('stopBtn').addEventListener('click', stopRecording);
+        document.getElementById('testBtn').addEventListener('click', testPlayback);
+
+        // Initialize
+        checkCodecs();
+    </script>
+</body>
+</html>

@@ -14,6 +14,24 @@ Legacy Letter enables people to leave behind meaningful, personalized messages f
 
 ---
 
+## 👑 Admin Access
+
+The application includes a blog admin system for content management:
+
+- **Admin Email**: `hassineaziz@icloud.com`
+- **Admin Password**: `admin123!`
+- **Admin Dashboard**: `/admin`
+
+### After Database Reset
+
+If you reset the database, the admin user will be automatically recreated. You can also manually ensure admin access by running:
+
+```bash
+python ensure_admin.py
+```
+
+---
+
 ## ✨ Core Features
 
 ### ✅ User Authentication

@@ -22,6 +22,9 @@ def reset_database(app):
 def create_app():
     app = Flask(__name__)
     
+    # File upload configuration - max file size to 100MB
+    app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
+    
     # Database configuration
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
     database_url = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/legacy_letter')
@@ -57,7 +60,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import User, Letter, DeathVerification, TrustedContact, Notification
+    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment
     
     # Create database tables
     with app.app_context():

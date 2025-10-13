@@ -59,10 +59,12 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    from .pricing import pricing_bp
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(seo_bp, url_prefix='/')
+    app.register_blueprint(pricing_bp, url_prefix='/')
 
     from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment
     
@@ -111,5 +113,30 @@ def create_app():
             'rejected': 'danger'
         }.get(status, 'secondary')
     app.jinja_env.filters['status_color'] = status_color
+
+    @app.context_processor
+    def utility_processor():
+        def check_trusted_contact_status(user):
+            if not user or not user.is_authenticated:
+                return False
+            from website.models import TrustedContact
+            return TrustedContact.query.filter_by(email=user.email, is_confirmed=True).count() > 0
+        def has_received_letters(user):
+            if not user or not user.is_authenticated:
+                return False
+            from website.models import RecipientInvite
+            return RecipientInvite.query.filter(
+                RecipientInvite.recipient_user_id == user.id,
+                RecipientInvite.registered_at.isnot(None)
+            ).count() > 0
+        return dict(check_trusted_contact_status=check_trusted_contact_status, has_received_letters=has_received_letters)
+
+    @app.context_processor
+    def inject_now():
+        from datetime import datetime, timezone
+        def now():
+            # ISO 8601 date-time for SEO/JSON-LD usage
+            return datetime.now(timezone.utc).isoformat()
+        return dict(now=now)
 
     return app

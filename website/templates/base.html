@@ -11,6 +11,7 @@
     <meta name="author" content="LetterForLater" />
     <meta name="robots" content="index, follow" />
     
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ request.url }}" />
@@ -37,8 +38,8 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>{% block title %}Home{% endblock %}</title>
-    <script>
+    <title>{% block title %}LetterForLater – Preserve Your Legacy{% endblock %}</title>
+        <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -82,10 +83,15 @@
         <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div class="flex justify-between items-center h-12 sm:h-14 lg:h-16">
                 <!-- Brand -->
-                <a href="/" class="flex items-center space-x-2 sm:space-x-3">
-                    <img src="{{ url_for('static', filename='logo.png') }}" alt="LetterForLater" class="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 rounded-md shadow-sm" loading="lazy">
-                    <span class="hidden sm:inline text-lg sm:text-xl font-bold text-primary">LetterForLater</span>
-                </a>
+                <div class="flex items-center space-x-4 sm:space-x-6">
+                    <a href="/" class="flex items-center space-x-2 sm:space-x-3">
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="LetterForLater" class="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 rounded-md shadow-sm" loading="lazy">
+                        <span class="hidden sm:inline text-lg sm:text-xl font-bold text-primary">LetterForLater</span>
+                    </a>
+                    <a href="{{ url_for('pricing.pricing_page') }}" class="text-sm sm:text-base font-medium text-primary hover:text-primary-light transition-colors">
+                        Pricing
+                    </a>
+                </div>
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button type="button" class="text-primary hover:text-primary-light focus:outline-none p-1"
@@ -978,6 +984,7 @@
             <div class="text-center">
                 <p class="text-sm text-gray-500">
                     © <span id="currentYear"></span> Letter for Later. All rights reserved. |
+                    <a href="{{ url_for('pricing.pricing_page') }}" class="text-gray-600 hover:text-gray-800">Pricing</a> |
                     <a href="{{ url_for('views.blog_index') }}" class="text-gray-600 hover:text-gray-800">Blog</a> |
                     <a href="{{ url_for('views.privacy_policy') }}" class="text-gray-600 hover:text-gray-800">Privacy Policy</a> |
                     <a href="{{ url_for('views.terms_of_service') }}" class="text-gray-600 hover:text-gray-800">Terms of Service</a>

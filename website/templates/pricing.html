@@ -523,6 +523,37 @@ document.addEventListener('DOMContentLoaded', function() {
   if (mobilePremiumCta) {
     mobilePremiumCta.onclick = function() { checkout('premium', 'month'); };
   }
+  
+  // Banner scroll behavior
+  const banner = document.querySelector('#premium-card .absolute');
+  let lastScrollY = window.scrollY;
+  let isScrollingDown = false;
+  
+  if (banner) {
+    window.addEventListener('scroll', function() {
+      const currentScrollY = window.scrollY;
+      const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+      
+      // Only hide/show if direction changed
+      if (scrollDirection !== isScrollingDown) {
+        isScrollingDown = scrollDirection === 'down';
+        
+        if (isScrollingDown && currentScrollY > 100) {
+          // Scrolling down - hide banner
+          banner.style.transform = 'translateX(-50%) translateY(-20px)';
+          banner.style.opacity = '0';
+          banner.style.transition = 'all 0.3s ease-out';
+        } else {
+          // Scrolling up or at top - show banner
+          banner.style.transform = 'translateX(-50%) translateY(0)';
+          banner.style.opacity = '1';
+          banner.style.transition = 'all 0.3s ease-out';
+        }
+      }
+      
+      lastScrollY = currentScrollY;
+    });
+  }
 });
 </script>
 

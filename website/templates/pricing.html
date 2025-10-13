@@ -463,15 +463,22 @@ async function checkout(plan, cycle = 'month') {
     console.log('User plan:', userPlan);
     console.log('Plan:', plan, 'Cycle:', cycle);
     
-    // Simple check: if userPlan is empty string, undefined, null, or 'None', user is not logged in
-    const isLoggedIn = userPlan && userPlan !== '' && userPlan !== 'None';
+    // Check if user is logged in - userPlan should be 'free', 'premium', 'lifetime', or empty/null
+    const isLoggedIn = userPlan && userPlan !== '' && userPlan !== 'None' && userPlan !== 'null';
     console.log('Is logged in:', isLoggedIn);
     
     if (!isLoggedIn) {
       // Redirect to signup with plan parameter
       const signupUrl = `/sign-up?plan=${plan}${cycle ? '&cycle=' + cycle : ''}`;
-      console.log('Redirecting to:', signupUrl);
+      console.log('Redirecting to signup:', signupUrl);
       window.location.href = signupUrl;
+      return;
+    }
+    
+    // Check if user already has this plan
+    if (userPlan === plan) {
+      console.log('User already has this plan, redirecting to dashboard');
+      window.location.href = '/';
       return;
     }
     
@@ -502,6 +509,11 @@ async function checkout(plan, cycle = 'month') {
 
 // Update Premium CTA to use checkout function
 document.addEventListener('DOMContentLoaded', function() {
+  // Debug user plan detection
+  const userPlan = document.body.dataset.userPlan;
+  console.log('DOM loaded - User plan:', userPlan);
+  console.log('Body dataset:', document.body.dataset);
+  
   const premiumCta = document.getElementById('premium-cta');
   const mobilePremiumCta = document.querySelector('.mobile-premium-cta');
   

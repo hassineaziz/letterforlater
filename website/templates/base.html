@@ -59,6 +59,7 @@
     </script>
     <!-- Modal System CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='modal-system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-features.css') }}">
 
     <style>
         body {
@@ -77,7 +78,7 @@
     <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/png">
 </head>
 
-<body class="font-sans text-gray-800 leading-relaxed">
+<body class="font-sans text-gray-800 leading-relaxed" data-user-plan="{% if user.is_authenticated %}{{ user.plan }}{% endif %}">
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg shadow-lg rounded-b-2xl mb-4 sm:mb-6 lg:mb-8 mx-2 sm:mx-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
@@ -1069,6 +1070,7 @@
     {% block javascript %}{% endblock %}
     <!-- Modal System JavaScript -->
     <script src="{{ url_for('static', filename='modal-system.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/premium-features.js') }}"></script>
 </body>
 
 </html>

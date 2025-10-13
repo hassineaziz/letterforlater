@@ -144,7 +144,7 @@
             </li>
           </ul>
           <div class="mt-auto">
-            <a href="{{ url_for('auth.sign_up') }}?plan=free" class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-all duration-300">Write Your First Letter</a>
+            <button onclick="checkout('free')" class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-all duration-300">Write Your First Letter</button>
           </div>
         </div>
       </div>
@@ -227,7 +227,7 @@
             </li>
           </ul>
           <div class="mt-auto">
-            <a id="premium-cta" href="{{ url_for('auth.sign_up') }}?plan=premium" class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-all duration-300">Protect Your Legacy</a>
+            <button id="premium-cta" onclick="checkout('premium', 'month')" class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-all duration-300">Protect Your Legacy</button>
           </div>
         </div>
       </div>
@@ -280,7 +280,7 @@
             </li>
           </ul>
           <div class="mt-auto">
-            <a href="{{ url_for('auth.sign_up') }}?plan=lifetime" class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl">Own Your Peace of Mind</a>
+            <button onclick="checkout('lifetime')" class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl">Own Your Peace of Mind</button>
           </div>
         </div>
       </div>
@@ -455,6 +455,66 @@
 </div>
 
 <script>
+// Stripe Checkout Function
+async function checkout(plan, cycle = 'month') {
+  try {
+    // Check if user is logged in
+    const userPlan = document.body.dataset.userPlan;
+    console.log('User plan:', userPlan);
+    console.log('Plan:', plan, 'Cycle:', cycle);
+    
+    // Simple check: if userPlan is empty string, undefined, null, or 'None', user is not logged in
+    const isLoggedIn = userPlan && userPlan !== '' && userPlan !== 'None';
+    console.log('Is logged in:', isLoggedIn);
+    
+    if (!isLoggedIn) {
+      // Redirect to signup with plan parameter
+      const signupUrl = `/sign-up?plan=${plan}${cycle ? '&cycle=' + cycle : ''}`;
+      console.log('Redirecting to:', signupUrl);
+      window.location.href = signupUrl;
+      return;
+    }
+    
+    console.log('Proceeding with Stripe checkout...');
+    const response = await fetch('/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ plan, cycle })
+    });
+    
+    const data = await response.json();
+    console.log('Stripe response:', data);
+    
+    if (data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else if (data.redirect) {
+      window.location.href = data.redirect;
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+// Update Premium CTA to use checkout function
+document.addEventListener('DOMContentLoaded', function() {
+  const premiumCta = document.getElementById('premium-cta');
+  const mobilePremiumCta = document.querySelector('.mobile-premium-cta');
+  
+  if (premiumCta) {
+    premiumCta.onclick = function() { checkout('premium', 'month'); };
+  }
+  if (mobilePremiumCta) {
+    mobilePremiumCta.onclick = function() { checkout('premium', 'month'); };
+  }
+});
+</script>
+
+<script>
 function toggleFAQ(button) {
   const content = button.nextElementSibling;
   const icon = button.querySelector('svg');
@@ -497,9 +557,8 @@ function toggleFAQ(button) {
       btnMonthly.classList.remove('text-white');
       btnMonthly.classList.add('text-gray-700');
       thumb.style.transform = 'translateX(5rem)'; // 20 * 0.25rem = 5rem
-      const yearHref = "{{ url_for('auth.sign_up') }}?plan=premium&cycle=year";
-      premiumCta && (premiumCta.href = yearHref);
-      mobilePremiumCta && (mobilePremiumCta.href = yearHref);
+      premiumCta && (premiumCta.onclick = function() { checkout('premium', 'year'); });
+      mobilePremiumCta && (mobilePremiumCta.onclick = function() { checkout('premium', 'year'); });
       if (premiumCard) premiumCard.classList.add('ring-2','ring-blue-400');
     } else {
       monthly.classList.remove('hidden');
@@ -513,9 +572,8 @@ function toggleFAQ(button) {
       btnYearly.classList.remove('text-white');
       btnYearly.classList.add('text-gray-700');
       thumb.style.transform = 'translateX(0)';
-      const monthHref = "{{ url_for('auth.sign_up') }}?plan=premium";
-      premiumCta && (premiumCta.href = monthHref);
-      mobilePremiumCta && (mobilePremiumCta.href = monthHref);
+      premiumCta && (premiumCta.onclick = function() { checkout('premium', 'month'); });
+      mobilePremiumCta && (mobilePremiumCta.onclick = function() { checkout('premium', 'month'); });
       if (premiumCard) premiumCard.classList.remove('ring-2','ring-blue-400');
     }
   }

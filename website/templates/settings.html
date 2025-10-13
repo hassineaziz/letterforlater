@@ -347,19 +347,424 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Billing & Subscription</h2>
-                            <p class="text-sm text-gray-600">Manage your subscription and billing</p>
+                            <h2 class="text-2xl font-bold text-gray-900">Subscription Management</h2>
+                            <p class="text-sm text-gray-600">Manage your subscription, billing, and payment methods</p>
                         </div>
                     </div>
                     
-                    <div class="text-center py-16">
-                        <div class="w-20 h-20 bg-gradient-to-r from-orange-100 to-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <!-- Current Subscription Status -->
+                    <div class="mb-8">
+                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Coming Soon</h3>
-                        <p class="text-gray-600 text-lg max-w-md mx-auto">Billing and subscription management features will be available soon.</p>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900">{{ user.plan.title() if user.plan else 'Free' }} Plan</h3>
+                                        <p class="text-sm text-gray-600">
+                                            {% if user.plan == 'premium' %}
+                                                {% if user.subscription_cycle %}
+                                                    Billed {{ user.subscription_cycle.title() }}
+                                                {% else %}
+                                                    Premium Subscription
+                                                {% endif %}
+                                            {% elif user.plan == 'lifetime' %}
+                                                One-time payment, lifetime access
+                                            {% else %}
+                                                Free tier with basic features
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    {% if user.plan == 'premium' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Active
+                                        </span>
+                                    {% elif user.plan == 'lifetime' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Lifetime
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                            Free Plan
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Subscription Details -->
+                            {% if user.plan == 'premium' %}
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                        <div class="text-sm text-gray-600 mb-1">Next Payment</div>
+                                        <div class="font-semibold text-gray-900">
+                                            {% if user.next_payment_date %}
+                                                {{ user.next_payment_date.strftime('%B %d, %Y') }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                        <div class="text-sm text-gray-600 mb-1">Last Payment</div>
+                                        <div class="font-semibold text-gray-900">
+                                            {% if user.last_payment_date %}
+                                                {{ user.last_payment_date.strftime('%B %d, %Y') }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                        <div class="text-sm text-gray-600 mb-1">Status</div>
+                                        <div class="font-semibold text-gray-900">
+                                            {% if user.subscription_status %}
+                                                {{ user.subscription_status.title() }}
+                                            {% else %}
+                                                Active
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Plan Features Comparison -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Plan Features</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Free Plan -->
+                            <div class="bg-white rounded-xl border-2 {% if user.plan == 'free' %}border-blue-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
+                                <div class="text-center mb-4">
+                                    <h4 class="text-lg font-bold text-gray-900">Free</h4>
+                                    <div class="text-3xl font-bold text-gray-900 mt-2">$0</div>
+                                    <div class="text-sm text-gray-600">Forever</div>
+                                </div>
+                                <ul class="space-y-3 text-sm flex-grow">
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        1 legacy letter
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Bank-level encryption
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Trusted contact verification
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Email delivery tracking
+                                    </li>
+                                </ul>
+                                {% if user.plan == 'free' %}
+                                    <div class="mt-4 text-center">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                            Current Plan
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Premium Plan -->
+                            <div class="bg-white rounded-xl border-2 {% if user.plan == 'premium' %}border-purple-500{% else %}border-gray-200{% endif %} p-6 relative flex flex-col">
+                                {% if user.plan == 'premium' %}
+                                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                            Current Plan
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                <div class="text-center mb-4">
+                                    <h4 class="text-lg font-bold text-gray-900">Premium</h4>
+                                    <div class="text-3xl font-bold text-gray-900 mt-2">$5.99</div>
+                                    <div class="text-sm text-gray-600">per month</div>
+                                </div>
+                                <ul class="space-y-3 text-sm flex-grow">
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Unlimited letters
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Photos, videos, and audio attachments
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Unlimited trusted contacts
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Schedule letters for birthdays & milestones
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        All free features
+                                    </li>
+                                </ul>
+                                {% if user.plan != 'premium' %}
+                                    <div class="mt-4">
+                                        <a href="{{ url_for('pricing.pricing_page') }}" class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 rounded-lg transition-all duration-300">
+                                            Upgrade to Premium
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Lifetime Plan -->
+                            <div class="bg-white rounded-xl border-2 {% if user.plan == 'lifetime' %}border-green-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
+                                <div class="text-center mb-4">
+                                    <h4 class="text-lg font-bold text-gray-900">Lifetime</h4>
+                                    <div class="text-3xl font-bold text-gray-900 mt-2">$99.99</div>
+                                    <div class="text-sm text-gray-600">one-time payment</div>
+                                </div>
+                                <ul class="space-y-3 text-sm flex-grow">
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Everything in Premium
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Pay once, use forever
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        20GB storage included
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        VIP support
+                                    </li>
+                                </ul>
+                                {% if user.plan == 'lifetime' %}
+                                    <div class="mt-4 text-center">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            Current Plan
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <div class="mt-4">
+                                        <a href="{{ url_for('pricing.pricing_page') }}" class="block w-full text-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2 rounded-lg transition-all duration-300">
+                                            Get Lifetime Access
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subscription Management Actions -->
+                    {% if user.plan == 'premium' %}
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Subscription Management</h3>
+                            
+                            <!-- Cancelled Subscription Notice -->
+                            {% if user.subscription_cancel_at_period_end %}
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        <div>
+                                            <h4 class="font-semibold text-yellow-800">Subscription Cancelled</h4>
+                                            <p class="text-sm text-yellow-700">Your subscription will end on {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}. You can reactivate it anytime before then.</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <form method="POST" action="{{ url_for('stripe.reactivate_subscription') }}" class="inline">
+                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                </svg>
+                                                Reactivate Subscription
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Change Billing Cycle -->
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">Billing Cycle</h4>
+                                            <p class="text-sm text-gray-600">Switch between monthly and yearly billing</p>
+                                        </div>
+                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mb-3">
+                                        Current: {{ user.subscription_cycle.title() if user.subscription_cycle else 'Monthly' }}
+                                    </div>
+                                    <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
+                                            data-modal="changeBillingCycleModal">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                        </svg>
+                                        Change Billing Cycle
+                                    </button>
+                                </div>
+
+                                <!-- Cancel Subscription -->
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">Cancel Subscription</h4>
+                                            <p class="text-sm text-gray-600">Cancel your subscription at any time</p>
+                                        </div>
+                                        <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mb-3">
+                                        You'll keep access until {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}
+                                    </div>
+                                    {% if not user.subscription_cancel_at_period_end %}
+                                        <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
+                                                data-modal="cancelSubscriptionModal">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            Cancel Subscription
+                                        </button>
+                                    {% else %}
+                                        <div class="text-sm text-gray-500 italic">Subscription already cancelled</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Payment History -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
+                        <div class="bg-white rounded-lg border border-gray-200">
+                            {% if user.payments %}
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50 border-b border-gray-200">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            {% for payment in user.payments|sort(attribute='payment_date', reverse=true) %}
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {{ payment.payment_date.strftime('%B %d, %Y') }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                        {% if payment.plan == 'premium' %}bg-purple-100 text-purple-800
+                                                        {% elif payment.plan == 'lifetime' %}bg-green-100 text-green-800
+                                                        {% else %}bg-blue-100 text-blue-800{% endif %}">
+                                                        {{ payment.plan.title() }}
+                                                        {% if payment.cycle %} ({{ payment.cycle.title() }}){% endif %}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    ${{ "%.2f"|format(payment.amount / 100) }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                        {% if payment.status == 'succeeded' %}bg-green-100 text-green-800
+                                                        {% elif payment.status == 'failed' %}bg-red-100 text-red-800
+                                                        {% elif payment.status == 'refunded' %}bg-yellow-100 text-yellow-800
+                                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                        {{ payment.status.title() }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-sm text-gray-900">
+                                                    {{ payment.description or 'Subscription payment' }}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="p-6 text-center text-gray-500">
+                                    <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                    <p class="text-sm">No payment history available</p>
+                                    <p class="text-xs text-gray-400 mt-1">Payment records will appear here after your first transaction</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Support -->
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Need Help?</h3>
+                                <p class="text-sm text-gray-600">Contact our support team for billing questions</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <a href="mailto:support@letterforlater.com" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                Email Support
+                            </a>
+                            <a href="{{ url_for('pricing.pricing_page') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                                View All Plans
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -682,13 +1087,13 @@
     </div>
 </div>
 
-<!-- Generate Backup Codes Modal -->
-<div id="generateBackupCodesModal" class="modal" style="display: none;">
+<!-- Change Billing Cycle Modal -->
+<div id="changeBillingCycleModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <form method="POST" action="{{ url_for('auth.generate_backup_codes') }}">
+        <form method="POST" action="{{ url_for('stripe.change_billing_cycle') }}">
             <div class="modal-header">
-                <h5 class="modal-title">Generate New Backup Codes</h5>
-                <button type="button" class="modal-close" data-modal="generateBackupCodesModal">
+                <h5 class="modal-title">Change Billing Cycle</h5>
+                <button type="button" class="modal-close" data-modal="changeBillingCycleModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -700,20 +1105,98 @@
                         <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <strong class="text-blue-800">Note:</strong>
-                        <span class="text-blue-700 ml-1">Generating new backup codes will invalidate all existing ones.</span>
+                        <strong class="text-blue-800">Billing Cycle Change:</strong>
+                        <span class="text-blue-700 ml-1">Changes will take effect on your next billing date.</span>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-4">To generate new backup codes, please enter your current password:</p>
+                <div class="space-y-4">
                 <div>
-                    <label for="generateBackupCodesPassword" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                    <input type="password" id="generateBackupCodesPassword" name="password" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Select New Billing Cycle:</label>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="new_cycle" value="month" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" 
+                                       {% if user.subscription_cycle == 'month' %}checked{% endif %}>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Monthly</div>
+                                    <div class="text-sm text-gray-500">$5.99 per month</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="new_cycle" value="year" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                       {% if user.subscription_cycle == 'year' %}checked{% endif %}>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Yearly</div>
+                                    <div class="text-sm text-gray-500">$59 per year (Save 20%)</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-modal="generateBackupCodesModal">Cancel</button>
-                <button type="submit" class="btn btn-warning">Generate New Codes</button>
+                <button type="button" class="btn btn-secondary" data-modal="changeBillingCycleModal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Change Billing Cycle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cancel Subscription Modal -->
+<div id="cancelSubscriptionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <form method="POST" action="{{ url_for('stripe.cancel_subscription') }}">
+            <div class="modal-header bg-red-50">
+                <h5 class="modal-title text-red-900">Cancel Subscription</h5>
+                <button type="button" class="modal-close" data-modal="cancelSubscriptionModal">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <strong class="text-red-800">Important:</strong>
+                        <span class="text-red-700 ml-1">You'll keep access until your next billing date.</span>
+                    </div>
+                </div>
+                <p class="text-gray-700 mb-4">Are you sure you want to cancel your subscription? You'll lose access to premium features after {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}.</p>
+                
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-900 mb-2">What happens when you cancel:</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• You'll keep premium access until {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}</li>
+                        <li>• Your account will revert to the free plan</li>
+                        <li>• You can resubscribe anytime</li>
+                        <li>• All your letters will remain safe and accessible</li>
+                    </ul>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="cancelReason" class="block text-sm font-medium text-gray-700 mb-2">Reason for cancellation (optional)</label>
+                        <select id="cancelReason" name="cancel_reason" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            <option value="">Select a reason...</option>
+                            <option value="too_expensive">Too expensive</option>
+                            <option value="not_using">Not using the service</option>
+                            <option value="found_alternative">Found an alternative</option>
+                            <option value="technical_issues">Technical issues</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cancelFeedback" class="block text-sm font-medium text-gray-700 mb-2">Additional feedback (optional)</label>
+                        <textarea id="cancelFeedback" name="cancel_feedback" rows="3" placeholder="Help us improve by sharing your feedback..."
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="cancelSubscriptionModal">Keep Subscription</button>
+                <button type="submit" class="btn btn-danger">Cancel Subscription</button>
             </div>
         </form>
     </div>

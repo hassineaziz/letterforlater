@@ -60,11 +60,15 @@ def create_app():
     from .views import views
     from .auth import auth
     from .pricing import pricing_bp
+    from .stripe_routes import stripe_bp
+    from .webhook_handler import webhook_bp
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(seo_bp, url_prefix='/')
     app.register_blueprint(pricing_bp, url_prefix='/')
+    app.register_blueprint(stripe_bp, url_prefix='/')
+    app.register_blueprint(webhook_bp, url_prefix='/')
 
     from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment
     
@@ -90,16 +94,22 @@ def create_app():
     @app.context_processor
     def inject_pending_trusted_invitations():
         from website.models import TrustedContact
-        if current_user.is_authenticated:
-            pending_trusted_invitations = TrustedContact.query.filter_by(email=current_user.email, is_confirmed=False).all()
-        else:
+        try:
+            if current_user.is_authenticated:
+                pending_trusted_invitations = TrustedContact.query.filter_by(email=current_user.email, is_confirmed=False).all()
+            else:
+                pending_trusted_invitations = []
+        except:
             pending_trusted_invitations = []
         return dict(pending_trusted_invitations=pending_trusted_invitations)
 
     # Add context processor to ensure user is always available in templates
     @app.context_processor
     def inject_user():
-        return dict(user=current_user)
+        try:
+            return dict(user=current_user if current_user.is_authenticated else None)
+        except:
+            return dict(user=None)
 
     # Add custom Jinja filter for status color
     def status_color(status):
@@ -138,5 +148,36 @@ def create_app():
             # ISO 8601 date-time for SEO/JSON-LD usage
             return datetime.now(timezone.utc).isoformat()
         return dict(now=now)
+
+    # Add plan utilities to context
+    @app.context_processor
+    def inject_plan_utils():
+        from website.plan_utils import (
+            get_user_plan, is_premium_user, is_lifetime_user,
+            can_create_unlimited_letters, can_upload_media, can_schedule_letters,
+            can_use_scheduled_delivery, can_use_death_verification,
+            can_add_unlimited_contacts, get_max_letters, get_max_contacts,
+            get_storage_limit, get_plan_features, get_upgrade_message,
+            get_plan_comparison, check_feature_access, get_upgrade_cta_text
+        )
+        return dict(
+            get_user_plan=get_user_plan,
+            is_premium_user=is_premium_user,
+            is_lifetime_user=is_lifetime_user,
+            can_create_unlimited_letters=can_create_unlimited_letters,
+            can_upload_media=can_upload_media,
+            can_schedule_letters=can_schedule_letters,
+            can_use_scheduled_delivery=can_use_scheduled_delivery,
+            can_use_death_verification=can_use_death_verification,
+            can_add_unlimited_contacts=can_add_unlimited_contacts,
+            get_max_letters=get_max_letters,
+            get_max_contacts=get_max_contacts,
+            get_storage_limit=get_storage_limit,
+            get_plan_features=get_plan_features,
+            get_upgrade_message=get_upgrade_message,
+            get_plan_comparison=get_plan_comparison,
+            check_feature_access=check_feature_access,
+            get_upgrade_cta_text=get_upgrade_cta_text
+        )
 
     return app

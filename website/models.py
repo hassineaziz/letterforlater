@@ -84,6 +84,21 @@ class User(db.Model, UserMixin):
     password_reset_token = db.Column(db.String(100), unique=True, nullable=True)
     password_reset_expires = db.Column(db.DateTime(timezone=True), nullable=True)
     
+    # Subscription/Plan fields
+    plan = db.Column(db.String(20), default='free')  # free, premium, lifetime
+    subscription_cycle = db.Column(db.String(10), nullable=True)  # month, year
+    stripe_customer_id = db.Column(db.String(100), nullable=True)
+    subscription_id = db.Column(db.String(100), nullable=True)
+    subscription_status = db.Column(db.String(20), nullable=True)  # active, cancelled, etc.
+    
+    # Enhanced subscription tracking
+    subscription_end_date = db.Column(db.DateTime(timezone=True), nullable=True)
+    subscription_cancel_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    subscription_cancel_at_period_end = db.Column(db.Boolean, default=False)
+    last_payment_date = db.Column(db.DateTime(timezone=True), nullable=True)
+    next_payment_date = db.Column(db.DateTime(timezone=True), nullable=True)
+    subscription_trial_end = db.Column(db.DateTime(timezone=True), nullable=True)
+    
     # Relationships
     letters = db.relationship('Letter', backref='author', lazy='dynamic', cascade='all, delete-orphan')
     trusted_contacts = db.relationship(
@@ -322,3 +337,26 @@ class RecipientInvite(db.Model):
         
         from datetime import timedelta
         return datetime.now() - self.last_reminder_sent_at > timedelta(days=7)
+
+class Payment(db.Model):
+    """Track payment history for users"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    stripe_payment_intent_id = db.Column(db.String(100), nullable=True)
+    stripe_invoice_id = db.Column(db.String(100), nullable=True)
+    amount = db.Column(db.Integer, nullable=False)  # Amount in cents
+    currency = db.Column(db.String(3), default='usd')
+    plan = db.Column(db.String(20), nullable=False)  # free, premium, lifetime
+    cycle = db.Column(db.String(10), nullable=True)  # month, year, one_time
+    status = db.Column(db.String(20), nullable=False)  # succeeded, failed, pending, refunded
+    payment_date = db.Column(db.DateTime(timezone=True), default=func.now())
+    description = db.Column(db.String(200), nullable=True)
+    
+    # Relationships
+    user = db.relationship('User', backref='payments')
+    
+    __table_args__ = (
+        db.Index('idx_payment_user', 'user_id'),
+        db.Index('idx_payment_date', 'payment_date'),
+        db.Index('idx_payment_status', 'status'),
+    )

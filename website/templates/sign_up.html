@@ -18,6 +18,25 @@
     <div class="text-center">
       <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Your Account</h2>
       <p class="text-gray-600">Join Letter for Later and start preserving your memories</p>
+      
+      <!-- Plan Selection Display -->
+      {% if selected_plan and selected_plan != 'free' %}
+        <div class="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4">
+          <div class="flex items-center justify-center mb-2">
+            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-sm font-semibold text-blue-800">Selected Plan: {{ selected_plan.title() }}</span>
+          </div>
+          <p class="text-sm text-blue-700">
+            {% if selected_plan == 'premium' %}
+              You'll get unlimited letters, media attachments, and scheduling features
+            {% elif selected_plan == 'lifetime' %}
+              You'll get everything in Premium with lifetime access
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
     </div>
     
     <!-- Sign Up Form -->
@@ -26,6 +45,10 @@
         {% if next %}
           <input type="hidden" name="next" value="{{ next }}" />
         {% endif %}
+        
+        <!-- Hidden fields for plan information -->
+        <input type="hidden" name="intended_plan" value="{{ selected_plan }}" />
+        <input type="hidden" name="intended_cycle" value="{{ cycle }}" />
         
         <div class="space-y-5">
           <div>

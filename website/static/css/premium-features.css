@@ -1,0 +1,430 @@
+/* Premium Feature Restrictions & Upgrade Prompts */
+
+/* Premium Feature Overlay */
+.premium-overlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.premium-overlay:hover::before {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(3px);
+}
+
+.premium-lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    animation: premiumPulse 2s infinite;
+}
+
+.premium-lock-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+@keyframes premiumPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.premium-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 12px;
+    z-index: 15;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    animation: badgeGlow 3s infinite;
+}
+
+@keyframes badgeGlow {
+    0%, 100% { box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3); }
+    50% { box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5); }
+}
+
+/* Premium Feature Tooltip */
+.premium-tooltip {
+    position: absolute;
+    bottom: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 25;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid rgba(0, 0, 0, 0.9);
+}
+
+.premium-overlay:hover .premium-tooltip {
+    opacity: 1;
+    visibility: visible;
+    bottom: -50px;
+}
+
+/* Upgrade Modal Styles */
+.upgrade-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.upgrade-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.upgrade-modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.upgrade-modal.active .upgrade-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.upgrade-feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    animation: iconBounce 0.6s ease-out;
+}
+
+@keyframes iconBounce {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.upgrade-feature-icon svg {
+    width: 36px;
+    height: 36px;
+    color: white;
+}
+
+/* Inline Upgrade Banner */
+.upgrade-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    animation: bannerSlide 0.5s ease-out;
+}
+
+@keyframes bannerSlide {
+    0% { transform: translateX(-100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+.upgrade-banner-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.upgrade-banner-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.upgrade-banner-icon svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.upgrade-banner-text {
+    flex: 1;
+}
+
+.upgrade-banner-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.upgrade-banner-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.upgrade-banner-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.upgrade-banner-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Fixed Bottom Upgrade Bar */
+.fixed-upgrade-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(102, 126, 234, 0.3);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.fixed-upgrade-bar.show {
+    transform: translateY(0);
+}
+
+.fixed-upgrade-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fixed-upgrade-text {
+    flex: 1;
+}
+
+.fixed-upgrade-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.fixed-upgrade-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.fixed-upgrade-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.fixed-upgrade-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fixed-upgrade-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+}
+
+.fixed-upgrade-button.primary {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.fixed-upgrade-button.primary:hover {
+    background: white;
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.fixed-upgrade-savings {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+/* Premium Feature Cards */
+.premium-feature-card {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.premium-feature-card.locked {
+    opacity: 0.6;
+    filter: grayscale(0.3);
+}
+
+.premium-feature-card.locked:hover {
+    opacity: 0.8;
+    filter: grayscale(0.1);
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .upgrade-modal-content {
+        padding: 24px;
+        margin: 20px;
+    }
+    
+    .upgrade-banner {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .upgrade-banner-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .upgrade-banner-icon {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    
+    .fixed-upgrade-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .fixed-upgrade-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .premium-lock-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .premium-lock-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}

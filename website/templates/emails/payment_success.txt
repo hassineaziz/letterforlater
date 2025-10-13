@@ -1,0 +1,30 @@
+Payment Successful - LetterForLater
+====================================
+
+Dear {{ user_name }},
+
+Thank you for subscribing to LetterForLater! Your payment has been processed successfully.
+
+SUBSCRIPTION DETAILS:
+--------------------
+Plan: {{ plan_name }}
+Billing Cycle: {{ billing_cycle }}
+Amount Paid: ${{ amount }}
+Next Payment: {{ next_payment_date }}
+Status: Active
+
+WHAT'S NEXT?
+------------
+1. Create your first legacy letter
+2. Add trusted contacts for verification  
+3. Schedule delivery and secure your legacy
+
+Get started now: {{ dashboard_url }}
+
+Need help? Contact us at support@letterforlater.com
+
+This email was sent to {{ user_email }}. If you didn't make this payment, please contact us immediately.
+
+---
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com

@@ -15,7 +15,26 @@
                 {% if letter_to_edit %}Update your letter and save the changes.{% else %}Your message will be safe here, and delivered with care when the time is right.{% endif %}
             </p>
             
-            
+            <!-- Letter Count Restriction for Free Users -->
+            {% if not can_create_unlimited_letters() and not letter_to_edit %}
+                <div class="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 max-w-2xl mx-auto">
+                    <div class="flex items-center justify-center mb-2">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-blue-800">Free Plan: 1 Letter Included</span>
+                    </div>
+                    <p class="text-sm text-blue-700 mb-3">You can create one letter with your free account. Upgrade to Premium for unlimited letters!</p>
+                    <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="window.location.href='/pricing'">
+                            Upgrade to Premium
+                        </button>
+                        <button class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="window.location.href='/pricing'">
+                            View All Plans
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -60,6 +79,7 @@
 
             <!-- Media Attachments Section -->
             <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-pink-100">
+                
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
@@ -68,30 +88,53 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Media Attachments</h3>
-                            <p class="text-sm text-gray-600">Add photos, videos, or audio to make your letter more personal</p>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900">Media Attachments</h3>
+                                {% if not can_upload_media() %}
+                                    <span class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold px-2 py-1 rounded-full">Premium</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                {% if can_upload_media() %}
+                                    Add photos, videos, or audio to make your letter more personal
+                                {% else %}
+                                    Attach precious photos, videos, and audio recordings to your letters
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                     <button type="button"
-                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-sm font-medium flex items-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-                        id="toggleMediaBtn">
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-sm font-medium flex items-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 {% if not can_upload_media() %}pointer-events-none opacity-50{% endif %}"
+                        id="toggleMediaBtn" 
+                        {% if not can_upload_media() %}data-premium-feature="media_attachments"{% endif %}>
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        Add Media
+                        {% if can_upload_media() %}Add Media{% else %}Upgrade to Add Media{% endif %}
                     </button>
                 </div>
 
                 <!-- Collapsible Media Upload Container -->
                 <div class="media-upload-container hidden" id="mediaUploadContainer">
+                    {% if not can_upload_media() %}
+                        <div class="premium-overlay">
+                            <div class="premium-lock-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <div class="premium-badge">Premium Feature</div>
+                        </div>
+                    {% endif %}
                     <div class="bg-gray-50 rounded-lg p-6">
                         <!-- Upload Options Tabs -->
                         <div class="mb-6">
                             <div class="flex space-x-1 bg-gray-200 p-1 rounded-lg" role="tablist">
                                 <button type="button"
-                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-primary shadow-sm"
-                                    id="upload-tab" onclick="switchTab('upload')">
+                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-primary shadow-sm {% if not can_upload_media() %}pointer-events-none opacity-50{% endif %}"
+                                    id="upload-tab" onclick="switchTab('upload')"
+                                    {% if not can_upload_media() %}disabled{% endif %}>
                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -101,8 +144,9 @@
                                     Upload Files
                                 </button>
                                 <button type="button"
-                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-primary"
-                                    id="record-tab" onclick="switchTab('record')">
+                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-primary {% if not can_upload_media() %}pointer-events-none opacity-50{% endif %}"
+                                    id="record-tab" onclick="switchTab('record')"
+                                    {% if not can_upload_media() %}disabled{% endif %}>
                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -112,8 +156,9 @@
                                     Record Audio
                                 </button>
                                 <button type="button"
-                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-primary"
-                                    id="video-tab" onclick="switchTab('video')">
+                                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-primary {% if not can_upload_media() %}pointer-events-none opacity-50{% endif %}"
+                                    id="video-tab" onclick="switchTab('video')"
+                                    {% if not can_upload_media() %}disabled{% endif %}>
                                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -289,6 +334,7 @@
 
             <!-- Delivery Settings -->
             <div class="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/50 border-b-2 border-b-orange-100">
+                
                 <div class="flex items-center mb-4">
                     <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,7 +343,9 @@
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-gray-900">Delivery Settings</h3>
-                        <p class="text-sm text-gray-600">Choose when and how your letter will be delivered</p>
+                        <p class="text-sm text-gray-600">
+                            Choose when and how your letter will be delivered
+                        </p>
                     </div>
                 </div>
 
@@ -309,7 +357,7 @@
                         id="delivery_type" name="delivery_type" required>
                         <option value="">Select delivery type</option>
                         <option value="date" {% if letter_to_edit and letter_to_edit.delivery_type=='date' %}selected{%
-                            endif %}>On a Chosen Date</option>
+                            endif %}{% if not can_use_scheduled_delivery() %} disabled{% endif %}>On a Chosen Date{% if not can_use_scheduled_delivery() %} (Premium Only){% endif %}</option>
                         <option value="death_verification" {% if letter_to_edit and
                             letter_to_edit.delivery_type=='death_verification' %}selected{% endif %}>When Verified by
                             Trusted Contacts</option>
@@ -318,7 +366,15 @@
 
                 <!-- Date Settings (stays in place) -->
                 <div id="dateSettings" class="hidden">
-                    <div class="glass-card-ui rounded-xl p-6 shadow-lg">
+                    <div class="glass-card-ui rounded-xl p-6 shadow-lg {% if not can_use_scheduled_delivery() %}premium-overlay{% endif %}">
+                        {% if not can_use_scheduled_delivery() %}
+                            <div class="premium-lock-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="premium-badge">Premium Feature</div>
+                        {% endif %}
                         <div class="flex items-center mb-4">
                             <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center mr-4">
                                 <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -336,9 +392,10 @@
                             <label for="scheduled_date" class="block text-sm font-medium text-primary mb-3">Select
                                 Date</label>
                             <input type="date"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg {% if not can_use_scheduled_delivery() %}pointer-events-none opacity-50{% endif %}"
                                 id="scheduled_date" name="scheduled_date"
-                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}">
+                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}"
+                                {% if not can_use_scheduled_delivery() %}disabled{% endif %}>
                             <p class="text-xs text-gray-600 mt-3 flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">

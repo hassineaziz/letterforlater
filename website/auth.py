@@ -76,6 +76,21 @@ def login():
                     contact = TrustedContact.query.filter_by(email=user.email, is_confirmed=False).first()
                     if contact:
                         session['pending_trusted_contact_code'] = contact.confirmation_code
+                    # Check for intended plan upgrade
+                    intended_plan = session.get('intended_plan')
+                    intended_cycle = session.get('intended_cycle')
+                    user_email = session.get('user_email')
+                    
+                    if intended_plan and intended_plan != 'free' and user_email == user.email:
+                        # Clear session data
+                        session.pop('intended_plan', None)
+                        session.pop('intended_cycle', None)
+                        session.pop('user_email', None)
+                        
+                        # Redirect to upgrade flow
+                        flash(f'Welcome! You signed up for {intended_plan.title()} plan. Complete your upgrade to unlock all features!', 'info')
+                        return redirect(url_for('pricing.pricing_page'))
+                    
                     flash('Logged in successfully!', category='success')
                     return redirect(next_page or url_for('views.home'))
             else:
@@ -205,6 +220,15 @@ def logout():
 def sign_up():
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
+    
+    # Get plan parameter from URL
+    selected_plan = request.args.get('plan', 'free')
+    cycle = request.args.get('cycle', 'month')
+    
+    # Validate plan parameter
+    if selected_plan not in ['free', 'premium', 'lifetime']:
+        selected_plan = 'free'
+    
     next_page = request.args.get('next')
     if request.method == 'POST':
         email = request.form.get('email')
@@ -212,6 +236,8 @@ def sign_up():
         last_name = request.form.get('lastName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        intended_plan = request.form.get('intended_plan', 'free')
+        intended_cycle = request.form.get('intended_cycle', 'month')
         next_page = request.form.get('next') or next_page
         user = User.query.filter_by(email=email).first()
         if user:
@@ -232,12 +258,19 @@ def sign_up():
                 first_name=first_name,
                 last_name=last_name,
                 password=generate_password_hash(password1, method='pbkdf2:sha256'),
+                plan='free',  # Always start with free plan
+                subscription_cycle=intended_cycle if intended_plan == 'premium' else None,
                 notification_preferences={'email_notifications': True},
                 delivery_preferences={'delivery_method': 'email'},
                 is_active=False
             )
             db.session.add(new_user)
             db.session.commit()
+
+            # Store intended plan in session for post-signup upgrade flow
+            session['intended_plan'] = intended_plan
+            session['intended_cycle'] = intended_cycle
+            session['user_email'] = email
 
             # Check if this is a trusted contact signup
             trusted_contact_code = session.get('trusted_contact_code')
@@ -313,7 +346,7 @@ LetterForLater Team'''
         if contact:
             email = contact.email
 
-    return render_template("sign_up.html", user=current_user, email=email, next=next_page)
+    return render_template("sign_up.html", user=current_user, email=email, next=next_page, selected_plan=selected_plan, cycle=cycle)
 
 @auth.route('/sign-up-with-invite/<token>', methods=['GET', 'POST'])
 def sign_up_with_invite(token):

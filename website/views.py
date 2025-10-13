@@ -355,28 +355,7 @@ def generate_unique_slug(base_title: str) -> str:
 def home():
     """Home page - landing page when logged out, dashboard when logged in"""
     if current_user.is_authenticated:
-        # Get verified death verifications for the template
-        verified_death_verifications = []
-        try:
-            verified_death_verifications = current_user.death_verifications.filter_by(status='verified').all()
-        except Exception as e:
-            print(f"Error loading death verifications: {e}")
-            verified_death_verifications = []
-        
-        # Get letter counts for the template
-        scheduled_letters_count = 0
-        delivered_letters_count = 0
-        try:
-            scheduled_letters_count = current_user.letters.filter_by(status='scheduled').count()
-            delivered_letters_count = current_user.letters.filter_by(status='delivered').count()
-        except Exception as e:
-            print(f"Error loading letter counts: {e}")
-        
-        return render_template("home.html", 
-                             user=current_user, 
-                             verified_death_verifications=verified_death_verifications,
-                             scheduled_letters_count=scheduled_letters_count,
-                             delivered_letters_count=delivered_letters_count)
+        return render_template("home.html", user=current_user)
     else:
         return render_template("landing.html")
 

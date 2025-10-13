@@ -215,6 +215,14 @@ class PremiumFeatures {
         // Only show for free users (this would be determined server-side)
         const isFreeUser = document.body.dataset.userPlan === 'free';
         
+        // Check if user has dismissed the banner recently
+        const dismissedUntil = localStorage.getItem('upgrade-banner-dismissed');
+        const now = Date.now();
+        
+        if (dismissedUntil && now < parseInt(dismissedUntil)) {
+            return; // Don't show if dismissed recently
+        }
+        
         if (isFreeUser) {
             const upgradeBar = this.createFixedUpgradeBar();
             document.body.appendChild(upgradeBar);
@@ -250,6 +258,11 @@ class PremiumFeatures {
                     </a>
                     <span class="fixed-upgrade-savings">Save 20%</span>
                 </div>
+                <button class="fixed-upgrade-close" onclick="this.parentElement.parentElement.remove(); localStorage.setItem('upgrade-banner-dismissed', Date.now() + (24 * 60 * 60 * 1000));" title="Close banner">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
         `;
         

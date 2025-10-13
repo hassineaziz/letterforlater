@@ -7,7 +7,7 @@
     <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         
         <!-- Death Verification Notifications -->
-{% if user.death_verifications.filter_by(status='verified').first() %}
+{% if verified_death_verifications %}
 <div class="bg-red-50 border border-red-200 rounded-xl shadow-lg mb-8">
     <div class="bg-red-100 text-red-900 px-6 py-4 rounded-t-xl">
         <h5 class="text-lg font-semibold flex items-center">
@@ -18,7 +18,7 @@
         </h5>
     </div>
     <div class="p-6">
-        {% for verification in user.death_verifications.filter_by(status='verified') %}
+        {% for verification in verified_death_verifications %}
         <div class="bg-red-100 border border-red-300 rounded-lg p-4 mb-4">
             <h6 class="text-lg font-semibold text-red-900 mb-2">Letters Have Been Processed</h6>
             <p class="text-red-800 mb-4">{{ verification.confirmations_count }} of your trusted contacts have confirmed your death. 
@@ -79,7 +79,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-yellow-600 transition-colors duration-300">{{ user.letters.filter_by(status='scheduled').count() }}</h3>
+                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-yellow-600 transition-colors duration-300">{{ scheduled_letters_count }}</h3>
                 <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-medium group-hover:text-yellow-500 transition-colors duration-300">Scheduled</p>
             </a>
             
@@ -89,7 +89,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-green-600 transition-colors duration-300">{{ user.letters.filter_by(status='delivered').count() }}</h3>
+                <h3 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-green-600 transition-colors duration-300">{{ delivered_letters_count }}</h3>
                 <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-medium group-hover:text-green-500 transition-colors duration-300">Delivered</p>
             </a>
             

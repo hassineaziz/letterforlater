@@ -152,7 +152,14 @@
       <!-- Premium Plan -->
       <div id="premium-card" class="group relative bg-white rounded-2xl border-2 border-blue-500 p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 order-1 lg:order-none mt-8">
         <div class="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-          <span class="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">Most Popular</span>
+          <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+            <span>Most Popular</span>
+            <button id="close-banner" class="ml-2 hover:bg-white/20 rounded-full p-1 transition-colors" title="Close banner">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="relative z-10 h-full flex flex-col">
           <div class="text-center mb-8">
@@ -524,34 +531,20 @@ document.addEventListener('DOMContentLoaded', function() {
     mobilePremiumCta.onclick = function() { checkout('premium', 'month'); };
   }
   
-  // Banner scroll behavior
+  // Banner close functionality
+  const closeBannerBtn = document.getElementById('close-banner');
   const banner = document.querySelector('#premium-card .absolute');
-  let lastScrollY = window.scrollY;
-  let isScrollingDown = false;
   
-  if (banner) {
-    window.addEventListener('scroll', function() {
-      const currentScrollY = window.scrollY;
-      const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+  if (closeBannerBtn && banner) {
+    closeBannerBtn.addEventListener('click', function() {
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateX(-50%) translateY(-20px)';
+      banner.style.transition = 'all 0.3s ease-out';
       
-      // Only hide/show if direction changed
-      if (scrollDirection !== isScrollingDown) {
-        isScrollingDown = scrollDirection === 'down';
-        
-        if (isScrollingDown && currentScrollY > 100) {
-          // Scrolling down - hide banner
-          banner.style.transform = 'translateX(-50%) translateY(-20px)';
-          banner.style.opacity = '0';
-          banner.style.transition = 'all 0.3s ease-out';
-        } else {
-          // Scrolling up or at top - show banner
-          banner.style.transform = 'translateX(-50%) translateY(0)';
-          banner.style.opacity = '1';
-          banner.style.transition = 'all 0.3s ease-out';
-        }
-      }
-      
-      lastScrollY = currentScrollY;
+      // Hide banner completely after animation
+      setTimeout(() => {
+        banner.style.display = 'none';
+      }, 300);
     });
   }
 });

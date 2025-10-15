@@ -3,7 +3,11 @@ WSGI entry point for production deployment
 Use with gunicorn: gunicorn -w 4 wsgi:app
 """
 from website import create_app
+from dotenv import load_dotenv
 import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Set production environment
 os.environ.setdefault('FLASK_ENV', 'production')

@@ -99,6 +99,9 @@ class User(db.Model, UserMixin):
     next_payment_date = db.Column(db.DateTime(timezone=True), nullable=True)
     subscription_trial_end = db.Column(db.DateTime(timezone=True), nullable=True)
     
+    # Marketing consent
+    marketing_consent = db.Column(db.Boolean, default=False)
+    
     # Relationships
     letters = db.relationship('Letter', backref='author', lazy='dynamic', cascade='all, delete-orphan')
     trusted_contacts = db.relationship(

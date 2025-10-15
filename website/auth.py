@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-from .models import User, TrustedContact, DeathVerification, Letter
+from .models import User, TrustedContact, DeathVerification, Letter, NewsletterSubscriber
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -262,10 +262,27 @@ def sign_up():
                 subscription_cycle=intended_cycle if intended_plan == 'premium' else None,
                 notification_preferences={'email_notifications': True},
                 delivery_preferences={'delivery_method': 'email'},
-                is_active=False
+                is_active=False,
+                marketing_consent=(request.form.get('marketing_consent') == 'yes')
             )
             db.session.add(new_user)
             db.session.commit()
+
+            # If marketing consent given, add/update newsletter subscriber
+            if new_user.marketing_consent:
+                subscriber = NewsletterSubscriber.query.filter_by(email=email).first()
+                if not subscriber:
+                    subscriber = NewsletterSubscriber(
+                        email=email,
+                        status='subscribed',
+                        source='signup_form'
+                    )
+                    db.session.add(subscriber)
+                else:
+                    subscriber.status = 'subscribed'
+                    if not subscriber.source:
+                        subscriber.source = 'signup_form'
+                db.session.commit()
 
             # Store intended plan in session for post-signup upgrade flow
             session['intended_plan'] = intended_plan

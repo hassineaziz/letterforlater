@@ -20,8 +20,8 @@ def update_static_sitemap():
     app = create_app()
     
     with app.app_context():
-        # Get the actual domain from environment or use placeholder
-        domain = os.getenv('SITE_DOMAIN', 'yourdomain.com')
+        # Get the actual domain from environment or use letterforlater.com
+        domain = os.getenv('SITE_DOMAIN', 'letterforlater.com')
         if not domain.startswith('https://'):
             domain = f'https://{domain}'
         
@@ -36,6 +36,7 @@ def update_static_sitemap():
         static_pages = [
             ('/', 'daily', 1.0),
             ('/blog', 'daily', 0.8),
+            ('/pricing', 'weekly', 0.7),
             ('/privacy', 'monthly', 0.3),
             ('/terms', 'monthly', 0.3),
         ]

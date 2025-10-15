@@ -134,19 +134,23 @@ def admin_required(f):
 @views.route('/admin/update-sitemap')
 @admin_required
 def admin_update_sitemap():
-    """Update static sitemap manually"""
+    """Update sitemap - now uses dynamic sitemap automatically"""
     try:
+        # The dynamic sitemap at /sitemap.xml is automatically updated
+        # No need to run scripts - just confirm it's working
+        flash('Sitemap is automatically updated! Visit /sitemap.xml to see current sitemap.', 'success')
+        
+        # Optional: Also update static sitemap for backup
         import subprocess
         import os
         
-        # Run the sitemap update script
         script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'update_sitemap.py')
         result = subprocess.run(['python', script_path], capture_output=True, text=True)
         
         if result.returncode == 0:
-            flash('Sitemap updated successfully!', 'success')
+            flash('Static sitemap backup also updated successfully!', 'info')
         else:
-            flash(f'Error updating sitemap: {result.stderr}', 'error')
+            flash(f'Static sitemap backup failed: {result.stderr}', 'warning')
             
     except Exception as e:
         flash(f'Error updating sitemap: {str(e)}', 'error')
@@ -1944,9 +1948,7 @@ def save_draft():
     scheduled_date = data.get('scheduled_date')
     media_files = data.get('media_files', [])  # Get media files from frontend
     
-    # Debug: Log what we received
-    print(f"DEBUG: Received draft data - media_files count: {len(media_files)}")
-    print(f"DEBUG: Media files data: {media_files}")
+    # Process media files for draft
 
     # Save draft even with minimal content to preserve user work
     # Only skip if literally nothing is provided (including media files)
@@ -2061,9 +2063,7 @@ def get_draft():
         'media_files': media_files  # Include media files from database
     }
     
-    # Debug: Log what we're returning
-    print(f"DEBUG: Returning draft data - media_files count: {len(draft_data['media_files'])}")
-    print(f"DEBUG: Media files in draft: {draft_data['media_files']}")
+    # Return draft data with media files
     
     return jsonify({'draft': draft_data})
 
@@ -2385,12 +2385,7 @@ def api_handle_invitation():
         return jsonify({'success': False, 'error': 'Missing required parameters'}), 400
     
     # First try to find it as a TrustedContact invitation
-    print(f"DEBUG: Looking for TrustedContact with ID: {notification_id}")
     trusted_contact = TrustedContact.query.get(notification_id)
-    print(f"DEBUG: Found TrustedContact: {trusted_contact}")
-    if trusted_contact:
-        print(f"DEBUG: TrustedContact email: {trusted_contact.email}, current_user email: {current_user.email}, is_confirmed: {trusted_contact.is_confirmed}")
-    
     if trusted_contact and trusted_contact.email == current_user.email and not trusted_contact.is_confirmed:
         # This is a trusted contact invitation
         try:
@@ -2831,47 +2826,7 @@ def download_media_session(media_id):
         print(f"❌ Error downloading media: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@views.route('/debug-media-session')
-@login_required
-def debug_media_session():
-    """Debug route to see temporary media in database"""
-    try:
-        # Get temporary media for current user
-        temp_media = MediaAttachment.query.filter_by(
-            user_id=current_user.id,
-            is_temporary=True
-        ).all()
-        
-        media_details = []
-        for media in temp_media:
-            media_details.append({
-                'id': media.id,
-                'file_name': media.file_name,
-                'file_path': media.file_path,
-                'file_type': media.file_type,
-                'mime_type': media.mime_type,
-                'file_size': media.file_size,
-                'created_at': media.created_at.isoformat() if media.created_at else None,
-                'expires_at': media.expires_at.isoformat() if media.expires_at else None,
-                'is_expired': media.is_expired(),
-                'file_exists': os.path.exists(media.file_path) if media.file_path else False
-            })
-        
-        # Get user media stats
-        stats = production_media_handlers.media_handler.get_user_media_stats(current_user.id)
-        
-        return jsonify({
-            'user_id': current_user.id,
-            'temp_media_count': len(temp_media),
-            'temp_media_details': media_details,
-            'user_stats': stats,
-            'upload_folder': os.path.join(os.getcwd(), 'website', 'static', 'uploads'),
-            'upload_folder_exists': os.path.exists(os.path.join(os.getcwd(), 'website', 'static', 'uploads'))
-        })
-        
-    except Exception as e:
-        print(f"❌ Error in debug media session: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+# Debug route removed for production
 
 @views.route('/media-stats')
 @login_required

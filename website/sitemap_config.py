@@ -23,21 +23,11 @@ seo_bp = Blueprint('seo', __name__)
 
 def sitemap_generator():
     """Generate sitemap entries automatically"""
+    from .auto_sitemap import generate_auto_sitemap
     
-    # Static pages - using proper ISO 8601 format
-    now_iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
-    yield 'views.home', {}, now_iso, 'daily', 1.0
-    yield 'views.blog_index', {}, now_iso, 'daily', 0.8
-    yield 'views.privacy_policy', {}, now_iso, 'monthly', 0.3
-    yield 'views.terms_of_service', {}, now_iso, 'monthly', 0.3
-    
-    # Dynamic blog posts - using proper ISO 8601 format
-    blog_posts = BlogPost.query.filter_by(status='published').all()
-    for post in blog_posts:
-        lastmod = post.updated_at or post.published_at or post.created_at
-        # Convert to ISO 8601 without microseconds
-        lastmod_iso = lastmod.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
-        yield 'views.blog_post', {'slug': post.slug}, lastmod_iso, 'weekly', 0.6
+    # Use automatic discovery for all routes
+    for entry in generate_auto_sitemap():
+        yield entry
 
 @seo_bp.route('/robots.txt')
 def robots_txt():
@@ -72,8 +62,7 @@ Disallow: /pending-trusted-contact
 Disallow: /media/
 Disallow: /download-media/
 
-# Block debug and test routes
-Disallow: /sitemap-debug
+# Block test routes
 Disallow: /test/
 
 # Allow important public pages
@@ -94,30 +83,7 @@ Sitemap: {base_url}/blog/feed.xml
     
     return robots_content, 200, {'Content-Type': 'text/plain'}
 
-@seo_bp.route('/sitemap-debug')
-def sitemap_debug():
-    """Debug sitemap generation"""
-    try:
-        entries = list(sitemap_generator())
-        debug_info = {
-            'total_entries': len(entries),
-            'entries': []
-        }
-        
-        for entry in entries:
-            debug_info['entries'].append({
-                'endpoint': entry[0],
-                'params': entry[1],
-                'lastmod': entry[2],
-                'changefreq': entry[3],
-                'priority': entry[4]
-            })
-        
-        from flask import jsonify
-        return jsonify(debug_info)
-    except Exception as e:
-        from flask import jsonify
-        return jsonify({'error': str(e)}), 500
+# Debug route removed for production
 
 @seo_bp.route('/sitemap.xml')
 def sitemap_xml():
@@ -167,7 +133,7 @@ def sitemap_xml():
                     priority_elem.text = str(entry[4])
                     
             except Exception as e:
-                print(f"Error generating URL for {entry[0]}: {e}")
+                # Log error but continue with other entries
                 continue
         
         # Convert to string

@@ -23,8 +23,7 @@ Disallow: /pending-trusted-contact
 Disallow: /media/
 Disallow: /download-media/
 
-# Block debug and test routes
-Disallow: /sitemap-debug
+# Block test routes
 Disallow: /test/
 
 # Allow important public pages

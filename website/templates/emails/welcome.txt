@@ -1,0 +1,49 @@
+Welcome to LetterForLater!
+============================
+
+Hi {{ user_name }},
+
+Thank you for joining LetterForLater! You've taken the first step toward creating something truly meaningful - a way to share your thoughts, wisdom, and love with those who matter most, even when you're no longer here to say it yourself.
+
+WHAT MAKES US SPECIAL:
+---------------------
+🔒 Bank-Level Security - Your letters are encrypted and stored securely
+👥 Trusted Contacts - Choose who can verify and deliver your letters  
+📅 Scheduled Delivery - Set specific dates or conditions for delivery
+📱 Easy Management - Create, edit, and manage your letters anytime
+
+HOW IT WORKS:
+-------------
+1. Write Your Letter
+   Share your thoughts, memories, advice, or anything you want your loved ones to know. Use our rich text editor to format your message exactly how you want it.
+
+2. Add Trusted Contacts
+   Choose people you trust to verify important events and deliver your letters. They'll receive secure invitations to join your trusted circle.
+
+3. Set Delivery Conditions
+   Decide when your letters should be delivered - on specific dates, after a certain period, or when trusted contacts verify important events.
+
+4. Rest Easy
+   Your letters are safely stored with bank-level encryption. You can update, edit, or add new letters anytime. Your legacy is secure and ready.
+
+GET STARTED:
+-----------
+Create your first letter: {{ dashboard_url }}/add-letter
+Add trusted contacts: {{ dashboard_url }}/trusted-contacts
+
+NEED HELP?
+----------
+We're here to help you every step of the way:
+- Dashboard: {{ dashboard_url }}
+- Support: support@letterforlater.com
+- Privacy Policy: {{ dashboard_url }}/privacy
+
+Welcome to the LetterForLater family!
+
+Best regards,
+The LetterForLater Team
+
+---
+This email was sent to {{ user_email }}.
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com

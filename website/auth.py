@@ -540,6 +540,14 @@ def confirm_email(token):
     user.password_reset_token = None
     user.password_reset_expires = None
     db.session.commit()
+    
+    # Send welcome email after successful confirmation
+    try:
+        from .email_service import send_welcome_email
+        send_welcome_email(user)
+    except Exception as e:
+        print(f"Error sending welcome email: {str(e)}")
+    
     flash('Your email has been confirmed. You can now log in.', 'success')
     return redirect(url_for('auth.login'))
 

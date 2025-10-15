@@ -38,13 +38,13 @@ def create_app():
         print('Database created!')
     
     # Email configuration
-    app.config['MAIL_SERVER'] = 'smtp.ionos.de'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'info@itbewertungen.de')
-    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'Testtest123*')
-    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME', 'info@itbewertungen.de')
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+    app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+    app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() in ['true', 'on', '1']
+    app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'false').lower() in ['true', 'on', '1']
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
     app.config['MAIL_TIMEOUT'] = 10  # 10 seconds timeout
     app.config['MAIL_MAX_EMAILS'] = 10
     app.config['MAIL_ASCII_ATTACHMENTS'] = False

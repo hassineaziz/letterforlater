@@ -3,6 +3,42 @@ from flask import render_template, url_for
 from datetime import datetime, timezone
 import os
 
+def send_welcome_email(user):
+    """Send welcome email to new user"""
+    try:
+        from website import mail
+        
+        # Create email message
+        msg = Message(
+            subject="🎉 Welcome to LetterForLater - Your Legacy Awaits!",
+            recipients=[user.email],
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
+        )
+        
+        # Render HTML template
+        msg.html = render_template('emails/welcome.html',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            dashboard_url="https://letterforlater.com"
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/welcome.txt',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            dashboard_url="https://letterforlater.com"
+        )
+        
+        # Send email
+        mail.send(msg)
+        
+        print(f"✅ Welcome email sent to {user.email}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error sending welcome email: {str(e)}")
+        return False
+
 def send_payment_success_email(user, session_data):
     """Send payment success email to user"""
     try:
@@ -43,7 +79,7 @@ def send_payment_success_email(user, session_data):
         msg = Message(
             subject="🎉 Payment Successful - Welcome to LetterForLater!",
             recipients=[user.email],
-            sender=os.getenv('MAIL_USERNAME', 'info@itbewertungen.de')
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )
         
         # Render HTML template
@@ -87,26 +123,22 @@ def send_payment_failed_email(user, subscription_data):
         msg = Message(
             subject="⚠️ Payment Failed - LetterForLater Subscription",
             recipients=[user.email],
-            sender=os.getenv('MAIL_USERNAME', 'info@itbewertungen.de')
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )
         
-        # Simple text email for payment failure
-        msg.body = f"""
-Dear {user.first_name},
-
-We were unable to process your payment for your LetterForLater subscription.
-
-Please update your payment method to continue enjoying premium features:
-
-1. Log in to your account
-2. Go to Settings > Billing
-3. Update your payment method
-
-If you need assistance, please contact us at support@letterforlater.com
-
-Best regards,
-The LetterForLater Team
-        """
+        # Render HTML template
+        msg.html = render_template('emails/payment_failed.html',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            dashboard_url="https://letterforlater.com"
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/payment_failed.txt',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            dashboard_url="https://letterforlater.com"
+        )
         
         # Send email
         mail.send(msg)
@@ -127,29 +159,22 @@ def send_subscription_cancelled_email(user):
         msg = Message(
             subject="Subscription Cancelled - LetterForLater",
             recipients=[user.email],
-            sender=os.getenv('MAIL_USERNAME', 'info@itbewertungen.de')
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )
         
-        # Simple text email for cancellation
-        msg.body = f"""
-Dear {user.first_name},
-
-Your LetterForLater subscription has been cancelled.
-
-You can still use our free plan which includes:
-- 1 legacy letter
-- Bank-level encryption
-- Trusted contact verification
-- Email delivery tracking
-
-If you change your mind, you can resubscribe anytime at:
-https://letterforlater.com/pricing
-
-Thank you for being part of the LetterForLater community.
-
-Best regards,
-The LetterForLater Team
-        """
+        # Render HTML template
+        msg.html = render_template('emails/subscription_cancelled.html',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            dashboard_url="https://letterforlater.com"
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/subscription_cancelled.txt',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            dashboard_url="https://letterforlater.com"
+        )
         
         # Send email
         mail.send(msg)

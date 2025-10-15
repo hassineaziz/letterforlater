@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed - LetterForLater</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .warning-icon {
+            width: 80px;
+            height: 80px;
+            background: #F59E0B;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        h1 {
+            color: #1F2937;
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #6B7280;
+            font-size: 16px;
+            margin: 10px 0 0 0;
+        }
+        .alert-box {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .alert-title {
+            color: #92400E;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0 0 8px 0;
+        }
+        .alert-text {
+            color: #92400E;
+            font-size: 14px;
+            margin: 0;
+        }
+        .steps-section {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 30px 0;
+        }
+        .steps-title {
+            color: #1F2937;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 16px 0;
+        }
+        .step-number {
+            background: #3B82F6;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .step-text {
+            color: #374151;
+            font-size: 14px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #2563EB, #7C3AED);
+        }
+        .help-section {
+            background: #F0F9FF;
+            border: 1px solid #BAE6FD;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .help-title {
+            color: #0C4A6E;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+        .help-text {
+            color: #0369A1;
+            font-size: 14px;
+            margin: 0 0 16px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #3B82F6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">L</div>
+            <div class="warning-icon">⚠️</div>
+            <h1>Payment Failed</h1>
+            <p class="subtitle">We couldn't process your payment</p>
+        </div>
+
+        <div class="alert-box">
+            <div class="alert-title">Action Required</div>
+            <div class="alert-text">We were unable to process your payment for your LetterForLater subscription. Please update your payment method to continue enjoying premium features.</div>
+        </div>
+
+        <div class="steps-section">
+            <h3 class="steps-title">How to Fix This</h3>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">Log in to your LetterForLater account</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">Go to Settings → Billing</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">Update your payment method</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-text">Your subscription will be reactivated automatically</div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{ dashboard_url }}/settings" class="cta-button">Update Payment Method</a>
+        </div>
+
+        <div class="help-section">
+            <h3 class="help-title">Need Help?</h3>
+            <p class="help-text">Our support team is here to help you resolve any payment issues quickly.</p>
+            <p style="margin: 0;">
+                <a href="mailto:support@letterforlater.com" style="color: #3B82F6; text-decoration: none;">Contact Support</a>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>This email was sent to {{ user_email }}. If you didn't make this payment, please contact us immediately.</p>
+            <p>LetterForLater - Preserve Your Legacy</p>
+        </div>
+    </div>
+</body>
+</html>

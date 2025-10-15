@@ -2973,6 +2973,13 @@ def google_callback():
             )
             db.session.add(user)
             db.session.commit()
+            
+            # Send welcome email for new Google users
+            try:
+                from .email_service import send_welcome_email
+                send_welcome_email(user)
+            except Exception as e:
+                print(f"Error sending welcome email to Google user: {str(e)}")
         
         # Log the user in
         login_user(user, remember=True)

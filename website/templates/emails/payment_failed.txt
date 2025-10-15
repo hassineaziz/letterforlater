@@ -1,0 +1,34 @@
+Payment Failed - LetterForLater
+===============================
+
+Dear {{ user_name }},
+
+We were unable to process your payment for your LetterForLater subscription.
+
+ACTION REQUIRED:
+----------------
+Please update your payment method to continue enjoying premium features.
+
+HOW TO FIX THIS:
+----------------
+1. Log in to your LetterForLater account
+2. Go to Settings → Billing  
+3. Update your payment method
+4. Your subscription will be reactivated automatically
+
+Update Payment Method: {{ dashboard_url }}/settings
+
+NEED HELP?
+----------
+Our support team is here to help you resolve any payment issues quickly.
+
+Contact us at: support@letterforlater.com
+
+Best regards,
+The LetterForLater Team
+
+---
+This email was sent to {{ user_email }}. If you didn't make this payment, please contact us immediately.
+
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com

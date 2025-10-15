@@ -1,0 +1,34 @@
+Subscription Cancelled - LetterForLater
+========================================
+
+Dear {{ user_name }},
+
+Your LetterForLater subscription has been cancelled. We're sorry to see you go, but we understand that circumstances change.
+
+YOU STILL HAVE ACCESS TO:
+-------------------------
+✓ 1 legacy letter (create and manage)
+✓ Bank-level encryption and security
+✓ Trusted contact verification system
+✓ Email delivery tracking
+✓ Basic scheduling options
+✓ Account management and settings
+
+CHANGE YOUR MIND?
+-----------------
+You can resubscribe anytime to unlock unlimited letters and premium features.
+
+View Pricing Plans: {{ dashboard_url }}/pricing
+Continue with Free Plan: {{ dashboard_url }}
+
+Thank you for being part of the LetterForLater community.
+
+Best regards,
+The LetterForLater Team
+
+---
+Questions? Contact us at support@letterforlater.com
+This email was sent to {{ user_email }}.
+
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com

@@ -25,17 +25,15 @@
             margin-bottom: 30px;
         }
         .logo {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto 20px;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
+            display: block;
+        }
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         .success-icon {
             width: 80px;
@@ -108,6 +106,27 @@
         .cta-button:hover {
             background: linear-gradient(135deg, #2563EB, #7C3AED);
         }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .cta-button {
+                display: block;
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+                margin: 10px 0;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .details-card {
+                padding: 20px;
+            }
+            .next-steps {
+                padding: 20px;
+            }
+        }
         .next-steps {
             background: #F0F9FF;
             border: 1px solid #BAE6FD;
@@ -158,7 +177,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">L</div>
+            <div class="logo">
+                <img src="https://letterforlater.com/static/logo.png" alt="LetterForLater" />
+            </div>
             <div class="success-icon">✓</div>
             <h1>Payment Successful!</h1>
             <p class="subtitle">Thank you for subscribing to LetterForLater</p>

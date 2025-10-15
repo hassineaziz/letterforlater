@@ -25,17 +25,15 @@
             margin-bottom: 30px;
         }
         .logo {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto 20px;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
+            display: block;
+        }
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         .welcome-icon {
             width: 80px;
@@ -72,6 +70,12 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin: 30px 0;
+        }
+        @media (max-width: 600px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
         }
         .feature-card {
             background: #F9FAFB;
@@ -222,6 +226,30 @@
             .cta-button {
                 display: block;
                 margin: 10px 0;
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .secondary-button {
+                display: block;
+                margin: 10px 0;
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .intro-text {
+                font-size: 15px;
             }
         }
     </style>
@@ -229,7 +257,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">L</div>
+            <div class="logo">
+                <img src="https://letterforlater.com/static/logo.png" alt="LetterForLater" />
+            </div>
             <div class="welcome-icon">👋</div>
             <h1>Welcome to LetterForLater!</h1>
             <p class="subtitle">Your journey to preserving your legacy begins now</p>
@@ -238,29 +268,6 @@
         <div class="intro-text">
             Hi {{ user_name }},<br><br>
             Thank you for joining LetterForLater! You've taken the first step toward creating something truly meaningful - a way to share your thoughts, wisdom, and love with those who matter most, even when you're no longer here to say it yourself.
-        </div>
-
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <div class="feature-title">Bank-Level Security</div>
-                <div class="feature-desc">Your letters are encrypted and stored securely</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">👥</div>
-                <div class="feature-title">Trusted Contacts</div>
-                <div class="feature-desc">Choose who can verify and deliver your letters</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📅</div>
-                <div class="feature-title">Scheduled Delivery</div>
-                <div class="feature-desc">Set specific dates or conditions for delivery</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <div class="feature-title">Easy Management</div>
-                <div class="feature-desc">Create, edit, and manage your letters anytime</div>
-            </div>
         </div>
 
         <div class="cta-section">
@@ -305,6 +312,8 @@
                 </div>
             </div>
         </div>
+
+    
 
         <div class="footer">
             <div class="social-links">

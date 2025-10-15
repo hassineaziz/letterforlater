@@ -334,19 +334,21 @@ def sign_up():
             # Send confirmation email
             confirm_link = url_for('auth.confirm_email', token=confirm_token, _external=True)
             msg = Message('Confirm your LetterForLater account', recipients=[email])
-            msg.body = f'''Hello {first_name},
-
-Welcome to LetterForLater! Please confirm your email to activate your account.
-
-Click the link below to confirm your account:
-{confirm_link}
-
-This link will expire in 48 hours.
-
-If you did not create this account, please ignore this email.
-
-Best regards,
-LetterForLater Team'''
+            
+            # Render HTML template
+            msg.html = render_template('emails/email_confirmation.html',
+                user_name=f"{first_name} {last_name}",
+                user_email=email,
+                confirm_link=confirm_link
+            )
+            
+            # Render text template
+            msg.body = render_template('emails/email_confirmation.txt',
+                user_name=f"{first_name} {last_name}",
+                user_email=email,
+                confirm_link=confirm_link
+            )
+            
             try:
                 mail.send(msg)
             except Exception as e:

@@ -1,0 +1,34 @@
+DEATH CONFIRMATION ALERT - LETTERFORLATER
+========================================
+
+Dear {{ user_name }},
+
+{{ confirmer_name }} has confirmed your death in the LetterForLater system.
+
+CONFIRMATION STATUS:
+-------------------
+✅ {{ confirmer_name }} has confirmed
+📊 {{ confirmations_count }} of your trusted contacts have confirmed
+⏳ We need at least 50% confirmation before processing your letters
+
+IMPORTANT - IF YOU ARE STILL ALIVE:
+----------------------------------
+If you are still alive, please log in to your account immediately to reject this confirmation and prevent any further processing.
+
+Login: https://letterforlater.com/login
+
+WHAT HAPPENS NEXT:
+-----------------
+• We're waiting for more trusted contacts to confirm
+• Once 50% confirmation is reached, your letters will be processed
+• Letters will be delivered according to their settings
+
+This is an automated notification from LetterForLater.com.
+
+If you need assistance, contact us at support@letterforlater.com
+
+---
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+
+This email was sent to {{ user_email }}.

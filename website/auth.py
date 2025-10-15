@@ -468,21 +468,23 @@ def forgot_password():
             
             # Send reset email
             reset_link = url_for('auth.reset_password', token=reset_token, _external=True)
-            msg = Message('Password Reset Request',
-                        recipients=[email])
-            msg.body = f'''Hello {user.first_name},
-
-You have requested a password reset for your LetterForLater account.
-
-Click the following link to reset your password:
-{reset_link}
-
-This link will expire in 24 hours.
-
-If you did not request this reset, please ignore this email.
-
-Best regards,
-LetterForLater Team'''
+            msg = Message('Reset Your Password - LetterForLater',
+                        recipients=[email],
+                        sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com'))
+            
+            # Render HTML template
+            msg.html = render_template('emails/password_reset.html',
+                user_name=f"{user.first_name} {user.last_name}",
+                user_email=user.email,
+                reset_link=reset_link
+            )
+            
+            # Render text template
+            msg.body = render_template('emails/password_reset.txt',
+                user_name=f"{user.first_name} {user.last_name}",
+                user_email=user.email,
+                reset_link=reset_link
+            )
             
             try:
                 mail.send(msg)

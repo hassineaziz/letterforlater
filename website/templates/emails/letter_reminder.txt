@@ -1,0 +1,52 @@
+FRIENDLY REMINDER - {{ author_name }} HAS LEFT YOU A PERSONAL LETTER
+===================================================================
+
+Dear {{ recipient_name }},
+
+{{ author_name }} wrote you a personal letter that has been preserved through LetterForLater, a secure platform for delivering important messages to loved ones. This is a heartfelt message written specifically for you.
+
+LETTER DETAILS:
+--------------
+👤 From: {{ author_name }}
+📅 Sent: {{ sent_date }}
+📝 Title: "{{ letter_title }}"
+
+YOUR PERSONAL LETTER FROM {{ author_name }}:
+--------------------------------------------
+This letter was written specifically for you and is waiting to be read.
+
+Read your letter: {{ invite_url }}
+
+WHAT YOU'LL GET:
+----------------
+✓ Read the complete letter
+✓ View photos, videos & audio recordings
+✓ Secure and private access
+✓ Easy account setup
+
+IMPORTANT MESSAGE:
+-----------------
+🔒 This letter was written by {{ author_name }} and preserved securely
+🔒 This link is unique to you and will remain active
+🔒 Your letter is encrypted and secure
+🔒 We never read your letters - they're only delivered to you
+
+ABOUT LETTERFORLATER:
+--------------------
+A secure platform where people can write letters to be delivered to loved ones. {{ author_name }} chose this service to ensure their message reaches you safely.
+
+NEED HELP?
+----------
+If you have any questions or need assistance:
+- Support: support@letterforlater.com
+- Website: https://letterforlater.com
+- Privacy Policy: https://letterforlater.com/privacy
+
+This reminder was sent through LetterForLater.com
+If you have already registered, please ignore this email.
+
+---
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+
+This email was sent to {{ recipient_email }}.

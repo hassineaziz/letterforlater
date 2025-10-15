@@ -1,0 +1,34 @@
+DEATH CONFIRMATION COMPLETE - LETTERFORLATER
+===========================================
+
+Dear {{ user_name }},
+
+{{ confirmations_count }} of your trusted contacts have confirmed your death in the LetterForLater system.
+
+LETTERS PROCESSED:
+-----------------
+Your letters have been processed according to their delivery settings:
+• Letters set for immediate delivery have been sent
+• Letters with delays have been scheduled for future delivery
+
+IMPORTANT - IF YOU ARE STILL ALIVE:
+----------------------------------
+If you are still alive, please log in to your account immediately to reject this confirmation and stop any scheduled deliveries.
+
+Login: https://letterforlater.com/login
+
+CONFIRMATION DETAILS:
+--------------------
+✅ {{ confirmations_count }} trusted contacts confirmed
+📬 Letters processed according to delivery settings
+🔒 All processes completed securely
+
+This is an automated notification from LetterForLater.com.
+
+If you need assistance, contact us at support@letterforlater.com
+
+---
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+
+This email was sent to {{ user_email }}.

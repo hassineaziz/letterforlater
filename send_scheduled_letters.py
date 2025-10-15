@@ -15,6 +15,8 @@ from website import create_app
 from website.models import Letter, DeathVerification, RecipientInvite
 from website.views import send_letter_invite
 from flask_mail import Message
+from flask import render_template
+import os
 
 def send_weekly_reminders():
     """Send weekly reminders to recipients who haven't registered yet"""
@@ -43,33 +45,28 @@ def send_weekly_reminders():
             
             # Create reminder email
             msg = Message(
-                f'Reminder: You have a letter waiting from {invite.letter.author.first_name} {invite.letter.author.last_name}',
-                recipients=[invite.recipient_email]
+                f'Friendly Reminder: You have a letter waiting from {invite.letter.author.first_name} {invite.letter.author.last_name}',
+                recipients=[invite.recipient_email],
+                sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
             )
             
-            body = f"""Dear {invite.recipient_name},
-
-This is a friendly reminder that you have a special legacy letter waiting for you from {invite.letter.author.first_name} {invite.letter.author.last_name}.
-
-The letter was sent to you on {invite.sent_at.strftime('%B %d, %Y')} and is ready to be read.
-
-To access your letter, simply create a free account using the link below:
-
-{invite_url}
-
-This link is unique to you and will remain active. Once you create your account, you'll be able to read the letter and access any photos, videos, or audio recordings that were included.
-
-If you have any questions or need assistance, please don't hesitate to reach out to our support team.
-
-With warm regards,
-The LetterForLater Team
-
----
-This reminder was sent through LetterForLater.com
-If you have already registered, please ignore this email.
-"""
+            # Render HTML template
+            msg.html = render_template('emails/letter_reminder.html',
+                recipient_name=invite.recipient_name,
+                author_name=f"{invite.letter.author.first_name} {invite.letter.author.last_name}",
+                sent_date=invite.sent_at.strftime('%B %d, %Y'),
+                letter_title=invite.letter.title,
+                invite_url=invite_url
+            )
             
-            msg.body = body
+            # Render text template
+            msg.body = render_template('emails/letter_reminder.txt',
+                recipient_name=invite.recipient_name,
+                author_name=f"{invite.letter.author.first_name} {invite.letter.author.last_name}",
+                sent_date=invite.sent_at.strftime('%B %d, %Y'),
+                letter_title=invite.letter.title,
+                invite_url=invite_url
+            )
             
             # Send the reminder
             mail.send(msg)

@@ -216,7 +216,8 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
     """Send an invite email instead of the full letter content"""
     try:
         from website.models import RecipientInvite
-        from flask import url_for
+        from flask import url_for, render_template
+        import os
         
         # Create or get existing invite record
         invite = RecipientInvite.query.filter_by(
@@ -235,68 +236,31 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
         
         # Create the email message
         msg = Message(
-            f'LetterForLater: You have received a legacy letter from {author_name}',
-            recipients=[recipient_email]
+            f'{author_name} has left you a personal letter - LetterForLater',
+            recipients=[recipient_email],
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )
         
         # Build invite URL
         invite_url = url_for('auth.sign_up_with_invite', token=invite.invite_token, _external=True)
         
-        # Build the email body
-        body = f"""Dear {recipient_name},
-
-You have received a special legacy letter from {author_name}.
-
-This letter was created with love and care, and we're honored to deliver it to you. To read this letter, you'll need to create a free account on LetterForLater.
-
-Click the link below to create your account and access your letter:
-
-{invite_url}
-
-This link is unique to you and will remain active. Once you create your account, you'll be able to read the letter and access any photos, videos, or audio recordings that were included.
-
-If you have any questions or need assistance, please don't hesitate to reach out to our support team.
-
-With warm regards,
-The LetterForLater Team
-
----
-This invite was sent through LetterForLater.com
-If you didn't expect this email, please ignore it.
-"""
-        
-        msg.body = body
-        
         # Add tracking pixel for email opens
         tracking_pixel_url = url_for('views.track_email_open', token=invite.invite_token, _external=True)
-        html_body = f"""<html>
-<body>
-<p>Dear {recipient_name},</p>
-
-<p>You have received a special legacy letter from <strong>{author_name}</strong>.</p>
-
-<p>This letter was created with love and care, and we're honored to deliver it to you. To read this letter, you'll need to create a free account on LetterForLater.</p>
-
-<p><a href="{invite_url}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Create Account & Read Letter</a></p>
-
-<p>This link is unique to you and will remain active. Once you create your account, you'll be able to read the letter and access any photos, videos, or audio recordings that were included.</p>
-
-<p>If you have any questions or need assistance, please don't hesitate to reach out to our support team.</p>
-
-<p>With warm regards,<br>
-The LetterForLater Team</p>
-
-<hr>
-<p style="font-size: 12px; color: #666;">
-This invite was sent through LetterForLater.com<br>
-If you didn't expect this email, please ignore it.
-</p>
-
-<img src="{tracking_pixel_url}" width="1" height="1" style="display: none;" />
-</body>
-</html>"""
         
-        msg.html = html_body
+        # Render HTML template
+        msg.html = render_template('emails/letter_received.html',
+            recipient_name=recipient_name,
+            author_name=author_name,
+            invite_url=invite_url,
+            tracking_pixel_url=tracking_pixel_url
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/letter_received.txt',
+            recipient_name=recipient_name,
+            author_name=author_name,
+            invite_url=invite_url
+        )
         
         mail.send(msg)
         
@@ -1086,24 +1050,24 @@ def verify_death():
                         try:
                             msg = Message(
                                 'Death Confirmation Complete - LetterForLater Letters Processed',
-                                recipients=[main_user.email]
+                                recipients=[main_user.email],
+                                sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
                             )
-                            msg.body = f"""
-Dear {main_user.first_name},
-
-{verification.confirmations_count} of your trusted contacts have confirmed your death in the LetterForLater system.
-
-Your letters have been processed according to their delivery settings:
-- Letters set for immediate delivery have been sent
-- Letters with delays have been scheduled for future delivery
-
-If you are still alive, please log in to your account immediately to reject this confirmation and stop any scheduled deliveries.
-
-This is an automated notification from LetterForLater.com.
-
-Best regards,
-LetterForLater Team
-"""
+                            
+                            # Render HTML template
+                            msg.html = render_template('emails/death_confirmation_complete.html',
+                                user_name=f"{main_user.first_name} {main_user.last_name}",
+                                user_email=main_user.email,
+                                confirmations_count=verification.confirmations_count
+                            )
+                            
+                            # Render text template
+                            msg.body = render_template('emails/death_confirmation_complete.txt',
+                                user_name=f"{main_user.first_name} {main_user.last_name}",
+                                user_email=main_user.email,
+                                confirmations_count=verification.confirmations_count
+                            )
+                            
                             mail.send(msg)
                         except Exception as e:
                             print(f"Error sending death confirmation email: {str(e)}")
@@ -1117,22 +1081,26 @@ LetterForLater Team
                         try:
                             msg = Message(
                                 'Death Confirmation Alert - LetterForLater',
-                                recipients=[main_user.email]
+                                recipients=[main_user.email],
+                                sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
                             )
-                            msg.body = f"""
-Dear {main_user.first_name},
-
-{contact.full_name} has confirmed your death in the LetterForLater system.
-
-{verification.confirmations_count} of your trusted contacts have confirmed. We need at least 50% confirmation before processing your letters.
-
-If you are still alive, please log in to your account immediately to reject this confirmation.
-
-This is an automated notification from LetterForLater.com.
-
-Best regards,
-LetterForLater Team
-"""
+                            
+                            # Render HTML template
+                            msg.html = render_template('emails/death_confirmation_alert.html',
+                                user_name=f"{main_user.first_name} {main_user.last_name}",
+                                user_email=main_user.email,
+                                confirmer_name=contact.full_name,
+                                confirmations_count=verification.confirmations_count
+                            )
+                            
+                            # Render text template
+                            msg.body = render_template('emails/death_confirmation_alert.txt',
+                                user_name=f"{main_user.first_name} {main_user.last_name}",
+                                user_email=main_user.email,
+                                confirmer_name=contact.full_name,
+                                confirmations_count=verification.confirmations_count
+                            )
+                            
                             mail.send(msg)
                         except Exception as e:
                             print(f"Error sending death confirmation email: {str(e)}")
@@ -1501,9 +1469,25 @@ def add_trusted_contact():
 
     # Send confirmation email
     confirmation_link = url_for('views.confirm_contact', code=confirmation_code, _external=True)
-    msg = Message('Confirm Your Role as a Trusted Contact',
-                  recipients=[email])
-    msg.body = f'You have been added as a trusted contact by {current_user.first_name}. Please confirm your role by clicking the link: {confirmation_link}'
+    msg = Message('You\'re Invited to Be a Trusted Contact - LetterForLater',
+                  recipients=[email],
+                  sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com'))
+    
+    # Render HTML template
+    msg.html = render_template('emails/trusted_contact_invite.html',
+        recipient_name=email.split('@')[0],  # Use email prefix as name if not provided
+        sender_name=f"{current_user.first_name} {current_user.last_name}",
+        sender_email=current_user.email,
+        confirmation_link=confirmation_link
+    )
+    
+    # Render text template
+    msg.body = render_template('emails/trusted_contact_invite.txt',
+        recipient_name=email.split('@')[0],
+        sender_name=f"{current_user.first_name} {current_user.last_name}",
+        sender_email=current_user.email,
+        confirmation_link=confirmation_link
+    )
     
     try:
         mail.send(msg)
@@ -1577,9 +1561,25 @@ def resend_confirmation(contact_id):
             db.session.commit()
         
         confirmation_link = url_for('views.confirm_contact', code=contact.confirmation_code, _external=True)
-        msg = Message('Confirm Your Role as a Trusted Contact',
-                      recipients=[contact.email])
-        msg.body = f'You have been added as a trusted contact by {current_user.first_name}. Please confirm your role by clicking the link: {confirmation_link}'
+        msg = Message('You\'re Invited to Be a Trusted Contact - LetterForLater',
+                      recipients=[contact.email],
+                      sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com'))
+        
+        # Render HTML template
+        msg.html = render_template('emails/trusted_contact_invite.html',
+            recipient_name=contact.email.split('@')[0],
+            sender_name=f"{current_user.first_name} {current_user.last_name}",
+            sender_email=current_user.email,
+            confirmation_link=confirmation_link
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/trusted_contact_invite.txt',
+            recipient_name=contact.email.split('@')[0],
+            sender_name=f"{current_user.first_name} {current_user.last_name}",
+            sender_email=current_user.email,
+            confirmation_link=confirmation_link
+        )
         
         try:
             mail.send(msg)
@@ -2102,8 +2102,26 @@ def invite_trusted_contact():
             existing.confirmation_code = str(uuid.uuid4())
             db.session.commit()
         confirmation_link = url_for('views.confirm_trust', token=existing.confirmation_code, _external=True)
-        msg = Message('Confirm Your Role as a Trusted Contact', recipients=[email])
-        msg.body = f'You have been invited as a trusted contact by {current_user.first_name}. Please confirm your role by clicking the link: {confirmation_link}'
+        msg = Message('You\'re Invited to Be a Trusted Contact - LetterForLater', 
+                      recipients=[email],
+                      sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com'))
+        
+        # Render HTML template
+        msg.html = render_template('emails/trusted_contact_invite.html',
+            recipient_name=email.split('@')[0],
+            sender_name=f"{current_user.first_name} {current_user.last_name}",
+            sender_email=current_user.email,
+            confirmation_link=confirmation_link
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/trusted_contact_invite.txt',
+            recipient_name=email.split('@')[0],
+            sender_name=f"{current_user.first_name} {current_user.last_name}",
+            sender_email=current_user.email,
+            confirmation_link=confirmation_link
+        )
+        
         try:
             mail.send(msg)
             flash('Confirmation email resent successfully!', category='success')
@@ -2125,8 +2143,26 @@ def invite_trusted_contact():
     db.session.add(new_contact)
     db.session.commit()
     confirmation_link = url_for('views.confirm_trust', token=confirmation_code, _external=True)
-    msg = Message('Confirm Your Role as a Trusted Contact', recipients=[email])
-    msg.body = f'You have been invited as a trusted contact by {current_user.first_name}. Please confirm your role by clicking the link: {confirmation_link}'
+    msg = Message('You\'re Invited to Be a Trusted Contact - LetterForLater', 
+                  recipients=[email],
+                  sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com'))
+    
+    # Render HTML template
+    msg.html = render_template('emails/trusted_contact_invite.html',
+        recipient_name=email.split('@')[0],
+        sender_name=f"{current_user.first_name} {current_user.last_name}",
+        sender_email=current_user.email,
+        confirmation_link=confirmation_link
+    )
+    
+    # Render text template
+    msg.body = render_template('emails/trusted_contact_invite.txt',
+        recipient_name=email.split('@')[0],
+        sender_name=f"{current_user.first_name} {current_user.last_name}",
+        sender_email=current_user.email,
+        confirmation_link=confirmation_link
+    )
+    
     try:
         mail.send(msg)
         flash('Trusted contact invited successfully! Confirmation email sent.', category='success')
@@ -2346,8 +2382,11 @@ def api_reject_death_confirmation():
         try:
             msg = Message(
                 'Death Confirmation Rejected - LetterForLater',
-                recipients=[trusted_contact.email]
+                recipients=[trusted_contact.email],
+                sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
             )
+            
+            # For now, use a simple text email since we don't have a specific template for this
             msg.body = f"""
 Dear {trusted_contact.full_name},
 

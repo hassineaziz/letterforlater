@@ -1,0 +1,38 @@
+You Have Received a Legacy Letter
+=================================
+
+Dear {{ recipient_name }},
+
+{{ author_name }} has left you a personal letter through LetterForLater, a secure platform for preserving important messages. This isn't spam - it's a heartfelt message written specifically for you.
+
+YOUR PERSONAL LETTER FROM {{ author_name }}:
+--------------------------------------------
+This letter was written specifically for you and is waiting to be read.
+
+Read your letter: {{ invite_url }}
+
+WHAT YOU'LL GET:
+----------------
+✓ Read your personal letter
+✓ View photos & videos  
+✓ Listen to audio messages
+✓ Secure & private access
+
+IMPORTANT - THIS IS NOT SPAM:
+-----------------------------
+🔒 This message was sent by {{ author_name }} through LetterForLater
+🔒 This link is unique to you and will remain active
+🔒 Your letter is encrypted and secure
+🔒 We never read your letters - they're only delivered to you
+
+ABOUT LETTERFORLATER:
+--------------------
+A secure platform where people can write letters to be delivered to loved ones. {{ author_name }} chose this service to ensure their message reaches you safely.
+
+Need help? Contact us at support@letterforlater.com
+
+---
+This message was sent by {{ author_name }} through LetterForLater.com
+
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com

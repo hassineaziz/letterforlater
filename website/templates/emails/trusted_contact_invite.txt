@@ -1,0 +1,48 @@
+TRUSTED CONTACT INVITATION - LETTERFORLATER
+==========================================
+
+Dear {{ recipient_name }},
+
+{{ sender_name }} has chosen you to be their trusted contact on LetterForLater, a secure platform for preserving important messages and ensuring they reach loved ones when needed.
+
+YOUR ROLE AS A TRUSTED CONTACT:
+-------------------------------
+🔐 Help verify important events when needed
+📬 Ensure letters reach their intended recipients  
+🤝 Be part of their legacy preservation system
+⚡ Simple verification process when the time comes
+
+WHAT THIS MEANS:
+---------------
+As a trusted contact, you'll play a crucial role in ensuring {{ sender_name }}'s important messages reach their loved ones when needed. This is a responsibility they've chosen to give you because they trust you completely.
+
+You'll only be contacted when verification is needed. Your information is encrypted and secure. You can decline this invitation at any time.
+
+ACCEPT YOUR INVITATION:
+-----------------------
+Click the link below to accept your role as a trusted contact:
+
+{{ confirmation_link }}
+
+IMPORTANT DETAILS:
+-----------------
+👤 Invited by: {{ sender_name }}
+📧 Their email: {{ sender_email }}
+🔒 Your privacy and security are protected
+⏰ This invitation doesn't expire
+
+NEED HELP?
+----------
+If you have any questions about this role or need assistance:
+- Support: support@letterforlater.com
+- Website: https://letterforlater.com
+- Privacy Policy: https://letterforlater.com/privacy
+
+This invitation was sent by {{ sender_name }} through LetterForLater.
+If you didn't expect this invitation, you can safely ignore this email.
+
+---
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+
+This email was sent to {{ recipient_email }}.

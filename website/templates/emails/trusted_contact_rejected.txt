@@ -1,0 +1,40 @@
+TRUSTED CONTACT INVITATION DECLINED - LETTERFORLATER
+===================================================
+
+Dear {{ user_name }},
+
+{{ contact_name }} ({{ contact_email }}) has declined your invitation to be a trusted contact on LetterForLater.
+
+WE UNDERSTAND:
+--------------
+Being a trusted contact is an important responsibility, and we respect their decision. This doesn't affect your ability to use LetterForLater or invite other trusted contacts.
+
+WHAT YOU CAN DO NEXT:
+--------------------
+1. Invite Someone Else
+   Consider inviting another trusted person to be your contact
+
+2. Review Your Letters
+   Make sure your letters have appropriate delivery settings
+
+3. Continue Writing
+   Keep creating your legacy letters for your loved ones
+
+MANAGE YOUR TRUSTED CONTACTS:
+----------------------------
+Visit: https://letterforlater.com/trusted-contacts
+
+NEED HELP?
+----------
+If you have any questions or need assistance:
+- Support: support@letterforlater.com
+- Website: https://letterforlater.com
+- Privacy Policy: https://letterforlater.com/privacy
+
+This notification was sent from LetterForLater.com
+
+---
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+
+This email was sent to {{ user_email }}.

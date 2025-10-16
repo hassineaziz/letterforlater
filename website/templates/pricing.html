@@ -165,7 +165,6 @@
                   <button id="toggle-monthly" type="button" aria-pressed="true" role="tab" aria-selected="true" class="relative z-10 w-20 h-7 text-xs font-semibold text-white">Monthly</button>
                   <button id="toggle-yearly" type="button" aria-pressed="false" role="tab" aria-selected="false" class="relative z-10 w-20 h-7 text-xs font-semibold text-gray-700">Yearly</button>
                 </div>
-                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-[10px] font-bold">Save 20%</span>
               </div>
             </div>
             <div class="mb-6">
@@ -176,12 +175,16 @@
                     <span class="text-2xl font-bold text-gray-600">.99</span>
                     <span class="text-gray-500 text-lg">/month</span>
                   </div>
+                  <div class="text-xs text-gray-500">or Save 20% with Yearly</div>
                 </div>
                 <div id="price-yearly" class="price-yearly hidden">
                   <div class="mb-3">
+                    <div class="flex items-center justify-center gap-2 mb-1">
+                      <span class="text-sm text-gray-400 line-through">$71.88</span>
+                      <span class="ml-0 bg-blue-100 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-full">Save 20%</span>
+                    </div>
                     <span class="text-5xl font-black text-gray-900">$59</span>
                     <span class="text-gray-500 text-lg">/year</span>
-                    <span class="ml-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">Save 20%</span>
                   </div>
                 </div>
               </div>
@@ -240,7 +243,14 @@
         <div class="relative z-10 h-full flex flex-col">
           <div class="text-center mb-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Lifetime</h2>
+            <div class="mb-1">
+              <span class="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Limited time</span>
+            </div>
             <div class="mb-4">
+              <div class="flex items-center justify-center gap-2 mb-1">
+                <span class="text-sm text-gray-400 line-through">$149.99</span>
+                <span class="inline-flex items-center bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[11px] font-bold">Save 33%</span>
+              </div>
               <span class="text-5xl font-black text-gray-900">$99</span>
               <span class="text-2xl font-bold text-gray-600">.99</span>
               <span class="text-gray-500 text-lg">/Lifetime</span>

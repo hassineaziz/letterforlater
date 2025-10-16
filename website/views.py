@@ -178,6 +178,28 @@ def admin_export_newsletter():
     from flask import Response
     return Response(output, mimetype='text/csv', headers={'Content-Disposition': 'attachment; filename=subscribers.csv'})
 
+@views.route('/unsubscribe', methods=['GET', 'POST'])
+@login_required
+def unsubscribe():
+    """Unsubscribe logged-in user from marketing emails after confirmation."""
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'confirm':
+            try:
+                current_user.marketing_consent = False
+                db.session.commit()
+                flash('You have successfully unsubscribed from marketing emails.', 'success')
+                return redirect(url_for('views.settings'))
+            except Exception as e:
+                db.session.rollback()
+                flash('An error occurred. Please try again.', 'error')
+                print(f"Error updating marketing_consent: {str(e)}")
+        else:
+            flash('Glad to have you stay! Your preferences are unchanged.', 'info')
+            return redirect(url_for('views.settings'))
+    # GET: show confirmation page
+    return render_template('unsubscribe.html')
+
 def has_active_trusted_relationships(user):
     """Check if a user has active (confirmed) trusted contact relationships"""
     if not user or not user.is_authenticated:

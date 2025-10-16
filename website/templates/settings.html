@@ -545,7 +545,16 @@
                             <div class="bg-white rounded-xl border-2 {% if user.plan == 'lifetime' %}border-green-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
                                 <div class="text-center mb-4">
                                     <h4 class="text-lg font-bold text-gray-900">Lifetime</h4>
-                                    <div class="text-3xl font-bold text-gray-900 mt-2">$99.99</div>
+                                    <div class="mt-1">
+                                        <span class="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide">Limited time</span>
+                                    </div>
+                                    <div class="text-3xl font-bold text-gray-900 mt-2">
+                                        <div class="flex items-center justify-center gap-2 mb-1">
+                                            <span class="text-xs text-gray-400 line-through">$149.99</span>
+                                            <span class="inline-flex items-center bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold">Save 33%</span>
+                                        </div>
+                                        $99.99
+                                    </div>
                                     <div class="text-sm text-gray-600">one-time payment</div>
                                 </div>
                                 <ul class="space-y-3 text-sm flex-grow">

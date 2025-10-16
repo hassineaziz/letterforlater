@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block title %}{{ post.meta_title or post.title }}{% endblock %}
 
-{% block meta_description %}{{ post.meta_description or post.excerpt or "Read this article about preserving your legacy with digital letters and family communication." }}{% endblock %}
+{% block meta_description %}{{ post.meta_description or post.excerpt }}{% endblock %}
 
-{% block meta_keywords %}{% if post.tags %}{{ post.tags|join(', ') }}, legacy letters, digital inheritance{% else %}legacy letters, digital inheritance, family communication{% endif %}{% endblock %}
+{% block meta_keywords %}{% if post.tags %}{{ post.tags|join(', ') }}{% endif %}{% endblock %}
 
 {% block og_title %}{{ post.meta_title or post.title }}{% endblock %}
-{% block og_description %}{{ post.meta_description or post.excerpt or "Read this article about preserving your legacy with digital letters and family communication." }}{% endblock %}
-{% block og_image %}{% if post.cover_image_url %}{{ post.cover_image_url }}{% else %}{{ url_for('static', filename='logo.png', _external=True) }}{% endif %}{% endblock %}
+{% block og_description %}{{ post.meta_description or post.excerpt }}{% endblock %}
+{% block og_image %}{% if post.cover_image_url %}{{ post.cover_image_url }}{% endif %}{% endblock %}
 
 {% block twitter_title %}{{ post.meta_title or post.title }}{% endblock %}
-{% block twitter_description %}{{ post.meta_description or post.excerpt or "Read this article about preserving your legacy with digital letters and family communication." }}{% endblock %}
-{% block twitter_image %}{% if post.cover_image_url %}{{ post.cover_image_url }}{% else %}{{ url_for('static', filename='logo.png', _external=True) }}{% endif %}{% endblock %}
+{% block twitter_description %}{{ post.meta_description or post.excerpt }}{% endblock %}
+{% block twitter_image %}{% if post.cover_image_url %}{{ post.cover_image_url }}{% endif %}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/blog-content.css') }}">
@@ -31,17 +31,6 @@
     </nav>
 
     <header class="mb-10 text-center">
-      <!-- Tags -->
-      {% if post.get_tags_list() %}
-      <div class="flex flex-wrap gap-2 mb-4">
-        {% for tag in post.get_tags_list() %}
-        <a href="{{ url_for('views.blog_index', tag=tag) }}" 
-           class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
-          {{ tag|title }}
-        </a>
-        {% endfor %}
-      </div>
-      {% endif %}
 
       <div class="bg-primary-light rounded-2xl px-6 py-6 shadow mb-6 inline-block w-full">
         <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-3">{{ post.title }}</h1>
@@ -81,17 +70,6 @@
             </form>
             <p class="text-gray-400 text-xs mt-3">By subscribing, you agree to receive occasional emails from letterforlater.com.</p>
           </section>
-
-          {% if post.get_tags_list() %}
-          <section class="bg-white rounded-xl border border-gray-200 shadow p-6">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">Tags</h3>
-            <div class="flex flex-wrap gap-2">
-              {% for tag in post.get_tags_list() %}
-              <a href="{{ url_for('views.blog_index', tag=tag) }}" class="px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-800 hover:bg-gray-200">{{ tag|title }}</a>
-              {% endfor %}
-            </div>
-          </section>
-          {% endif %}
 
           <section class="bg-white rounded-xl border border-gray-200 shadow p-6">
             <h3 class="text-sm font-semibold text-gray-900 mb-3">Share</h3>

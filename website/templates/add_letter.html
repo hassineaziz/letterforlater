@@ -103,16 +103,26 @@
                             </p>
                         </div>
                     </div>
+                    {% if can_upload_media() %}
                     <button type="button"
                         class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-sm font-medium flex items-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-                        id="toggleMediaBtn" 
-                        {% if not can_upload_media() %}onclick="window.location.href='/pricing'"{% endif %}>
+                        id="toggleMediaBtn">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        {% if can_upload_media() %}Add Media{% else %}Upgrade to Add Media{% endif %}
+                        Add Media
                     </button>
+                    {% else %}
+                    <a href="/pricing"
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-sm font-medium inline-flex items-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Upgrade to Add Media
+                    </a>
+                    {% endif %}
                 </div>
 
                 <!-- Collapsible Media Upload Container -->

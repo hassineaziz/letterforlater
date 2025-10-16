@@ -15,6 +15,39 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/blog-content.css') }}">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ post.meta_title or post.title|e }}",
+  "description": "{{ post.meta_description or post.excerpt|e }}",
+  "image": "{{ post.cover_image_url or url_for('static', filename='logo.png', _external=True) }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ post.author|e }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "LetterForLater",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ url_for('static', filename='logo.png', _external=True) }}"
+    }
+  },
+  "datePublished": "{{ post.published_at.isoformat() if post.published_at else post.created_at.isoformat() }}",
+  "dateModified": "{{ post.updated_at.isoformat() if post.updated_at else post.created_at.isoformat() }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ url_for('views.blog_post', slug=post.slug, _external=True) }}"
+  },
+  "url": "{{ url_for('views.blog_post', slug=post.slug, _external=True) }}",
+  "keywords": "{{ post.tags|join(', ') if post.tags else '' }}",
+  "articleSection": "Legacy Letters",
+  "wordCount": "{{ post.content|length if post.content else 0 }}"
+}
+</script>
 {% endblock %}
 {% block content %}
 <div class="max-w-screen-2xl mx-auto py-10 px-4">
@@ -167,26 +200,6 @@
   </article>
 </div>
 
-<!-- SEO Meta Tags -->
-{% if post.meta_description %}
-<meta name="description" content="{{ post.meta_description }}">
-{% endif %}
-{% if post.get_tags_list() %}
-<meta name="keywords" content="{{ post.get_tags_list()|join(', ') }}">
-{% endif %}
-<meta property="og:title" content="{{ post.meta_title or post.title }}">
-<meta property="og:description" content="{{ post.meta_description or post.excerpt or post.content_html|striptags|truncate(160) }}">
-<meta property="og:type" content="article">
-<meta property="og:url" content="{{ url_for('views.blog_post', slug=post.slug, _external=True) }}">
-{% if post.cover_image_url %}
-<meta property="og:image" content="{{ post.cover_image_url }}">
-{% endif %}
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ post.meta_title or post.title }}">
-<meta name="twitter:description" content="{{ post.meta_description or post.excerpt or post.content_html|striptags|truncate(160) }}">
-{% if post.cover_image_url %}
-<meta name="twitter:image" content="{{ post.cover_image_url }}">
-{% endif %}
 {% endblock %}
 
 

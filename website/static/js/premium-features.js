@@ -9,6 +9,7 @@ class PremiumFeatures {
 
     init() {
         this.bindEvents();
+        this.initBannerVariants();
         this.showFixedUpgradeBar();
         this.initTooltips();
     }
@@ -224,7 +225,8 @@ class PremiumFeatures {
         }
         
         if (isFreeUser) {
-            const upgradeBar = this.createFixedUpgradeBar();
+            const nextVariant = this.getNextBannerVariant();
+            const upgradeBar = this.createFixedUpgradeBar(nextVariant);
             document.body.appendChild(upgradeBar);
             
             // Show after a delay
@@ -234,39 +236,155 @@ class PremiumFeatures {
         }
     }
 
-    createFixedUpgradeBar() {
+    createFixedUpgradeBar(variant) {
         const bar = document.createElement('div');
         bar.className = 'fixed-upgrade-bar';
-        bar.innerHTML = `
-            <div class="fixed-upgrade-content">
-                <div class="fixed-upgrade-text">
-                    <div class="fixed-upgrade-title">Unlock Your Full Legacy Potential</div>
-                    <div class="fixed-upgrade-subtitle">Get unlimited letters, media attachments, and scheduling</div>
-                </div>
-                <div class="fixed-upgrade-buttons">
-                    <a href="/pricing" class="fixed-upgrade-button primary">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                        </svg>
-                        Upgrade to Premium
-                    </a>
-                    <a href="/pricing" class="fixed-upgrade-button">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Get Lifetime
-                    </a>
-                    <span class="fixed-upgrade-savings">Save 20%</span>
-                </div>
-                <button class="fixed-upgrade-close" onclick="this.parentElement.parentElement.remove(); localStorage.setItem('upgrade-banner-dismissed', Date.now() + (5 * 60 * 1000));" title="Close banner">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
+        bar.innerHTML = this.renderBannerVariant(variant);
+        
+        // Wire up countdown if present
+        const countdownEl = bar.querySelector('[data-countdown-deadline]');
+        if (countdownEl) {
+            const deadline = parseInt(countdownEl.getAttribute('data-countdown-deadline'), 10);
+            this.startCountdown(deadline, countdownEl);
+        }
+        
+        // Close handler persists dismissal window
+        const closeBtn = bar.querySelector('.fixed-upgrade-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                bar.remove();
+                // Dismiss for 5 minutes
+                localStorage.setItem('upgrade-banner-dismissed', Date.now() + (5 * 60 * 1000));
+            });
+        }
         
         return bar;
+    }
+
+    // ----- Rotating banner variants -----
+    initBannerVariants() {
+        // Establish variants with urgency and limited-time messaging
+        // Variant A: Yearly savings focus
+        // Variant B: Lifetime limited-time discount with strike-through and countdown
+        // Variant C: Free plan limitation / social proof
+        this.bannerVariants = [
+            {
+                id: 'yearly-savings',
+                template: `
+                <div class="fixed-upgrade-content">
+                    <div class="fixed-upgrade-text">
+                        <div class="fixed-upgrade-title">Unlock Your Full Legacy Potential</div>
+                        <div class="fixed-upgrade-subtitle">Upgrade today — save 20% with annual billing</div>
+                    </div>
+                    <div class="fixed-upgrade-buttons">
+                        <a href="/pricing" class="fixed-upgrade-button primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Go Yearly — Save 20%
+                        </a>
+                        <a href="/pricing" class="fixed-upgrade-button">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Get Lifetime
+                        </a>
+                        <span class="fixed-upgrade-savings">Limited-time: Save 20%</span>
+                    </div>
+                    <button class="fixed-upgrade-close" title="Close banner">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>`
+            },
+            {
+                id: 'lifetime-countdown',
+                template: (() => {
+                    const deadline = this.getOrCreateDeadline('upgrade-lifetime-deadline', 24); // 24 hours
+                    return `
+                    <div class="fixed-upgrade-content">
+                        <div class="fixed-upgrade-text">
+                            <div class="fixed-upgrade-title">Lifetime Deal Ends Soon</div>
+                            <div class="fixed-upgrade-subtitle"><span style="text-decoration:line-through;color:#9ca3af;">$149.99</span> → <strong>$99.99</strong> — Save 33%</div>
+                        </div>
+                        <div class="fixed-upgrade-buttons">
+                            <a href="/pricing" class="fixed-upgrade-button primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Get Lifetime
+                            </a>
+                            <a href="/pricing" class="fixed-upgrade-button">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                Upgrade to Premium
+                            </a>
+                            <span class="fixed-upgrade-savings">Ends in <span data-countdown-deadline="${deadline}">--:--:--</span></span>
+                        </div>
+                        <button class="fixed-upgrade-close" title="Close banner">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>`;
+                })()
+            },
+            {
+                id: 'free-limit-fomo',
+                template: `
+                <div class="fixed-upgrade-content">
+                    <div class="fixed-upgrade-text">
+                        <div class="fixed-upgrade-title">You're On The Free Plan</div>
+                        <div class="fixed-upgrade-subtitle">Only 1 letter included — upgrade for unlimited letters & media</div>
+                    </div>
+                    <div class="fixed-upgrade-buttons">
+                        <a href="/pricing" class="fixed-upgrade-button primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Upgrade to Premium
+                        </a>
+                        <a href="/pricing" class="fixed-upgrade-button">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Get Lifetime
+                        </a>
+                        <span class="fixed-upgrade-savings">Over 10,000 letters delivered</span>
+                    </div>
+                    <button class="fixed-upgrade-close" title="Close banner">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>`
+            }
+        ];
+    }
+
+    getNextBannerVariant() {
+        const key = 'upgrade-banner-variant-index';
+        const max = this.bannerVariants.length;
+        let idx = parseInt(localStorage.getItem(key) || '0', 10);
+        if (Number.isNaN(idx) || idx < 0 || idx >= max) idx = 0;
+        // Rotate for next time
+        const nextIdx = (idx + 1) % max;
+        localStorage.setItem(key, nextIdx.toString());
+        return this.bannerVariants[idx];
+    }
+
+    renderBannerVariant(variant) {
+        return variant.template;
+    }
+
+    getOrCreateDeadline(storageKey, hoursFromNow) {
+        const existing = localStorage.getItem(storageKey);
+        const now = Date.now();
+        if (existing && parseInt(existing, 10) > now) {
+            return parseInt(existing, 10);
+        }
+        const deadline = now + hoursFromNow * 60 * 60 * 1000;
+        localStorage.setItem(storageKey, deadline);
+        return deadline;
+    }
+
+    startCountdown(deadline, element) {
+        const tick = () => {
+            const now = Date.now();
+            const diff = Math.max(0, deadline - now);
+            const hrs = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            const pad = (n) => n.toString().padStart(2, '0');
+            element.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+            if (diff === 0) clearInterval(timer);
+        };
+        tick();
+        const timer = setInterval(tick, 1000);
     }
 
     initTooltips() {

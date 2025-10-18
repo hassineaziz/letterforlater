@@ -541,6 +541,7 @@ def blog_new():
         cover_image_url = request.form.get('cover_image_url', '').strip()
         meta_title = request.form.get('meta_title', '').strip() or title
         meta_description = request.form.get('meta_description', '').strip() or excerpt
+        focus_keyword = request.form.get('focus_keyword', '').strip()
         # Handle status based on action button
         action = request.form.get('action', 'save_draft')
         status = 'published' if action == 'publish' else 'draft'
@@ -581,6 +582,7 @@ def blog_new():
             author_id=current_user.id,
             meta_title=meta_title,
             meta_description=meta_description,
+            focus_keyword=focus_keyword,
         )
         
         # Handle tags
@@ -611,6 +613,7 @@ def blog_edit(post_id):
         cover_image_url = request.form.get('cover_image_url', '').strip()
         meta_title = request.form.get('meta_title', '').strip() or title
         meta_description = request.form.get('meta_description', '').strip() or excerpt
+        focus_keyword = request.form.get('focus_keyword', '').strip()
         # Handle status based on action button
         action = request.form.get('action', 'save_draft')
         status = 'published' if action == 'publish' else 'draft'
@@ -632,6 +635,7 @@ def blog_edit(post_id):
         post.cover_image_url = cover_image_url or None
         post.meta_title = meta_title
         post.meta_description = meta_description
+        post.focus_keyword = focus_keyword
         
         # Handle status and publish date
         prev_status = post.status

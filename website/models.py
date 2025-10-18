@@ -270,6 +270,7 @@ class BlogPost(db.Model):
     tags = db.Column(JSONB, nullable=True)  # Array of tag strings
     meta_title = db.Column(db.String(255), nullable=True)
     meta_description = db.Column(db.String(255), nullable=True)
+    focus_keyword = db.Column(db.String(100), nullable=True)  # Main SEO focus keyword
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), default=func.now(), onupdate=func.now())
 

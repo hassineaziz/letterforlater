@@ -31,6 +31,10 @@ requests==2.31.0
 python-dotenv==1.0.0
 markdown==3.5.1
 
+# PDF Generation
+reportlab==4.0.4
+weasyprint==60.2
+
 # Google OAuth (found in your code)
 google-auth==2.23.3
 google-auth-oauthlib==1.1.0

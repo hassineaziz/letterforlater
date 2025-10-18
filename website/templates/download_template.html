@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+{% block title %}Free Legacy Letter Template Download - LetterForLater{% endblock %}
+
+{% block meta_description %}Download our free professional legacy letter template. Start creating meaningful letters for your loved ones with our comprehensive guide and template.{% endblock %}
+
+{% block meta_keywords %}legacy letter template, free download, letter writing, family letters, legacy planning{% endblock %}
+
+{% block og_title %}Free Legacy Letter Template Download - LetterForLater{% endblock %}
+{% block og_description %}Download our free professional legacy letter template. Start creating meaningful letters for your loved ones with our comprehensive guide and template.{% endblock %}
+{% block og_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}
+
+{% block head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .download-section {
+        padding: 80px 0;
+        background: #f8fafc;
+    }
+    
+    .template-preview {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        padding: 40px;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+    
+    .pdf-icon {
+        width: 80px;
+        height: 80px;
+        background: #ef4444;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .template-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+    
+    .template-description {
+        font-size: 1.125rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px 32px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.125rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.4);
+    }
+    
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px 0 rgba(102, 126, 234, 0.6);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .features-section {
+        padding: 80px 0;
+        background: white;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-top: 60px;
+    }
+    
+    .feature-card {
+        text-align: center;
+        padding: 40px 20px;
+        border-radius: 16px;
+        background: #f8fafc;
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-description {
+        color: #6b7280;
+        line-height: 1.6;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cta-description {
+        font-size: 1.125rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+    
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+        padding: 16px 32px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.125rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 14px 30px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.125rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: white;
+        color: #1f2937;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    
+    .stats-section {
+        background: #f8fafc;
+        padding: 60px 0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 1.125rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.125rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Free Legacy Letter Template</h1>
+        <p class="hero-subtitle">
+            Download our professional template and start creating meaningful letters 
+            that will touch your loved ones' hearts for generations to come.
+        </p>
+    </div>
+</section>
+
+<!-- Download Section -->
+<section class="download-section">
+    <div class="container">
+        <div class="template-preview">
+            <div class="pdf-icon">📄</div>
+            <h2 class="template-title">Legacy Letter Template</h2>
+            <p class="template-description">
+                Our comprehensive template includes guided prompts, formatting suggestions, 
+                and examples to help you craft the perfect legacy letter. No experience needed!
+            </p>
+            <a href="{{ url_for('views.serve_legacy_template_pdf') }}" class="download-btn">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                Download Free Template
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">What's Included</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Our template is designed by experts to help you create meaningful, 
+                lasting letters that your family will treasure forever.
+            </p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">✍️</div>
+                <h3 class="feature-title">Guided Prompts</h3>
+                <p class="feature-description">
+                    Thoughtful questions and prompts to help you reflect on what matters most 
+                    and what you want to share with your loved ones.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3 class="feature-title">Professional Format</h3>
+                <p class="feature-description">
+                    Clean, professional formatting that's easy to read and looks beautiful 
+                    when printed or shared digitally.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3 class="feature-title">Writing Tips</h3>
+                <p class="feature-description">
+                    Expert advice on tone, structure, and content to help you express 
+                    yourself authentically and effectively.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Multiple Sections</h3>
+                <p class="feature-description">
+                    Organized sections for different types of messages: life lessons, 
+                    memories, hopes, and personal stories.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">Digital & Print Ready</h3>
+                <p class="feature-description">
+                    Works perfectly for both digital sharing and traditional printing, 
+                    ensuring your letter looks great in any format.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">❤️</div>
+                <h3 class="feature-title">From the Heart</h3>
+                <p class="feature-description">
+                    Designed to help you create letters that truly come from the heart 
+                    and will be cherished for generations.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div>
+                <div class="stat-number">10,000+</div>
+                <div class="stat-label">Templates Downloaded</div>
+            </div>
+            <div>
+                <div class="stat-number">50,000+</div>
+                <div class="stat-label">Letters Created</div>
+            </div>
+            <div>
+                <div class="stat-number">98%</div>
+                <div class="stat-label">User Satisfaction</div>
+            </div>
+            <div>
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Support Available</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Ready to Create Your Legacy?</h2>
+        <p class="cta-description">
+            Join thousands of families who have already started their legacy journey. 
+            Create your free account today and begin writing letters that will last forever.
+        </p>
+        
+        <div class="cta-buttons">
+            <a href="{{ url_for('auth.sign_up') }}" class="btn-primary">
+                Create Free Account
+            </a>
+            <a href="{{ url_for('views.home') }}" class="btn-secondary">
+                Learn More
+            </a>
+        </div>
+        
+        <div class="mt-8 text-sm opacity-75">
+            <p>✓ No credit card required ✓ Free forever plan ✓ Start writing in minutes</p>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Signup -->
+<section class="py-16 bg-white">
+    <div class="container">
+        <div class="max-w-2xl mx-auto text-center">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Stay Updated</h3>
+            <p class="text-gray-600 mb-8">
+                Get tips, inspiration, and updates about legacy letter writing delivered to your inbox.
+            </p>
+            
+            <form action="{{ url_for('views.newsletter_subscribe') }}" method="POST" class="flex gap-4 max-w-md mx-auto">
+                <input type="email" name="email" required 
+                       placeholder="Enter your email" 
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

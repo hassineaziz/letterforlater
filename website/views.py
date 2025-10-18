@@ -42,8 +42,9 @@ def _prepare_excerpt(user_excerpt: str, content_html: str) -> str:
 
 @views.route('/newsletter/subscribe', methods=['POST'])
 def newsletter_subscribe():
-    """Instantly subscribe a user without double opt-in."""
+    """Instantly subscribe a user without double opt-in and send welcome email with PDF."""
     from website.models import NewsletterSubscriber
+    from website.email_service import send_newsletter_welcome_email
     import re
     from datetime import datetime, timezone
     email = (request.form.get('email') or '').strip().lower()
@@ -54,6 +55,7 @@ def newsletter_subscribe():
         return redirect(referer)
     try:
         subscriber = NewsletterSubscriber.query.filter_by(email=email).one_or_none()
+        is_new_subscriber = not subscriber
         if not subscriber:
             subscriber = NewsletterSubscriber(
                 email=email,
@@ -69,6 +71,16 @@ def newsletter_subscribe():
         if not subscriber.source:
             subscriber.source = source
         db.session.commit()
+        
+        # Send welcome email with PDF attachment for new subscribers
+        if is_new_subscriber:
+            try:
+                send_newsletter_welcome_email(email)
+                print(f"✅ Newsletter welcome email with PDF sent to {email}")
+            except Exception as email_error:
+                print(f"❌ Error sending newsletter welcome email: {email_error}")
+                # Don't fail the subscription if email fails
+        
         flash('Subscribed! You will receive updates from our blog.', 'success')
     except Exception as e:
         db.session.rollback()
@@ -122,6 +134,30 @@ def newsletter_unsubscribe():
     db.session.commit()
     flash('You have been unsubscribed.', 'success')
     return redirect(url_for('views.blog_index'))
+
+@views.route('/download/legacy-template')
+def download_legacy_template():
+    """Public page for downloading the legacy letter template PDF"""
+    return render_template('download_template.html')
+
+@views.route('/download/legacy-template.pdf')
+def serve_legacy_template_pdf():
+    """Serve the PDF file directly"""
+    import os
+    from flask import send_file
+    
+    pdf_path = os.path.join(os.path.dirname(__file__), 'static', 'Legacy_Letter_Template_LetterForLater.pdf')
+    
+    if os.path.exists(pdf_path):
+        return send_file(
+            pdf_path,
+            as_attachment=True,
+            download_name='Legacy_Letter_Template_LetterForLater.pdf',
+            mimetype='application/pdf'
+        )
+    else:
+        flash('PDF template not found.', 'error')
+        return redirect(url_for('views.download_legacy_template'))
 
 def admin_required(f):
     @wraps(f)

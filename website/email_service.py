@@ -185,3 +185,36 @@ def send_subscription_cancelled_email(user):
     except Exception as e:
         print(f"❌ Error sending subscription cancelled email: {str(e)}")
         return False
+
+def send_newsletter_welcome_email(email):
+    """Send welcome email with link to download page to newsletter subscribers"""
+    try:
+        from website import mail
+        from flask import url_for
+        
+        # Create email message
+        msg = Message(
+            subject="🎉 Welcome to Our Newsletter + Free Legacy Template!",
+            recipients=[email],
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
+        )
+        
+        # Render HTML template
+        msg.html = render_template('emails/newsletter_welcome.html',
+            unsubscribe_url=url_for('views.newsletter_unsubscribe', email=email, _external=True)
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/newsletter_welcome.txt',
+            unsubscribe_url=url_for('views.newsletter_unsubscribe', email=email, _external=True)
+        )
+        
+        # Send email
+        mail.send(msg)
+        
+        print(f"✅ Newsletter welcome email sent to {email}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error sending newsletter welcome email: {str(e)}")
+        return False

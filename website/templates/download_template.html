@@ -9,425 +9,351 @@
 {% block og_description %}Download our free professional legacy letter template. Start creating meaningful letters for your loved ones with our comprehensive guide and template.{% endblock %}
 {% block og_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}
 
-{% block head %}
-<style>
-    .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 80px 0;
-        text-align: center;
-    }
-    
-    .hero-title {
-        font-size: 3.5rem;
-        font-weight: 800;
-        margin-bottom: 1.5rem;
-        line-height: 1.1;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.25rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .download-section {
-        padding: 80px 0;
-        background: #f8fafc;
-    }
-    
-    .template-preview {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        padding: 40px;
-        margin-bottom: 40px;
-        text-align: center;
-    }
-    
-    .pdf-icon {
-        width: 80px;
-        height: 80px;
-        background: #ef4444;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 24px;
-        font-size: 2rem;
-        color: white;
-    }
-    
-    .template-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 1rem;
-    }
-    
-    .template-description {
-        font-size: 1.125rem;
-        color: #6b7280;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-    }
-    
-    .download-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 16px 32px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1.125rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.4);
-    }
-    
-    .download-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px 0 rgba(102, 126, 234, 0.6);
-        color: white;
-        text-decoration: none;
-    }
-    
-    .features-section {
-        padding: 80px 0;
-        background: white;
-    }
-    
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 40px;
-        margin-top: 60px;
-    }
-    
-    .feature-card {
-        text-align: center;
-        padding: 40px 20px;
-        border-radius: 16px;
-        background: #f8fafc;
-        transition: transform 0.3s ease;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .feature-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 24px;
-        font-size: 1.5rem;
-        color: white;
-    }
-    
-    .feature-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 1rem;
-    }
-    
-    .feature-description {
-        color: #6b7280;
-        line-height: 1.6;
-    }
-    
-    .cta-section {
-        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-        color: white;
-        padding: 80px 0;
-        text-align: center;
-    }
-    
-    .cta-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-    }
-    
-    .cta-description {
-        font-size: 1.125rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .cta-buttons {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 2rem;
-    }
-    
-    .btn-primary {
-        background: #3b82f6;
-        color: white;
-        padding: 16px 32px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1.125rem;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-        background: #2563eb;
-        color: white;
-        text-decoration: none;
-        transform: translateY(-2px);
-    }
-    
-    .btn-secondary {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-        padding: 14px 30px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1.125rem;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-secondary:hover {
-        background: white;
-        color: #1f2937;
-        text-decoration: none;
-        transform: translateY(-2px);
-    }
-    
-    .stats-section {
-        background: #f8fafc;
-        padding: 60px 0;
-    }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 40px;
-        text-align: center;
-    }
-    
-    .stat-number {
-        font-size: 3rem;
-        font-weight: 800;
-        color: #667eea;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-label {
-        font-size: 1.125rem;
-        color: #6b7280;
-        font-weight: 500;
-    }
-    
-    @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.125rem;
-        }
-        
-        .cta-buttons {
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .btn-primary, .btn-secondary {
-            width: 100%;
-            max-width: 300px;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <h1 class="hero-title">Free Legacy Letter Template</h1>
-        <p class="hero-subtitle">
-            Download our professional template and start creating meaningful letters 
-            that will touch your loved ones' hearts for generations to come.
-        </p>
-    </div>
-</section>
 
-<!-- Download Section -->
-<section class="download-section">
-    <div class="container">
-        <div class="template-preview">
-            <div class="pdf-icon">📄</div>
-            <h2 class="template-title">Legacy Letter Template</h2>
-            <p class="template-description">
-                Our comprehensive template includes guided prompts, formatting suggestions, 
-                and examples to help you craft the perfect legacy letter. No experience needed!
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl mb-6 leading-tight">
+                <span class="block font-serif text-gray-900">Free Legacy Letter Template</span>
+                <span class="block font-sans font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Download & Start Writing</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
+                Download our professional template and start creating meaningful letters 
+                that will touch your loved ones' hearts for generations to come.
             </p>
-            <a href="{{ url_for('views.serve_legacy_template_pdf') }}" class="download-btn">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                </svg>
-                Download Free Template
-            </a>
+            
+            <div class="flex flex-col sm:flex-row gap-4 sm:items-center justify-center mb-8">
+                <a href="{{ url_for('views.serve_legacy_template_pdf') }}" 
+                   class="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl text-lg md:text-xl font-bold transition-all duration-300 shadow-2xl hover:shadow-3xl hover:-translate-y-1">
+                    <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    Download Free Template
+                </a>
+            </div>
+            <p class="text-sm text-gray-500 mb-6">No signup required • Instant download • Professional quality</p>
+
+            <!-- Trust Badges -->
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-gray-600">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>10,000+ Downloads</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Professional Quality</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.036a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.036a1 1 0 00-1.175 0l-2.802 2.036c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    <span>4.9★ from Families</span>
+                </div>
+            </div>
         </div>
     </div>
-</section>
+</div>
+
+<!-- Template Preview Section -->
+<div class="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-100/20 via-transparent to-blue-100/20"></div>
+    
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">What's Included</span>
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Our template is designed by experts to help you create meaningful, lasting letters that your family will treasure forever.</p>
+        </div>
+        
+        <!-- Template Preview Card -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-white/50 mb-16">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Legacy Letter Template</h3>
+                <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Our comprehensive template includes guided prompts, formatting suggestions, 
+                    and examples to help you craft the perfect legacy letter. No experience needed!
+                </p>
+                <a href="{{ url_for('views.serve_legacy_template_pdf') }}" 
+                   class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    Download Free Template
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Features Section -->
-<section class="features-section">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">What's Included</h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Our template is designed by experts to help you create meaningful, 
-                lasting letters that your family will treasure forever.
-            </p>
+<div class="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Template Features</span>
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Everything you need to create a meaningful legacy letter</p>
         </div>
         
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">✍️</div>
-                <h3 class="feature-title">Guided Prompts</h3>
-                <p class="feature-description">
-                    Thoughtful questions and prompts to help you reflect on what matters most 
-                    and what you want to share with your loved ones.
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div class="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Guided Prompts</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Thoughtful questions and prompts to help you reflect on what matters most and what you want to share with your loved ones.
                 </p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">📋</div>
-                <h3 class="feature-title">Professional Format</h3>
-                <p class="feature-description">
-                    Clean, professional formatting that's easy to read and looks beautiful 
-                    when printed or shared digitally.
+            <div class="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Professional Format</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Clean, professional formatting that's easy to read and looks beautiful when printed or shared digitally.
                 </p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">💡</div>
-                <h3 class="feature-title">Writing Tips</h3>
-                <p class="feature-description">
-                    Expert advice on tone, structure, and content to help you express 
-                    yourself authentically and effectively.
+            <div class="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Writing Tips</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Expert advice on tone, structure, and content to help you express yourself authentically and effectively.
                 </p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3 class="feature-title">Multiple Sections</h3>
-                <p class="feature-description">
-                    Organized sections for different types of messages: life lessons, 
-                    memories, hopes, and personal stories.
+            <div class="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Multiple Sections</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Organized sections for different types of messages: life lessons, memories, hopes, and personal stories.
                 </p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3 class="feature-title">Digital & Print Ready</h3>
-                <p class="feature-description">
-                    Works perfectly for both digital sharing and traditional printing, 
-                    ensuring your letter looks great in any format.
+            <div class="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Digital & Print Ready</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Works perfectly for both digital sharing and traditional printing, ensuring your letter looks great in any format.
                 </p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">❤️</div>
-                <h3 class="feature-title">From the Heart</h3>
-                <p class="feature-description">
-                    Designed to help you create letters that truly come from the heart 
-                    and will be cherished for generations.
+            <div class="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">From the Heart</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Designed to help you create letters that truly come from the heart and will be cherished for generations.
                 </p>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<!-- Stats Section -->
-<section class="stats-section">
-    <div class="container">
-        <div class="stats-grid">
-            <div>
-                <div class="stat-number">10,000+</div>
-                <div class="stat-label">Templates Downloaded</div>
+<!-- Trust Indicators Section -->
+<div class="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-transparent to-blue-100/10"></div>
+    
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <!-- Trust Indicators -->
+        <div class="text-center">
+            <!-- Desktop: Horizontal layout -->
+            <div class="hidden md:inline-flex items-center gap-6 lg:gap-8 bg-white/80 backdrop-blur-sm rounded-2xl px-6 lg:px-8 py-6 shadow-lg">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-xl font-bold text-gray-900">10,000+</div>
+                        <div class="text-sm text-gray-600">Templates Downloaded</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-xl font-bold text-gray-900">4.9★</div>
+                        <div class="text-sm text-gray-600">Average Rating</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-xl font-bold text-gray-900">99.9%</div>
+                        <div class="text-sm text-gray-600">Uptime Guarantee</div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <div class="stat-number">50,000+</div>
-                <div class="stat-label">Letters Created</div>
-            </div>
-            <div>
-                <div class="stat-number">98%</div>
-                <div class="stat-label">User Satisfaction</div>
-            </div>
-            <div>
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">Support Available</div>
+            
+            <!-- Mobile: Vertical layout -->
+            <div class="md:hidden space-y-4">
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg">
+                    <div class="flex items-center justify-center gap-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-gray-900">10,000+</div>
+                            <div class="text-sm text-gray-600">Templates Downloaded</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg">
+                    <div class="flex items-center justify-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-gray-900">4.9★</div>
+                            <div class="text-sm text-gray-600">Average Rating</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg">
+                    <div class="flex items-center justify-center gap-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-gray-900">99.9%</div>
+                            <div class="text-sm text-gray-600">Uptime Guarantee</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 <!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <h2 class="cta-title">Ready to Create Your Legacy?</h2>
-        <p class="cta-description">
-            Join thousands of families who have already started their legacy journey. 
-            Create your free account today and begin writing letters that will last forever.
+<div class="py-16 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-700/90"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+    
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+            Ready to Create Your Legacy?
+        </h2>
+        <p class="text-lg md:text-xl text-blue-100 mb-6 max-w-3xl mx-auto leading-relaxed">
+            Join over <span class="font-bold text-white">10,000 families</span> who trust LetterForLater to deliver their most important messages.
         </p>
         
-        <div class="cta-buttons">
-            <a href="{{ url_for('auth.sign_up') }}" class="btn-primary">
-                Create Free Account
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <a href="{{ url_for('auth.sign_up') }}" 
+               class="group bg-white hover:bg-gray-100 text-blue-600 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 transform">
+                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Start Writing Your Legacy
             </a>
-            <a href="{{ url_for('views.home') }}" class="btn-secondary">
+            <a href="{{ url_for('views.home') }}" 
+               class="group bg-transparent hover:bg-white/20 text-white border-2 border-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 backdrop-blur-sm">
+                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
                 Learn More
             </a>
         </div>
         
-        <div class="mt-8 text-sm opacity-75">
-            <p>✓ No credit card required ✓ Free forever plan ✓ Start writing in minutes</p>
+        <div class="text-center">
+            <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-white font-semibold text-sm">Start free with 1 letter</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-white font-semibold text-sm">Cancel anytime</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-white font-semibold text-sm">Enterprise security</span>
+                </div>
+            </div>
+            <p class="text-sm text-blue-200">Your letters are encrypted and stored securely. We never access your content.</p>
         </div>
     </div>
-</section>
+</div>
 
 <!-- Newsletter Signup -->
-<section class="py-16 bg-white">
-    <div class="container">
-        <div class="max-w-2xl mx-auto text-center">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Stay Updated</h3>
-            <p class="text-gray-600 mb-8">
+<div class="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Stay Updated</span>
+            </h3>
+            <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
                 Get tips, inspiration, and updates about legacy letter writing delivered to your inbox.
             </p>
             
-            <form action="{{ url_for('views.newsletter_subscribe') }}" method="POST" class="flex gap-4 max-w-md mx-auto">
+            <form action="{{ url_for('views.newsletter_subscribe') }}" method="POST" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <input type="email" name="email" required 
                        placeholder="Enter your email" 
                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                     Subscribe
                 </button>
             </form>
         </div>
     </div>
-</section>
+</div>
+
 {% endblock %}

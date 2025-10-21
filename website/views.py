@@ -167,7 +167,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@views.route('/admin/update-sitemap')
+@views.route('/admin-cms/update-sitemap')
 @admin_required
 def admin_update_sitemap():
     """Update sitemap - now uses dynamic sitemap automatically"""
@@ -181,7 +181,7 @@ def admin_update_sitemap():
         import os
         
         script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'update_sitemap.py')
-        result = subprocess.run(['python', script_path], capture_output=True, text=True)
+        result = subprocess.run(['python3', script_path], capture_output=True, text=True)
         
         if result.returncode == 0:
             flash('Static sitemap backup also updated successfully!', 'info')
@@ -193,7 +193,7 @@ def admin_update_sitemap():
     
     return redirect(url_for('views.blog_dashboard'))
 
-@views.route('/admin/newsletter/export.csv')
+@views.route('/admin-cms/newsletter/export.csv')
 @admin_required
 def admin_export_newsletter():
     """Export subscribers as CSV (subscribed only by default)."""
@@ -465,7 +465,7 @@ def blog_feed():
     return render_template('blog_feed.xml', posts=posts), 200, {'Content-Type': 'application/xml'}
 
 # Admin Blog Routes
-@views.route('/admin')
+@views.route('/admin-cms')
 @login_required
 @admin_required
 def blog_dashboard():
@@ -528,7 +528,7 @@ def blog_dashboard():
                              'drafts': draft_posts
                          })
 
-@views.route('/admin/new', methods=['GET', 'POST'])
+@views.route('/admin-cms/new', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def blog_new():
@@ -598,7 +598,7 @@ def blog_new():
     
     return render_template('blog_admin_edit.html', user=current_user, post=None)
 
-@views.route('/admin/<int:post_id>/edit', methods=['GET', 'POST'])
+@views.route('/admin-cms/<int:post_id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def blog_edit(post_id):
@@ -665,7 +665,7 @@ def blog_edit(post_id):
     
     return render_template('blog_admin_edit.html', user=current_user, post=post)
 
-@views.route('/admin/<int:post_id>/delete', methods=['POST'])
+@views.route('/admin-cms/<int:post_id>/delete', methods=['POST'])
 @login_required
 @admin_required
 def blog_delete(post_id):
@@ -681,7 +681,7 @@ def blog_delete(post_id):
         flash('Failed to delete post.', 'error')
     return redirect(url_for('views.blog_dashboard'))
 
-@views.route('/admin/upload-image-url', methods=['POST'])
+@views.route('/admin-cms/upload-image-url', methods=['POST'])
 @login_required
 @admin_required
 def blog_upload_image_url():
@@ -713,7 +713,7 @@ def serve_blog_image(filename):
         return "Image not found", 404
 
 
-@views.route('/admin/feed-preview')
+@views.route('/admin-cms/feed-preview')
 @login_required
 @admin_required
 def blog_feed_preview():

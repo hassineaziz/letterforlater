@@ -8,6 +8,8 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 from flask_login import current_user
+from flask_admin import Admin, AdminIndexView
+from flask_admin.contrib.sqla import ModelView
 
 db = SQLAlchemy()
 migrate = Migrate(db)
@@ -70,7 +72,7 @@ def create_app():
     app.register_blueprint(stripe_bp, url_prefix='/')
     app.register_blueprint(webhook_bp, url_prefix='/')
 
-    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment
+    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment
     
     # Create database tables
     with app.app_context():
@@ -84,6 +86,38 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
+    
+    # Configure Flask-Admin (after login manager is set up)
+    class AdminAuthMixin:
+        def is_accessible(self):
+            return current_user.is_authenticated and current_user.role == 'admin'
+        
+        def inaccessible_callback(self, name, **kwargs):
+            from flask import redirect, url_for, flash
+            flash('You need admin privileges to access this page.', 'error')
+            return redirect(url_for('auth.login'))
+    
+    class AdminModelView(AdminAuthMixin, ModelView):
+        pass
+    
+    class CustomAdminIndexView(AdminAuthMixin, AdminIndexView):
+        pass
+    
+    # Initialize Flask-Admin at default /admin URL
+    admin = Admin(app, name='Database Admin', index_view=CustomAdminIndexView())
+    
+    # Add model views
+    admin.add_view(AdminModelView(User, db.session, name='Users'))
+    admin.add_view(AdminModelView(Letter, db.session, name='Letters'))
+    admin.add_view(AdminModelView(DeathVerification, db.session, name='Death Verifications'))
+    admin.add_view(AdminModelView(TrustedContact, db.session, name='Trusted Contacts'))
+    admin.add_view(AdminModelView(Notification, db.session, name='Notifications'))
+    admin.add_view(AdminModelView(MediaAttachment, db.session, name='Media Attachments'))
+    admin.add_view(AdminModelView(BlogPost, db.session, name='Blog Posts'))
+    admin.add_view(AdminModelView(RecipientInvite, db.session, name='Recipient Invites'))
+    admin.add_view(AdminModelView(DeathVerificationConfirmation, db.session, name='Death Confirmations'))
+    admin.add_view(AdminModelView(NewsletterSubscriber, db.session, name='Newsletter Subscribers'))
+    admin.add_view(AdminModelView(Payment, db.session, name='Payments'))
 
     # Add context processor to make TrustedContact and Letter available to all templates
     @app.context_processor

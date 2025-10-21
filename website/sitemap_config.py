@@ -41,7 +41,7 @@ def robots_txt():
 Allow: /
 
 # Block private user areas
-Disallow: /admin/
+Disallow: /admin-cms/
 Disallow: /api/
 Disallow: /auth/
 Disallow: /add-letter

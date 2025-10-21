@@ -16,7 +16,7 @@ def discover_routes():
     for rule in current_app.url_map.iter_rules():
         # Skip private/admin routes
         if any(skip in rule.rule for skip in [
-            '/admin', '/api', '/auth', '/add-letter', '/view-letters',
+            '/admin-cms', '/api', '/auth', '/add-letter', '/view-letters',
             '/received-letters', '/settings', '/trusted-contacts', '/verify-',
             '/setup-2fa', '/forgot-password', '/reset-password', '/sign-up-with-invite',
             '/confirm-trusted-contact', '/pending-trusted-contact', '/media/',

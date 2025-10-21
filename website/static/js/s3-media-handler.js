@@ -245,7 +245,7 @@ class BlogImageUploader {
      * Get presigned URL for blog image upload (for direct S3 upload)
      */
     async getUploadUrl(filename) {
-        const response = await fetch('/admin/upload-image-url', {
+        const response = await fetch('/admin-cms/upload-image-url', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

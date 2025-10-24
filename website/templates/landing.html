@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}LetterForLater - Preserve Your Legacy{% endblock %}
+{% block title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}
 
-{% block meta_description %}Create heartfelt letters that will be delivered to your loved ones when the time is right. Secure digital legacy service for preserving memories and messages.{% endblock %}
+{% block meta_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}
 
-{% block meta_keywords %}legacy letters, digital letters, family messages, memorial letters, future letters, personal legacy, digital inheritance, family communication{% endblock %}
+{% block meta_keywords %}legacy letters, future self letters, digital letters, family messages, memorial letters, birthday letters, milestone messages, scheduled delivery, trusted contacts, digital inheritance, family communication, capsule letters{% endblock %}
 
 {% block content %}
 
@@ -13,7 +13,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "LetterForLater",
-  "description": "Preserve your legacy with heartfelt letters delivered to loved ones at the right time. Secure, private, and meaningful digital letter service.",
+  "description": "Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.",
   "url": "{{ request.url_root }}",
   "applicationCategory": "LifestyleApplication",
   "operatingSystem": "Web Browser",
@@ -28,11 +28,12 @@
     "name": "LetterForLater"
   },
   "featureList": [
-    "Secure letter storage",
-    "Scheduled delivery",
+    "Legacy letters for loved ones",
+    "Future self messages for milestones",
+    "Scheduled delivery for birthdays",
+    "Trusted contact verification",
     "Media attachments",
-    "Death verification system",
-    "Trusted contacts"
+    "Secure letter storage"
   ]
 }
 
@@ -44,19 +45,18 @@
         <div class="grid grid-cols-1 items-center">
             <!-- Left: Copy -->
             <div class="opacity-0 translate-y-4 transition-all duration-700 ease-out" id="heroCopy">
-                <h1 class="text-4xl md:text-6xl lg:text-7xl mb-6 leading-tight text-center">
-                    <span class="block font-serif text-gray-900">Preserve Your Legacy.</span>
-                    <span class="block font-sans font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">One Letter at a Time.</span>
+                <h1 class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-6xl mb-6 leading-tight text-center">
+                    <span class="block font-serif text-gray-900">Letter For Later</span>
+                    <span class="block font-sans font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Delivered When It Matters.</span>
             </h1>
                 <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed text-center">
-                Create heartfelt messages that will be delivered to your loved ones when the time is right. 
-                    <span class="text-gray-800 font-semibold">Your words and memories will live on forever.</span>
+                Create heartfelt messages for birthdays, milestones, or special moments.
             </p>
             
                 <div class="flex flex-col sm:flex-row gap-4 sm:items-center justify-center mb-5">
                 <a href="{{ url_for('auth.sign_up') }}" 
                        class="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl text-lg md:text-xl font-bold transition-all duration-300 shadow-2xl hover:shadow-3xl hover:-translate-y-1">
-                        Start Writing Your Legacy
+                        Start Writing Letters
                 </a>
                 </div>
                 <p class="text-sm text-gray-500 mb-6 text-center">Start free with 1 letter. No credit card required.</p>
@@ -89,6 +89,147 @@
     </div>
 </div>
 
+<!-- Two Delivery Methods Section -->
+<div class="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-transparent to-blue-100/10"></div>
+    
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-8 sm:mb-12 px-4">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+                <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Two Ways to Deliver Your Letters</span>
+            </h2>
+            <p class="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">Choose the delivery method that fits your needs - schedule for specific dates or let trusted contacts decide when the time is right</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <!-- Scheduled Delivery -->
+            <div class="group bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="flex items-center mb-4 sm:mb-6">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Scheduled Delivery</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">Perfect for birthdays, anniversaries, and milestones</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Set Specific Dates</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Choose exactly when your letter should be delivered - birthdays, graduations, weddings, or any special occasion</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Automatic Delivery</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Your letter is automatically sent on the chosen date - no manual intervention needed</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Perfect Timing</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Ideal for time-sensitive messages like birthday wishes, anniversary celebrations, or milestone congratulations</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg">
+                    <p class="text-xs sm:text-sm text-blue-800 font-medium leading-relaxed">💡 Great for: Birthday messages, anniversary letters, graduation congratulations, holiday wishes</p>
+                </div>
+            </div>
+            
+            <!-- Trusted Contact Verification -->
+            <div class="group bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Trusted Contact Verification</h3>
+                        <p class="text-sm text-gray-600">Let family and friends decide when to deliver your message</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Choose Trusted Contacts</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Select family members and close friends who will verify when your letter should be delivered</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Majority Verification Required</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">At least 50% of your trusted contacts must verify before delivery, preventing accidental or malicious triggers</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Built-in Delay Protection</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">After verification, there's a delay period where you can decline false reports before letters are sent</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-purple-50 rounded-lg">
+                    <p class="text-xs sm:text-sm text-purple-800 font-medium leading-relaxed">💡 Great for: Legacy letters, final messages, important family communications, sensitive personal messages</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-8 sm:mt-12">
+            <p class="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-4">Both methods ensure your letters are delivered securely and at the right time</p>
+            <a href="{{ url_for('auth.sign_up') }}" class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+                Start Writing Your First Letter
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- How It Works Section -->
 <div class="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
     <!-- Background decoration -->
@@ -99,7 +240,7 @@
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">How It Works</span>
             </h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Preserve your legacy in just 4 simple steps</p>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Create and deliver your letters in just 4 simple steps</p>
         </div>
         
         <!-- Desktop: Compact horizontal flow -->
@@ -1097,10 +1238,10 @@
     
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
-            Ready to Preserve Your Legacy?
+            Ready to Send Letters for the Future?
         </h2>
         <p class="text-lg md:text-xl text-blue-100 mb-6 max-w-3xl mx-auto leading-relaxed">
-            Join over <span class="font-bold text-white">10,000 families</span> who trust LetterForLater to deliver their most important messages.
+            Join over <span class="font-bold text-white">10,000 families</span> who trust LetterForLater to deliver their messages at the perfect time.
         </p>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
@@ -1153,7 +1294,7 @@
     
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Your Legacy Matters</span>
+            <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Your Messages Matter</span>
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -1190,7 +1331,7 @@
         
         <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
             <h3 class="text-xl font-bold text-gray-900 mb-3">Start Your First Letter Today</h3>
-            <p class="text-sm text-gray-600 mb-4 max-w-xl mx-auto">It takes just 5 minutes to create your first letter and begin preserving your legacy.</p>
+            <p class="text-sm text-gray-600 mb-4 max-w-xl mx-auto">It takes just 5 minutes to create your first letter and start sending messages for the future.</p>
             <a href="{{ url_for('auth.sign_up') }}" 
                class="group inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
                 <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -366,8 +366,7 @@
                         class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
                         id="delivery_type" name="delivery_type" required>
                         <option value="">Select delivery type</option>
-                        <option value="date" {% if letter_to_edit and letter_to_edit.delivery_type=='date' %}selected{%
-                            endif %}{% if not can_use_scheduled_delivery() %} disabled{% endif %}>On a Chosen Date{% if not can_use_scheduled_delivery() %} (Premium Only){% endif %}</option>
+                        <option value="date" {% if letter_to_edit and letter_to_edit.delivery_type=='date' %}selected{% endif %}>On a Chosen Date</option>
                         <option value="death_verification" {% if letter_to_edit and
                             letter_to_edit.delivery_type=='death_verification' %}selected{% endif %}>When Verified by
                             Trusted Contacts</option>
@@ -376,15 +375,7 @@
 
                 <!-- Date Settings (stays in place) -->
                 <div id="dateSettings" class="hidden">
-                    <div class="glass-card-ui rounded-xl p-6 shadow-lg {% if not can_use_scheduled_delivery() %}premium-overlay{% endif %}">
-                        {% if not can_use_scheduled_delivery() %}
-                            <div class="premium-lock-icon">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="premium-badge">Premium Feature</div>
-                        {% endif %}
+                    <div class="glass-card-ui rounded-xl p-6 shadow-lg">
                         <div class="flex items-center mb-4">
                             <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center mr-4">
                                 <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,10 +393,9 @@
                             <label for="scheduled_date" class="block text-sm font-medium text-primary mb-3">Select
                                 Date</label>
                             <input type="date"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg {% if not can_use_scheduled_delivery() %}pointer-events-none opacity-50{% endif %}"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg"
                                 id="scheduled_date" name="scheduled_date"
-                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}"
-                                {% if not can_use_scheduled_delivery() %}disabled{% endif %}>
+                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}">
                             <p class="text-xs text-gray-600 mt-3 flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">

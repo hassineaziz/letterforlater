@@ -172,10 +172,10 @@
 </div>
 </div>
 <!-- Info Modal Overlay -->
-<div id="trusted-contact-main-overlay" class="hidden fixed inset-0 bg-gray-900/50 z-50"></div>
+<div id="trusted-contact-main-overlay" class="hidden fixed inset-0 bg-gray-900/50 z-50 transition-opacity duration-300 opacity-0"></div>
 
 <!-- Info Modal -->
-<div id="trusted-contact-main-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl border border-primary-light p-6 z-50 max-w-sm w-full mx-4">
+<div id="trusted-contact-main-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl border border-primary-light p-6 z-50 max-w-sm w-full mx-4 transition-all duration-300 scale-95 opacity-0">
     <div class="text-gray-700">
         <h3 class="text-lg font-semibold text-primary mb-3">A Trusted Contact is a person you choose</h3>
         <p class="mb-4">who can confirm your passing when the time comes.</p>
@@ -247,27 +247,22 @@
 </div>
 <script>
 function showTrustedContactMainPopup() {
-    if (window.modalManager) {
-        window.modalManager.createConfirmModal({
-            title: 'What are Trusted Contacts?',
-            message: `Trusted contacts are people you trust to verify your death and access your letters. They can be family members, close friends, or legal representatives.
-
-When you add someone as a trusted contact, they will receive an email with instructions on how to verify your death. Once verified, they can access your letters and help ensure your final wishes are carried out.
-
-You can add up to 5 trusted contacts. Each contact will receive a unique verification link and can only access your letters after confirming your death.`,
-            confirmText: 'Got it',
-            cancelText: '',
-            confirmClass: 'btn-primary',
-            showCancel: false,
-            iconPath: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
-            iconColor: 'text-blue-600',
-            iconBg: 'bg-blue-100',
-            headerClass: 'bg-blue-50',
-            titleClass: 'text-blue-900',
-            onConfirm: function() {
-                // Just dismiss
-            }
-        });
+    // Show the custom info modal instead of using modalManager
+    const overlay = document.getElementById('trusted-contact-main-overlay');
+    const popup = document.getElementById('trusted-contact-main-popup');
+    
+    if (overlay && popup) {
+        overlay.classList.remove('hidden');
+        popup.classList.remove('hidden');
+        
+        // Add animation classes
+        setTimeout(() => {
+            overlay.classList.add('opacity-100');
+            popup.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
     } else {
         // Fallback for when modal system isn't loaded
         showNotificationToast('ℹ️ Trusted contacts are people you trust to verify your death and access your letters. They can be family members, close friends, or legal representatives.', 'info');
@@ -275,13 +270,48 @@ You can add up to 5 trusted contacts. Each contact will receive a unique verific
 }
 
 function closeTrustedContactMainPopup() {
-    // This function is kept for compatibility but now handled by modal system
-    if (window.modalManager) {
-        window.modalManager.closeModal();
+    const overlay = document.getElementById('trusted-contact-main-overlay');
+    const popup = document.getElementById('trusted-contact-main-popup');
+    
+    if (overlay && popup) {
+        // Remove animation classes
+        overlay.classList.remove('opacity-100');
+        popup.classList.remove('scale-100', 'opacity-100');
+        
+        // Hide after animation
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            popup.classList.add('hidden');
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }, 300);
     }
 }
 
 document.getElementById('trusted-contact-info-main').addEventListener('click', showTrustedContactMainPopup);
+
+// Add event listeners for closing the modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal when clicking overlay
+    const overlay = document.getElementById('trusted-contact-main-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                closeTrustedContactMainPopup();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const popup = document.getElementById('trusted-contact-main-popup');
+            if (popup && !popup.classList.contains('hidden')) {
+                closeTrustedContactMainPopup();
+            }
+        }
+    });
+});
 </script>
 
 {% endblock %}

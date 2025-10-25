@@ -135,7 +135,7 @@ class PremiumFeatures {
                         <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                         </svg>
-                        ${featureData.cta} - $5.99/month
+                        ${featureData.cta} - $2.99/month
                     </button>
                     <button class="upgrade-button flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1" data-plan="lifetime">
                         <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@ class PremiumFeatures {
                 </div>
                 
                 <div class="text-center mt-4">
-                    <p class="text-xs text-gray-500">Save 20% with annual billing</p>
+                    <p class="text-xs text-gray-500">Save 44% with annual billing</p>
                 </div>
             </div>
         `;
@@ -274,18 +274,18 @@ class PremiumFeatures {
                 <div class="fixed-upgrade-content">
                     <div class="fixed-upgrade-text">
                         <div class="fixed-upgrade-title">Unlock Your Full Legacy Potential</div>
-                        <div class="fixed-upgrade-subtitle">Upgrade today — save 20% with annual billing</div>
+                        <div class="fixed-upgrade-subtitle">Upgrade today — save 44% with annual billing</div>
                     </div>
                     <div class="fixed-upgrade-buttons">
                         <a href="/pricing" class="fixed-upgrade-button primary">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            Go Yearly — Save 20%
+                            Go Yearly — Save 44%
                         </a>
                         <a href="/pricing" class="fixed-upgrade-button">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Get Lifetime
                         </a>
-                        <span class="fixed-upgrade-savings">Limited-time: Save 20%</span>
+                        <span class="fixed-upgrade-savings">Limited-time: Save 44%</span>
                     </div>
                     <button class="fixed-upgrade-close" title="Close banner">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>

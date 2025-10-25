@@ -157,7 +157,7 @@ def get_plan_comparison():
         },
         'premium': {
             'name': 'Premium',
-            'price': '$5.99',
+            'price': '$2.99',
             'period': 'per month',
             'features': [
                 'Unlimited letters',
@@ -235,7 +235,7 @@ def get_upgrade_cta_text(plan=None):
         return {
             'primary': 'Upgrade to Premium',
             'secondary': 'Get Lifetime Access',
-            'price_primary': '$5.99/month',
+            'price_primary': '$2.99/month',
             'price_secondary': '$99.99 one-time',
             'benefit': 'Save 20% on annual subscription!'
         }

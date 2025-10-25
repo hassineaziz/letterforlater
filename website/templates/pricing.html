@@ -7,7 +7,7 @@
 {% block og_description %}Choose the perfect plan for legacy letters and future self messages. Free plan includes 1 letter, Premium offers unlimited letters with media, Lifetime provides permanent access. All plans include scheduled delivery and trusted contact verification.{% endblock %}
 
 {% block twitter_title %}LetterForLater Pricing - Legacy Letters & Future Self Messages{% endblock %}
-{% block twitter_description %}Secure your family's future with LetterForLater. Free, Premium ($5.99/month), and Lifetime ($99.99) plans available. Create legacy letters and future self messages today.{% endblock %}
+{% block twitter_description %}Secure your family's future with LetterForLater. Free, Premium ($2.99/month), and Lifetime ($99.99) plans available. Create legacy letters and future self messages today.{% endblock %}
 
 {% block content %}
 
@@ -34,7 +34,7 @@
     "@type": "Offer",
     "name": "Premium Monthly",
     "description": "Unlimited letters with media attachments",
-    "price": "5.99",
+    "price": "2.99",
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock",
     "url": "{{ url_for('auth.sign_up') }}?plan=premium",
@@ -42,8 +42,8 @@
   },{
     "@type": "Offer",
     "name": "Premium Yearly",
-    "description": "Unlimited letters with media attachments - Save 20%",
-    "price": "59",
+    "description": "Unlimited letters with media attachments - Save 44%",
+    "price": "19.99",
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock",
     "url": "{{ url_for('auth.sign_up') }}?plan=premium&cycle=year",
@@ -140,7 +140,7 @@
               <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
               </div>
-              <span class="text-gray-700">1 trusted contact</span>
+              <span class="text-gray-700">trusted contact</span>
             </li>
             <li class="flex items-start gap-3">
               <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -177,19 +177,24 @@
               <div class="text-center" aria-live="polite">
                 <div id="price-monthly" class="price-monthly">
                   <div class="mb-3">
-                    <span class="text-5xl font-black text-gray-900">$5</span>
+                    <span class="text-5xl font-black text-gray-900">$2</span>
                     <span class="text-2xl font-bold text-gray-600">.99</span>
                     <span class="text-gray-500 text-lg">/month</span>
                   </div>
-                  <div class="text-xs text-gray-500">or Save 20% with Yearly</div>
+                  <div class="flex items-center justify-center gap-2 text-sm">
+                    <span class="text-gray-500">or</span>
+                    <span class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Save 44%</span>
+                    <span class="text-gray-500">with yearly</span>
+                  </div>
                 </div>
                 <div id="price-yearly" class="price-yearly hidden">
                   <div class="mb-3">
                     <div class="flex items-center justify-center gap-2 mb-1">
-                      <span class="text-sm text-gray-400 line-through">$71.88</span>
-                      <span class="ml-0 bg-blue-100 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-full">Save 20%</span>
+                      <span class="text-sm text-gray-400 line-through">$35.88</span>
+                      <span class="ml-0 bg-blue-100 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-full">Save 44%</span>
                     </div>
-                    <span class="text-5xl font-black text-gray-900">$59</span>
+                    <span class="text-5xl font-black text-gray-900">$19</span>
+                    <span class="text-2xl font-bold text-gray-600">.99</span>
                     <span class="text-gray-500 text-lg">/year</span>
                   </div>
                 </div>

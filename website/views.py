@@ -797,7 +797,7 @@ def add_letter():
             if delivery_type == 'date':
                 scheduled_date = request.form.get('scheduled_date')
                 if scheduled_date:
-                    letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+                    letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
                     letter.delivery_status = 'pending'
                     letter.status = 'scheduled'
                 else:
@@ -956,8 +956,8 @@ def add_letter():
                 flash(error_msg, 'error')
                 db.session.rollback()
                 return redirect(url_for('views.add_letter'))
-            # Set delivery time to 8 PM (20:00) in user's local timezone
-            new_letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+            # Set delivery time to 8 PM (20:00) UTC
+            new_letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
             new_letter.delivery_status = 'pending'
             new_letter.status = 'scheduled'
         elif delivery_type == 'death_verification':
@@ -1601,8 +1601,8 @@ def update_letter_status():
             if delivery_type == 'date':
                 scheduled_date = request.form.get('scheduled_date')
                 if scheduled_date:
-                    # Set delivery time to 8 PM (20:00) in user's local timezone
-                    letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+                    # Set delivery time to 8 PM (20:00) UTC
+                    letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
                     letter.delivery_status = 'pending'
                     letter.status = 'scheduled'
                 else:
@@ -2195,8 +2195,8 @@ def save_draft():
         db.session.commit()
         # Update or create delivery schedule if needed
         if delivery_type == 'date' and scheduled_date:
-            # Set delivery time to 8 PM (20:00) in user's local timezone
-            draft.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+            # Set delivery time to 8 PM (20:00) UTC
+            draft.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
             draft.delivery_status = 'pending'
         elif delivery_type != 'date' and draft.delivery_date:
             draft.delivery_date = None
@@ -2233,8 +2233,8 @@ def save_draft():
         
         # Save scheduled date if present
         if delivery_type == 'date' and scheduled_date:
-            # Set delivery time to 8 PM (20:00) in user's local timezone
-            draft.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+            # Set delivery time to 8 PM (20:00) UTC
+            draft.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
             draft.delivery_status = 'pending'
         return jsonify({'success': True, 'draft_id': draft.id, 'created': True})
 
@@ -3269,7 +3269,7 @@ def google_callback():
                 )
                 
                 if letter_data.get('delivery_type') == 'date' and letter_data.get('scheduled_date'):
-                    scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+                    scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
                     new_letter.delivery_date = scheduled_date
                     new_letter.delivery_status = 'pending'
                 

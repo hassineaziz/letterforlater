@@ -301,8 +301,24 @@
                         <p class="text-sm text-gray-600">Who will receive this meaningful message?</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                
+                <!-- Checkbox for sending to myself -->
+                <div class="mb-4 p-4 md:p-5 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <label class="flex items-start sm:items-center cursor-pointer group">
+                        <input type="checkbox" id="send_to_myself" name="send_to_myself" class="mt-1 sm:mt-0 w-5 h-5 sm:w-6 sm:h-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer transition-all duration-200 flex-shrink-0">
+                        <div class="ml-3 flex items-start sm:items-center flex-1 flex-wrap gap-2">
+                            <span class="text-gray-800 font-semibold text-base sm:text-lg leading-relaxed">Sending it to myself for the future</span>
+                            <button type="button" id="sendToMyselfInfoBtn" class="mt-0.5 sm:mt-0 inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 hover:bg-blue-200 active:bg-blue-300 text-blue-600 transition-all duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 touch-manipulation" aria-label="Learn more about sending to yourself">
+                                <svg class="w-4 h-4 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </label>
+                </div>
+                
+                <div id="recipientFields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="recipientNameField">
                         <label for="recipient_name" class="block text-lg font-semibold text-gray-900 mb-3">Recipient Name</label>
                         <input type="text"
                             class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
@@ -310,7 +326,7 @@
                             value="{% if letter_to_edit %}{{ letter_to_edit.recipient_name }}{% endif %}"
                             placeholder="Enter recipient's full name">
                     </div>
-                    <div>
+                    <div id="recipientEmailField">
                         <label for="recipient_email" class="block text-lg font-semibold text-gray-900 mb-3">Recipient Email</label>
                         <input type="email"
                             class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
@@ -339,7 +355,7 @@
                 </div>
 
                 <!-- Delivery Type Selection -->
-                <div class="mb-4">
+                <div id="deliveryTypeContainer" class="mb-4">
                     <label for="delivery_type" class="block text-lg font-semibold text-gray-900 mb-3">Delivery Type</label>
                     <select
                         class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
@@ -955,11 +971,140 @@
         });
     }
 
+    // Send to myself checkbox handler
+    function setupSendToMyselfHandler() {
+        const sendToMyselfCheckbox = document.getElementById('send_to_myself');
+        if (!sendToMyselfCheckbox) return;
+
+        sendToMyselfCheckbox.addEventListener('change', function () {
+            const recipientFields = document.getElementById('recipientFields');
+            const recipientName = document.getElementById('recipient_name');
+            const recipientEmail = document.getElementById('recipient_email');
+            const deliveryTypeContainer = document.getElementById('deliveryTypeContainer');
+            const deliveryType = document.getElementById('delivery_type');
+            const dateSettings = document.getElementById('dateSettings');
+            const verificationSettings = document.getElementById('verificationSettings');
+
+            if (this.checked) {
+                // Hide recipient fields with smooth transition
+                recipientFields.style.display = 'none';
+                recipientName.removeAttribute('required');
+                recipientEmail.removeAttribute('required');
+                
+                // Hide delivery type dropdown
+                deliveryTypeContainer.style.display = 'none';
+                
+                // Auto-select "date" delivery type
+                deliveryType.value = 'date';
+                
+                // Show date settings
+                dateSettings.classList.remove('hidden');
+                verificationSettings.classList.add('hidden');
+            } else {
+                // Show recipient fields with smooth transition
+                recipientFields.style.display = 'grid';
+                recipientName.setAttribute('required', 'required');
+                recipientEmail.setAttribute('required', 'required');
+                
+                // Show delivery type dropdown
+                deliveryTypeContainer.style.display = 'block';
+                
+                // Trigger delivery type change handler to update settings
+                deliveryType.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+
+    // Setup handler when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupSendToMyselfHandler);
+    } else {
+        setupSendToMyselfHandler();
+    }
+
+    // Send to Myself Info Modal Handler
+    function setupSendToMyselfInfoModal() {
+        const infoBtn = document.getElementById('sendToMyselfInfoBtn');
+        const modal = document.getElementById('sendToMyselfInfoModal');
+        const modalContent = document.getElementById('sendToMyselfInfoModalContent');
+        const closeBtn = document.getElementById('closeSendToMyselfModal');
+        const okBtn = document.getElementById('sendToMyselfModalOkBtn');
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        if (infoBtn) {
+            infoBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal();
+            });
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        if (okBtn) {
+            okBtn.addEventListener('click', closeModal);
+        }
+
+        // Close on overlay click
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    }
+
+    // Setup modal when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupSendToMyselfInfoModal);
+    } else {
+        setupSendToMyselfInfoModal();
+    }
+
     // Delivery type change handler
     document.getElementById('delivery_type').addEventListener('change', function () {
         const dateSettings = document.getElementById('dateSettings');
         const verificationSettings = document.getElementById('verificationSettings');
         const noTrustedContactsWarning = document.getElementById('noTrustedContactsWarning');
+        const sendToMyself = document.getElementById('send_to_myself');
+
+        // If "send to myself" is checked, always show date settings
+        if (sendToMyself && sendToMyself.checked) {
+            dateSettings.classList.remove('hidden');
+            verificationSettings.classList.add('hidden');
+            if (noTrustedContactsWarning) {
+                noTrustedContactsWarning.classList.add('hidden');
+            }
+            return;
+        }
 
         // Hide all settings first
         dateSettings.classList.add('hidden');
@@ -2417,6 +2562,75 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-modal="draftLoadModal">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Send to Myself Info Modal -->
+<div id="sendToMyselfInfoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 transition-opacity duration-300 overflow-y-auto" style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-3 sm:mx-4 my-auto transform transition-all duration-300 scale-95 opacity-0" id="sendToMyselfInfoModalContent">
+        <div class="p-5 sm:p-6 md:p-8">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-5 sm:mb-6">
+                <div class="flex items-center flex-1 min-w-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 truncate">Send to Myself</h3>
+                </div>
+                <button type="button" id="closeSendToMyselfModal" class="ml-2 text-gray-400 hover:text-gray-600 active:text-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1 sm:p-2 touch-manipulation flex-shrink-0" aria-label="Close">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="space-y-3 sm:space-y-4 text-gray-700">
+                <p class="text-sm sm:text-base leading-relaxed">
+                    When you choose to send a letter to yourself, you're creating a <strong>future self message</strong> that will be delivered on the date you select.
+                </p>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 rounded-r-lg">
+                    <div class="flex items-start">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-blue-900 mb-2 text-sm sm:text-base">Important Notice:</p>
+                            <ul class="space-y-2 text-xs sm:text-sm text-blue-800">
+                                <li class="flex items-start">
+                                    <span class="mr-2 flex-shrink-0">•</span>
+                                    <span>Once you schedule this letter, <strong>you won't be able to edit or delete it</strong> after saving</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2 flex-shrink-0">•</span>
+                                    <span>You'll receive the letter on the selected delivery date</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2 flex-shrink-0">•</span>
+                                    <span>The letter will be sent to the email address associated with your account</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-50 rounded-lg p-3 sm:p-4 border border-purple-200">
+                    <p class="text-xs sm:text-sm text-purple-900">
+                        <strong>Perfect for:</strong> Birthday reminders, milestone celebrations, goal reflections, or messages to your future self!
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Footer Button -->
+            <div class="mt-6">
+                <button type="button" id="sendToMyselfModalOkBtn" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:from-blue-800 active:to-purple-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 touch-manipulation">
+                    Got it!
+                </button>
+            </div>
         </div>
     </div>
 </div>

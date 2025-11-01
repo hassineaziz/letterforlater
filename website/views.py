@@ -292,6 +292,13 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
             db.session.add(invite)
             db.session.flush()
         
+        # If recipient is already registered (for send-to-myself letters), link the invite to their account
+        recipient_user = User.query.filter_by(email=recipient_email).first()
+        if recipient_user and not invite.recipient_user_id:
+            invite.recipient_user_id = recipient_user.id
+            invite.registered_at = datetime.now(timezone.utc)  # Mark as registered since they already have an account
+            db.session.flush()
+        
         # Create the email message
         msg = Message(
             f'{author_name} has left you a personal letter - LetterForLater',
@@ -743,13 +750,37 @@ def add_letter():
                     return jsonify({'success': False, 'error': 'You do not have permission to edit this letter.'}), 403
                 flash('You do not have permission to edit this letter.', 'error')
                 return redirect(url_for('views.view_letters', user_id=current_user.id))
-
+            
+            # Prevent editing send-to-myself letters that are not drafts
+            if letter.is_send_to_myself and letter.status != 'draft':
+                if is_ajax:
+                    return jsonify({'success': False, 'error': 'This letter is scheduled to be sent to you. You can only edit it while it is a draft.'}), 403
+                flash('This letter is scheduled to be sent to you. You can only edit it while it is a draft.', 'info')
+                return redirect(url_for('views.view_letters', user_id=current_user.id))
+            
             # Update fields
             letter.title = request.form.get('title')
             letter.content = request.form.get('content')
-            letter.recipient_name = request.form.get('recipient_name')
-            letter.recipient_email = request.form.get('recipient_email')
-            delivery_type = request.form.get('delivery_type')
+            
+            # Handle "send to myself" checkbox
+            send_to_myself = request.form.get('send_to_myself') == 'on'
+            if send_to_myself:
+                # Set recipient to current user
+                letter.recipient_name = f"{current_user.first_name} {current_user.last_name}"
+                letter.recipient_email = current_user.email
+                letter.is_send_to_myself = True
+                # Force delivery type to 'date' for send-to-myself letters
+                delivery_type = 'date'
+                # Clear any death verification delay settings
+                letter.delay_after_verification = None
+            else:
+                # Use provided recipient info
+                letter.recipient_name = request.form.get('recipient_name')
+                letter.recipient_email = request.form.get('recipient_email')
+                letter.is_send_to_myself = False
+                # Use delivery type from form
+                delivery_type = request.form.get('delivery_type')
+            
             letter.delivery_type = delivery_type
 
             # Delivery specifics
@@ -760,6 +791,14 @@ def add_letter():
                     letter.delivery_status = 'pending'
                     letter.status = 'scheduled'
                 else:
+                    # For send-to-myself letters, require a scheduled date
+                    if send_to_myself:
+                        error_msg = 'Please select a delivery date for your letter to yourself.'
+                        if is_ajax:
+                            db.session.rollback()
+                            return jsonify({'success': False, 'error': error_msg}), 400
+                        flash(error_msg, 'error')
+                        return redirect(url_for('views.add_letter', letter_id=letter.id))
                     letter.delivery_date = None
                     letter.delivery_status = None
             elif delivery_type == 'death_verification':
@@ -865,9 +904,18 @@ def add_letter():
         # Otherwise, create a new letter
         title = request.form.get('title')
         content = request.form.get('content')
-        recipient_name = request.form.get('recipient_name')
-        recipient_email = request.form.get('recipient_email')
         delivery_type = request.form.get('delivery_type')
+        
+        # Handle "send to myself" checkbox
+        send_to_myself = request.form.get('send_to_myself') == 'on'
+        if send_to_myself:
+            # Set recipient to current user
+            recipient_name = f"{current_user.first_name} {current_user.last_name}"
+            recipient_email = current_user.email
+        else:
+            # Use provided recipient info
+            recipient_name = request.form.get('recipient_name')
+            recipient_email = request.form.get('recipient_email')
 
         if not title or not content or not recipient_name or not recipient_email or not delivery_type:
             error_msg = 'Please fill in all required fields.'
@@ -882,7 +930,8 @@ def add_letter():
             recipient_name=recipient_name,
             recipient_email=recipient_email,
             delivery_type=delivery_type,
-            user_id=current_user.id
+            user_id=current_user.id,
+            is_send_to_myself=send_to_myself
         )
         db.session.add(new_letter)
         db.session.flush()
@@ -1006,6 +1055,11 @@ def add_letter():
             letter_to_edit = Letter.query.get(letter_id)
             if not letter_to_edit or letter_to_edit.user_id != current_user.id:
                 flash('You do not have permission to edit this letter.', 'error')
+                return redirect(url_for('views.view_letters', user_id=current_user.id))
+            
+            # Prevent editing send-to-myself letters that are not drafts
+            if letter_to_edit.is_send_to_myself and letter_to_edit.status != 'draft':
+                flash('This letter is scheduled to be sent to you. You can only edit it while it is a draft.', 'info')
                 return redirect(url_for('views.view_letters', user_id=current_user.id))
             try:
                 media_attachments = MediaAttachment.query.filter_by(letter_id=letter_to_edit.id).all()
@@ -1418,6 +1472,10 @@ def delete_letter():
     letter = Letter.query.get(letterId)
     if letter:
         if letter.user_id == current_user.id:
+            # Prevent deleting send-to-myself letters that are not drafts
+            if letter.is_send_to_myself and letter.status != 'draft':
+                return jsonify({'success': False, 'error': 'This letter is scheduled to be sent to you. You can only delete it while it is a draft.'}), 403
+            
             # Delete associated media files from S3 and database
             try:
                 media_result = s3_media_handler.delete_letter_media(letterId, current_user.id)
@@ -1807,6 +1865,10 @@ def view_letter(letter_id):
     
     # Check if current user is the owner of the letter
     if current_user.id == letter.user_id:
+        # If this is a "send to myself" letter and it's not a draft, prevent viewing
+        if letter.is_send_to_myself and letter.status != 'draft':
+            flash('This letter is scheduled to be sent to you on the delivery date. You cannot view it until it is delivered.', category='info')
+            return redirect(url_for('views.view_letters', user_id=current_user.id))
         return render_template('view_letter.html', letter=letter, is_owner=True)
     
     # Check if current user is a trusted contact for the letter owner

@@ -91,12 +91,25 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                 {% for letter in letters %}
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-gray-50 {% if letter.is_send_to_myself %}bg-purple-50/30{% endif %}">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">{{ letter.title }}</div>
+                        <div class="flex items-center gap-2">
+                            <div class="text-sm font-medium text-gray-900">{{ letter.title }}</div>
+                            {% if letter.is_send_to_myself %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700" title="This letter is scheduled to be sent to yourself">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                </svg>
+                                To Myself
+                            </span>
+                            {% endif %}
+                        </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{ letter.recipient_name }}</div>
+                        {% if letter.is_send_to_myself and letter.status != 'draft' %}
+                        <div class="text-xs text-purple-600 mt-1 italic">Will be delivered on scheduled date</div>
+                        {% endif %}
                     </td>
                     {% if show_scheduled_date %}
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -129,12 +142,18 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
                                 {% if is_owner %}
-                                    <a href="{{ url_for('views.view_letter', letter_id=letter.id) }}" 
-                                       class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5">View</a>
-                                    <a href="{{ url_for('views.add_letter') }}?letter_id={{ letter.id }}" 
-                                       class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5">Edit</a>
-                                    <button type="button" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5" 
-                                            data-letter-id="{{ letter.id }}" onclick="deleteLetter({{ letter.id }})">Delete</button>
+                                    {% if letter.is_send_to_myself and letter.status != 'draft' %}
+                                        {# Send-to-myself letters that are scheduled/delivered cannot be viewed, edited, or deleted #}
+                                        <span class="text-gray-400 text-xs italic" title="This letter is scheduled to be sent to you. You can view, edit, or delete it only while it's a draft.">Locked until delivery</span>
+                                    {% else %}
+                                        {# Draft letters and regular letters can be viewed/edited/deleted #}
+                                        <a href="{{ url_for('views.view_letter', letter_id=letter.id) }}" 
+                                           class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5">View</a>
+                                        <a href="{{ url_for('views.add_letter') }}?letter_id={{ letter.id }}" 
+                                           class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5">Edit</a>
+                                        <button type="button" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5" 
+                                                data-letter-id="{{ letter.id }}" onclick="deleteLetter({{ letter.id }})">Delete</button>
+                                    {% endif %}
                                 {% elif letter.delivery_type == 'date' and letter.status == 'delivered' %}
                                     <button type="button" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5" 
                                             onclick="showViewLetterModal({{ letter.id }}, '{{ letter.title|e }}', '{{ letter.recipient_name|e }}', '{{ letter.content|e }}', '{{ letter.delivery_schedule.delivery_date.strftime('%B %d, %Y') if letter.delivery_schedule and letter.delivery_schedule.delivery_date else 'Not scheduled' }}')">View Letter</button>

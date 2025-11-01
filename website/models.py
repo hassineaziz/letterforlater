@@ -27,6 +27,7 @@ class Letter(db.Model):
     recipient_name = db.Column(db.String(150), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     delay_after_verification = db.Column(db.Integer, nullable=True)  # Days to wait after death verification
+    is_send_to_myself = db.Column(db.Boolean, default=False)  # True if letter is sent to the user themselves
     
     # Media attachments
     media_attachments = db.Column(JSONB, default=[])  # Array of media file info

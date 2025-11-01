@@ -85,7 +85,11 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        user = User.query.get(int(id))
+        # Don't allow blocked/suspended users to login
+        if user and not user.is_active:
+            return None  # This will force re-login and show error
+        return user
     
     # Configure Flask-Admin (after login manager is set up)
     class AdminAuthMixin:

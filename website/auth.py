@@ -40,9 +40,11 @@ def login():
         next_page = request.form.get('next') or next_page
         user = User.query.filter_by(email=email).first()
         if user:
-            # Require email confirmation before allowing login
+            # Check if user account is suspended/blocked
             if not user.is_active:
-                flash('Please confirm your email to activate your account. Check your inbox for the confirmation link.', 'error')
+                # Check if it's email confirmation or account suspension
+                # (Users who haven't confirmed email would have different state)
+                flash('Your account has been suspended or is not active. Please contact support if you believe this is an error.', 'error')
                 return render_template("login.html", user=current_user, next=next_page)
             if check_password_hash(user.password, password):
                 # Check if user has 2FA enabled
@@ -560,9 +562,10 @@ def confirm_email(token):
             from .models import Letter
             from .views import check_letter_creation_rate_limit
             
-            # Anti-spam: Check letter creation rate limit (10 per hour)
-            is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id)
+            # Anti-spam: Check letter creation rate limit (5 per hour, auto-suspend if 10+ in 5 min)
+            is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id, limit=5)
             if not is_allowed:
+                db.session.rollback()  # Make sure no partial saves
                 session.pop(f'pending_hero_letter_data_for_user_{user.email}', None)
                 flash(rate_limit_msg, 'error')
                 login_user(user, remember=True)  # Still log them in

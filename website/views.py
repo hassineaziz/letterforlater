@@ -25,7 +25,7 @@ import requests as http_requests
 
 views = Blueprint('views', __name__)
 
-def check_letter_creation_rate_limit(user_id, limit=10, hours=1):
+def check_letter_creation_rate_limit(user_id, limit=5, hours=1):
     """
     Check if user has exceeded the letter creation rate limit.
     Returns (is_allowed, count, message)
@@ -34,16 +34,45 @@ def check_letter_creation_rate_limit(user_id, limit=10, hours=1):
     - message: Error message if rate limited
     """
     from datetime import timedelta
+    
+    # Check if user is blocked/suspended
+    user = User.query.get(user_id)
+    if user and not user.is_active:
+        return False, 0, "Your account has been suspended. Please contact support."
+    
     one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=hours)
     
-    # Count letters created by this user in the last hour
+    # Count ALL letters created by this user in the last hour (including drafts)
     recent_letters_count = Letter.query.filter(
         Letter.user_id == user_id,
         Letter.created_date >= one_hour_ago
     ).count()
     
+    # Also check for rapid creation (e.g., 10 letters in 5 minutes = block)
+    five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+    rapid_count = Letter.query.filter(
+        Letter.user_id == user_id,
+        Letter.created_date >= five_minutes_ago
+    ).count()
+    
+    # Block if creating more than 10 letters in 5 minutes (spam detection)
+    if rapid_count >= 10:
+        error_msg = f"Account temporarily blocked due to suspicious activity. Please wait before creating more letters."
+        print(f"[RATE LIMIT] BLOCKED User {user_id}: Rapid creation detected ({rapid_count} in 5 minutes)")
+        # Auto-suspend user if creating too rapidly
+        if user:
+            user.is_active = False
+            db.session.commit()
+            print(f"[RATE LIMIT] Auto-suspended user {user_id} due to spam ({rapid_count} letters in 5 minutes)")
+        return False, recent_letters_count, error_msg
+    
+    # Log all rate limit checks for monitoring
+    print(f"[RATE LIMIT] User {user_id}: {recent_letters_count} letters in last hour, {rapid_count} in last 5 minutes (limit: {limit}/hour)")
+    
     if recent_letters_count >= limit:
-        return False, recent_letters_count, f"You have created {recent_letters_count} letters in the last hour. Please wait before creating more. (Limit: {limit} letters per hour)"
+        error_msg = f"You have created {recent_letters_count} letters in the last hour. Please wait before creating more. (Limit: {limit} letters per hour)"
+        print(f"[RATE LIMIT] BLOCKED User {user_id}: {error_msg}")
+        return False, recent_letters_count, error_msg
     
     return True, recent_letters_count, None
 
@@ -504,6 +533,27 @@ def blog_feed():
     return render_template('blog_feed.xml', posts=posts), 200, {'Content-Type': 'application/xml'}
 
 # Admin Blog Routes
+@views.route('/admin-cms/block-user/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def block_user(user_id):
+    """Block/suspend a user account"""
+    user = User.query.get_or_404(user_id)
+    action = request.form.get('action', 'block')  # 'block' or 'unblock'
+    
+    if action == 'block':
+        user.is_active = False
+        db.session.commit()
+        flash(f'User {user.email} has been blocked.', 'success')
+        print(f"[ADMIN] User {user.email} (ID: {user_id}) blocked by admin {current_user.email}")
+    elif action == 'unblock':
+        user.is_active = True
+        db.session.commit()
+        flash(f'User {user.email} has been unblocked.', 'success')
+        print(f"[ADMIN] User {user.email} (ID: {user_id}) unblocked by admin {current_user.email}")
+    
+    return redirect(request.referrer or url_for('views.blog_dashboard'))
+
 @views.route('/admin-cms')
 @login_required
 @admin_required
@@ -956,9 +1006,10 @@ def add_letter():
             flash(error_msg, 'error')
             return redirect(url_for('views.add_letter'))
 
-        # Anti-spam: Check letter creation rate limit (10 per hour)
-        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id)
+        # Anti-spam: Check letter creation rate limit (5 per hour, auto-suspend if 10+ in 5 min)
+        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id, limit=5)
         if not is_allowed:
+            db.session.rollback()  # Make sure no partial saves
             if is_ajax:
                 return jsonify({'success': False, 'error': rate_limit_msg}), 429
             flash(rate_limit_msg, 'error')
@@ -2233,6 +2284,12 @@ def save_draft():
             draft.delivery_status = None
         return jsonify({'success': True, 'draft_id': draft.id, 'updated': True})
     else:
+        # Anti-spam: Check letter creation rate limit (5 per hour, auto-suspend if 10+ in 5 min)
+        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id, limit=5)
+        if not is_allowed:
+            db.session.rollback()  # Make sure no partial saves
+            return jsonify({'success': False, 'error': rate_limit_msg}), 429
+        
         # Create a new draft
         draft = Letter(
             title=title or '',
@@ -2881,9 +2938,10 @@ from .s3_media_handler import s3_media_handler
 def create_draft_letter():
     """Create a draft letter for media uploads"""
     try:
-        # Anti-spam: Check letter creation rate limit (10 per hour)
-        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id)
+        # Anti-spam: Check letter creation rate limit (5 per hour, auto-suspend if 10+ in 5 min)
+        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id, limit=5)
         if not is_allowed:
+            db.session.rollback()  # Make sure no partial saves
             return jsonify({'success': False, 'error': rate_limit_msg}), 429
         
         # Create a draft letter
@@ -3291,9 +3349,10 @@ def google_callback():
             try:
                 from .models import Letter
                 
-                # Anti-spam: Check letter creation rate limit (10 per hour)
-                is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id)
+                # Anti-spam: Check letter creation rate limit (5 per hour, auto-suspend if 10+ in 5 min)
+                is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id, limit=5)
                 if not is_allowed:
+                    db.session.rollback()  # Make sure no partial saves
                     session.pop('pending_hero_letter_data', None)
                     flash(rate_limit_msg, 'error')
                     return redirect(url_for('views.add_letter'))

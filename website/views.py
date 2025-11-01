@@ -135,6 +135,16 @@ def newsletter_unsubscribe():
     flash('You have been unsubscribed.', 'success')
     return redirect(url_for('views.blog_index'))
 
+@views.route('/favicon.ico')
+def favicon():
+    """Serve favicon for Google search results"""
+    from flask import current_app, send_from_directory
+    return send_from_directory(
+        current_app.static_folder,
+        'logo.png',
+        mimetype='image/png'
+    )
+
 @views.route('/download/legacy-template')
 def download_legacy_template():
     """Public page for downloading the legacy letter template PDF"""

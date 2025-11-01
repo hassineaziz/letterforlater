@@ -55,6 +55,10 @@
     <meta property="og:title" content="{% block og_title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}" />
     <meta property="og:description" content="{% block og_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
     <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:site_name" content="LetterForLater" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -75,12 +79,14 @@
     <meta name="msvalidate.01" content="B1A3E5DA1DE239A9DC6CF01E1A778CCE" />
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo.png') }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='logo.png') }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png') }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.png') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
+    <link rel="shortcut icon" href="{{ url_for('views.favicon', _external=True) }}" />
+    <link rel="icon" href="{{ url_for('views.favicon', _external=True) }}" type="image/png" />
     <meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo.png', _external=True) }}" />
     <meta name="msapplication-TileColor" content="#3B82F6" />
+    <meta name="theme-color" content="#3B82F6" />
     
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">

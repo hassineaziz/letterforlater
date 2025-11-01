@@ -558,6 +558,15 @@ def confirm_email(token):
     if pending_letter_data:
         try:
             from .models import Letter
+            from .views import check_letter_creation_rate_limit
+            
+            # Anti-spam: Check letter creation rate limit (10 per hour)
+            is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id)
+            if not is_allowed:
+                session.pop(f'pending_hero_letter_data_for_user_{user.email}', None)
+                flash(rate_limit_msg, 'error')
+                login_user(user, remember=True)  # Still log them in
+                return redirect(url_for('views.add_letter'))
             
             letter_data = pending_letter_data
             new_letter = Letter(

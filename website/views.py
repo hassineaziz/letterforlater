@@ -25,6 +25,28 @@ import requests as http_requests
 
 views = Blueprint('views', __name__)
 
+def check_letter_creation_rate_limit(user_id, limit=10, hours=1):
+    """
+    Check if user has exceeded the letter creation rate limit.
+    Returns (is_allowed, count, message)
+    - is_allowed: True if user can create letter, False if rate limited
+    - count: Number of letters created in the time window
+    - message: Error message if rate limited
+    """
+    from datetime import timedelta
+    one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=hours)
+    
+    # Count letters created by this user in the last hour
+    recent_letters_count = Letter.query.filter(
+        Letter.user_id == user_id,
+        Letter.created_date >= one_hour_ago
+    ).count()
+    
+    if recent_letters_count >= limit:
+        return False, recent_letters_count, f"You have created {recent_letters_count} letters in the last hour. Please wait before creating more. (Limit: {limit} letters per hour)"
+    
+    return True, recent_letters_count, None
+
 def _strip_tags(html: str) -> str:
     import re
     return re.sub('<[^<]+?>', '', html or '')
@@ -932,6 +954,14 @@ def add_letter():
             if is_ajax:
                 return jsonify({'success': False, 'error': error_msg}), 400
             flash(error_msg, 'error')
+            return redirect(url_for('views.add_letter'))
+
+        # Anti-spam: Check letter creation rate limit (10 per hour)
+        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id)
+        if not is_allowed:
+            if is_ajax:
+                return jsonify({'success': False, 'error': rate_limit_msg}), 429
+            flash(rate_limit_msg, 'error')
             return redirect(url_for('views.add_letter'))
 
         new_letter = Letter(
@@ -2851,6 +2881,11 @@ from .s3_media_handler import s3_media_handler
 def create_draft_letter():
     """Create a draft letter for media uploads"""
     try:
+        # Anti-spam: Check letter creation rate limit (10 per hour)
+        is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(current_user.id)
+        if not is_allowed:
+            return jsonify({'success': False, 'error': rate_limit_msg}), 429
+        
         # Create a draft letter
         draft_letter = Letter(
             title='',
@@ -3255,6 +3290,13 @@ def google_callback():
         if pending_letter_data:
             try:
                 from .models import Letter
+                
+                # Anti-spam: Check letter creation rate limit (10 per hour)
+                is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id)
+                if not is_allowed:
+                    session.pop('pending_hero_letter_data', None)
+                    flash(rate_limit_msg, 'error')
+                    return redirect(url_for('views.add_letter'))
                 
                 letter_data = pending_letter_data
                 new_letter = Letter(

@@ -40,8 +40,8 @@ def send_weekly_reminders():
     reminder_count = 0
     for invite in invites_needing_reminders:
         try:
-            # Build invite URL
-            invite_url = f"https://letterforlater.com{url_for('auth.sign_up_with_invite', token=invite.invite_token)}"
+            # Build invite URL (works with SERVER_NAME configured in main())
+            invite_url = url_for('auth.sign_up_with_invite', token=invite.invite_token, _external=True)
             
             # Create reminder email
             msg = Message(
@@ -94,6 +94,24 @@ def main():
     try:
         # Create Flask app context
         app = create_app()
+        
+        # Configure Flask for URL generation outside request context (needed for cron)
+        # These settings allow url_for() to work without an active HTTP request
+        site_domain = os.getenv('SITE_DOMAIN', 'https://letterforlater.com')
+        if site_domain.startswith('https://'):
+            server_name = site_domain.replace('https://', '').replace('http://', '').split('/')[0]
+            app.config['SERVER_NAME'] = server_name
+            app.config['PREFERRED_URL_SCHEME'] = 'https'
+        elif site_domain.startswith('http://'):
+            server_name = site_domain.replace('http://', '').split('/')[0]
+            app.config['SERVER_NAME'] = server_name
+            app.config['PREFERRED_URL_SCHEME'] = 'http'
+        else:
+            # Default to letterforlater.com
+            app.config['SERVER_NAME'] = 'letterforlater.com'
+            app.config['PREFERRED_URL_SCHEME'] = 'https'
+        
+        app.config['APPLICATION_ROOT'] = '/'
         
         with app.app_context():
             # Process scheduled letters

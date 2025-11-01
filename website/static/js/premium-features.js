@@ -325,7 +325,7 @@ class PremiumFeatures {
                 <div class="fixed-upgrade-content">
                     <div class="fixed-upgrade-text">
                         <div class="fixed-upgrade-title">You're On The Free Plan</div>
-                        <div class="fixed-upgrade-subtitle">Only 1 letter included — upgrade for unlimited letters & media</div>
+                        <div class="fixed-upgrade-subtitle">Text only — upgrade for media attachments & scheduled delivery</div>
                     </div>
                     <div class="fixed-upgrade-buttons">
                         <a href="/pricing" class="fixed-upgrade-button primary">

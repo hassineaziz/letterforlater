@@ -14,27 +14,6 @@
             <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 {% if letter_to_edit %}Update your letter and save the changes.{% else %}Your message will be safe here, and delivered with care when the time is right.{% endif %}
             </p>
-            
-            <!-- Letter Count Restriction for Free Users -->
-            {% if not can_create_unlimited_letters() and not letter_to_edit %}
-                <div class="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 max-w-2xl mx-auto">
-                    <div class="flex items-center justify-center mb-2">
-                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span class="text-sm font-semibold text-blue-800">Free Plan: 1 Letter Included</span>
-                    </div>
-                    <p class="text-sm text-blue-700 mb-3">You can create one letter with your free account. Upgrade to Premium for unlimited letters!</p>
-                    <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="window.location.href='/pricing'">
-                            Upgrade to Premium
-                        </button>
-                        <button class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="window.location.href='/pricing'">
-                            View All Plans
-                        </button>
-                    </div>
-                </div>
-            {% endif %}
         </div>
     </div>
 
@@ -2170,48 +2149,7 @@ document.addEventListener('DOMContentLoaded', function() {
             radio.addEventListener('change', markAsChanged);
         });
 
-        // Add form submission validation
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const deliveryType = document.getElementById('delivery_type').value;
-
-            // Collect uploaded media IDs
-            const mediaAttachments = uploadedFiles.map(file => ({
-                media_id: file.media_id,
-                file_name: file.file_name,
-                file_type: file.file_type
-            }));
-            
-            // Add hidden input for media attachments
-            let mediaInput = document.getElementById('media_attachments_input');
-            if (!mediaInput) {
-                mediaInput = document.createElement('input');
-                mediaInput.type = 'hidden';
-                mediaInput.id = 'media_attachments_input';
-                mediaInput.name = 'media_attachments';
-                document.querySelector('form').appendChild(mediaInput);
-            }
-            mediaInput.value = JSON.stringify(mediaAttachments);
-
-            if (deliveryType === 'death_verification') {
-                // Check if user has confirmed trusted contacts before allowing submission
-                fetch('/api/trusted-contacts-status')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.has_confirmed_contacts) {
-                            e.preventDefault();
-                            showNoTrustedContactsWarning();
-                            showNotification('You need at least one confirmed trusted contact to use verification delivery.', 'error');
-                            return false;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking trusted contacts:', error);
-                        e.preventDefault();
-                        showNotification('Unable to verify trusted contacts. Please try again.', 'error');
-                        return false;
-                    });
-            }
-        });
+        // Note: Form submission validation moved to main AJAX handler below
 
         // Check for existing draft when page loads
         checkForDraft();
@@ -2261,71 +2199,153 @@ document.addEventListener('DOMContentLoaded', function() {
             letterForm.addEventListener('submit', function (e) {
                 e.preventDefault(); // Prevent default form submission
 
-                // Set flag to prevent auto-save during submission
-                window.formSubmitting = true;
-
-                // Show loading state
+                // Get submit button reference early
                 const submitBtn = letterForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.textContent;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {% if letter_to_edit %}Updating...{% else %}Creating...{% endif %}
-            `;
-
-                // Collect form data
-                const formData = new FormData(letterForm);
-
-                // For editing existing letters, use the letter_id from the template
-                // For drafts, use currentLetterId
-                if (letter_to_edit) {
-                    // We're editing an existing letter, don't override letter_id
-                    console.log('Editing existing letter:', letter_to_edit.id);
-                } else if (currentLetterId && isEditingDraft) {
-                    // We're editing a draft letter
-                    console.log('Editing draft letter:', currentLetterId);
-                    formData.append('letter_id', currentLetterId);
-                } else if (currentLetterId && !isEditingDraft) {
-                    // We're editing an existing letter (not a draft) - this shouldn't happen
-                    // because letter_to_edit should be set, but just in case
-                    console.log('Editing existing letter via currentLetterId:', currentLetterId);
-                    formData.append('letter_id', currentLetterId);
-                } else if (currentLetterId) {
-                    // We're working with a draft but not editing it (shouldn't happen)
-                    console.log('Working with draft but not editing:', currentLetterId);
-                    formData.append('letter_id', currentLetterId);
+                if (!submitBtn) {
+                    return;
                 }
+                const originalText = submitBtn.textContent || submitBtn.innerText || 'Submit';
 
-                // Media is already attached to the letter, no need to process it here
+                // Validate delivery type and trusted contacts before submission
+                const deliveryType = document.getElementById('delivery_type')?.value;
+                
+                // Define submitForm function that can access submitBtn and originalText
+                function submitForm() {
+                    // Set flag to prevent auto-save during submission
+                    window.formSubmitting = true;
 
-                // Submit via AJAX
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {% if letter_to_edit %}Updating...{% else %}Creating...{% endif %}
+                `;
+
+                    // Collect uploaded media IDs
+                    const uploadedFiles = window.uploadedFiles || [];
+                    const mediaAttachments = uploadedFiles.map(file => ({
+                        media_id: file.media_id,
+                        file_name: file.file_name,
+                        file_type: file.file_type
+                    }));
+                    
+                    // Collect form data
+                    const formData = new FormData(letterForm);
+                    
+                    // Add media attachments to form data
+                    if (mediaAttachments.length > 0) {
+                        formData.append('media_attachments', JSON.stringify(mediaAttachments));
                     }
-                })
-                    .then(response => {
-                        if (response.redirected) {
-                            // If redirected, follow the redirect
-                            window.location.href = response.url;
-                        } else {
-                            // If not redirected, reload the page to show any flash messages
-                            window.location.reload();
+
+                    // For editing existing letters, use the letter_id from the template
+                    const letterIdInput = letterForm.querySelector('input[name="letter_id"]');
+                    const letterIdFromForm = letterIdInput ? letterIdInput.value : null;
+                    
+                    // If there's a letter_id in the form (for editing), don't override it
+                    if (!letterIdFromForm) {
+                        // Only add letter_id if editing a draft
+                        if (typeof currentLetterId !== 'undefined' && currentLetterId) {
+                            formData.append('letter_id', currentLetterId);
+                        }
+                    }
+
+                    // Submit via AJAX
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        // Reset button state and form submitting flag
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
-                        window.formSubmitting = false;
-                        showNotificationToast('❌ An error occurred. Please try again.', 'error');
-                    });
+                        .then(response => {
+                            // Check if response is ok
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            
+                            // Try to parse as JSON first
+                            return response.text().then(text => {
+                                try {
+                                    const data = JSON.parse(text);
+                                    
+                                    if (data.success) {
+                                        // Show success message if provided
+                                        if (data.message) {
+                                            showNotificationToast('✅ ' + data.message, 'success');
+                                        }
+                                        // Redirect if provided, otherwise reload
+                                        if (data.redirect) {
+                                            setTimeout(() => {
+                                                window.location.href = data.redirect;
+                                            }, 500);
+                                        } else {
+                                            window.location.reload();
+                                        }
+                                    } else {
+                                        // Handle error
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerHTML = originalText;
+                                        window.formSubmitting = false;
+                                        showNotificationToast('❌ ' + (data.error || 'An error occurred. Please try again.'), 'error');
+                                    }
+                                } catch (e) {
+                                    // Not JSON - might be HTML redirect response
+                                    if (response.redirected || response.url !== window.location.href) {
+                                        window.location.href = response.url;
+                                    } else {
+                                        showNotificationToast('⚠️ Unexpected response format. Reloading...', 'info');
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1000);
+                                    }
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            // Reset button state and form submitting flag
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                            window.formSubmitting = false;
+                            showNotificationToast('❌ Network error. Please try again.', 'error');
+                        });
+                }
+
+                // Check delivery type and proceed accordingly
+                if (deliveryType === 'death_verification') {
+                    // Check if user has confirmed trusted contacts before allowing submission
+                    fetch('/api/trusted-contacts-status')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.has_confirmed_contacts) {
+                                if (typeof showNoTrustedContactsWarning === 'function') {
+                                    showNoTrustedContactsWarning();
+                                }
+                                showNotificationToast('You need at least one confirmed trusted contact to use verification delivery.', 'error');
+                                
+                                // Reset button
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalText;
+                                window.formSubmitting = false;
+                                return;
+                            }
+                            // Continue with form submission
+                            submitForm();
+                        })
+                        .catch(error => {
+                            showNotificationToast('Unable to verify trusted contacts. Please try again.', 'error');
+                            
+                            // Reset button on error
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                            window.formSubmitting = false;
+                        });
+                } else {
+                    // Continue with form submission for other delivery types
+                    submitForm();
+                }
             });
         }
     });

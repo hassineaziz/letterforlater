@@ -730,12 +730,17 @@ def blog_feed_preview():
 @login_required
 def add_letter():
     """Add new letter page - also supports editing when letter_id is provided"""
+    # Check if this is an AJAX request
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    
     if request.method == 'POST':
         # If editing an existing letter
         letter_id = request.form.get('letter_id')
         if letter_id:
             letter = Letter.query.get(letter_id)
             if not letter or letter.user_id != current_user.id:
+                if is_ajax:
+                    return jsonify({'success': False, 'error': 'You do not have permission to edit this letter.'}), 403
                 flash('You do not have permission to edit this letter.', 'error')
                 return redirect(url_for('views.view_letters', user_id=current_user.id))
 
@@ -778,10 +783,16 @@ def add_letter():
                         if 1 <= days <= 365:
                             letter.delay_after_verification = days
                         else:
-                            flash('Custom delay must be between 1 and 365 days.', 'error')
+                            error_msg = 'Custom delay must be between 1 and 365 days.'
+                            if is_ajax:
+                                return jsonify({'success': False, 'error': error_msg}), 400
+                            flash(error_msg, 'error')
                             return redirect(url_for('views.add_letter', letter_id=letter.id))
                     else:
-                        flash('Please enter a valid number of days for custom delay.', 'error')
+                        error_msg = 'Please enter a valid number of days for custom delay.'
+                        if is_ajax:
+                            return jsonify({'success': False, 'error': error_msg}), 400
+                        flash(error_msg, 'error')
                         return redirect(url_for('views.add_letter', letter_id=letter.id))
 
             # Handle media attachments for edited letters
@@ -804,39 +815,52 @@ def add_letter():
             media_to_remove = existing_media_ids - current_media_ids
             if media_to_remove:
                 try:
-                    result = production_media_handlers.media_handler.remove_media_from_letter(
-                        current_user.id,
-                        letter.id,
-                        list(media_to_remove)
-                    )
-                    if not result.json.get('success'):
-                        print(f"Warning: Failed to remove some media files from edited letter {letter.id}: {result.json.get('error')}")
+                    # Remove media from letter by deleting MediaAttachment records
+                    media_to_delete = MediaAttachment.query.filter(
+                        MediaAttachment.id.in_(list(media_to_remove)),
+                        MediaAttachment.letter_id == letter.id,
+                        MediaAttachment.user_id == current_user.id
+                    ).all()
+                    for media in media_to_delete:
+                        db.session.delete(media)
+                    db.session.commit()
                 except Exception as e:
+                    db.session.rollback()
                     print(f"Error removing media attachments during edit: {e}")
             
             # Find media to add (current media not in existing list)
             media_to_add = current_media_ids - existing_media_ids
             if media_to_add:
                 try:
-                    result = production_media_handlers.media_handler.attach_media_to_letter(
-                        current_user.id,
-                        letter.id,
-                        list(media_to_add)
-                    )
-                    if not result.json.get('success'):
-                        print(f"Warning: Failed to attach some media files to edited letter {letter.id}: {result.json.get('error')}")
+                    # Attach media to letter by updating letter_id
+                    media_to_attach = MediaAttachment.query.filter(
+                        MediaAttachment.id.in_(list(media_to_add)),
+                        MediaAttachment.user_id == current_user.id
+                    ).all()
+                    for media in media_to_attach:
+                        media.letter_id = letter.id
+                    db.session.commit()
                 except Exception as e:
-                    print(f"Error processing media attachments during edit: {e}")
+                    db.session.rollback()
+                    print(f"Error attaching media to letter during edit: {e}")
 
             try:
                 db.session.commit()
+                if is_ajax:
+                    redirect_url = url_for('views.view_letters', user_id=current_user.id)
+                    response = jsonify({'success': True, 'message': 'Letter updated successfully!', 'redirect': redirect_url})
+                    response.headers['Content-Type'] = 'application/json'
+                    return response
                 flash('Letter updated successfully!', 'success')
+                return redirect(url_for('views.view_letters', user_id=current_user.id))
             except Exception as e:
                 db.session.rollback()
+                error_msg = f'An error occurred while updating the letter: {str(e)}'
                 print(f"Error updating letter: {e}")
+                if is_ajax:
+                    return jsonify({'success': False, 'error': error_msg}), 500
                 flash('An error occurred while updating the letter.', 'error')
-
-            return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.view_letters', user_id=current_user.id))
 
         # Otherwise, create a new letter
         title = request.form.get('title')
@@ -846,7 +870,10 @@ def add_letter():
         delivery_type = request.form.get('delivery_type')
 
         if not title or not content or not recipient_name or not recipient_email or not delivery_type:
-            flash('Please fill in all required fields.', 'error')
+            error_msg = 'Please fill in all required fields.'
+            if is_ajax:
+                return jsonify({'success': False, 'error': error_msg}), 400
+            flash(error_msg, 'error')
             return redirect(url_for('views.add_letter'))
 
         new_letter = Letter(
@@ -863,7 +890,11 @@ def add_letter():
         if delivery_type == 'date':
             scheduled_date = request.form.get('scheduled_date')
             if not scheduled_date:
-                flash('Please select a delivery date.', 'error')
+                error_msg = 'Please select a delivery date.'
+                if is_ajax:
+                    db.session.rollback()
+                    return jsonify({'success': False, 'error': error_msg}), 400
+                flash(error_msg, 'error')
                 db.session.rollback()
                 return redirect(url_for('views.add_letter'))
             # Set delivery time to 8 PM (20:00) in user's local timezone
@@ -878,7 +909,11 @@ def add_letter():
             ).count()
             
             if confirmed_contacts == 0:
-                flash('You need at least one confirmed trusted contact to use death verification delivery. Please add trusted contacts first.', 'error')
+                error_msg = 'You need at least one confirmed trusted contact to use death verification delivery. Please add trusted contacts first.'
+                if is_ajax:
+                    db.session.rollback()
+                    return jsonify({'success': False, 'error': error_msg}), 400
+                flash(error_msg, 'error')
                 db.session.rollback()
                 return redirect(url_for('views.add_letter'))
             
@@ -902,11 +937,19 @@ def add_letter():
                     if 1 <= days <= 365:
                         new_letter.delay_after_verification = days
                     else:
-                        flash('Custom delay must be between 1 and 365 days.', 'error')
+                        error_msg = 'Custom delay must be between 1 and 365 days.'
+                        if is_ajax:
+                            db.session.rollback()
+                            return jsonify({'success': False, 'error': error_msg}), 400
+                        flash(error_msg, 'error')
                         db.session.rollback()
                         return redirect(url_for('views.add_letter'))
                 else:
-                    flash('Please enter a valid number of days for custom delay.', 'error')
+                    error_msg = 'Please enter a valid number of days for custom delay.'
+                    if is_ajax:
+                        db.session.rollback()
+                        return jsonify({'success': False, 'error': error_msg}), 400
+                    flash(error_msg, 'error')
                     db.session.rollback()
                     return redirect(url_for('views.add_letter'))
             
@@ -933,27 +976,55 @@ def add_letter():
                 db.session.delete(draft)
                 db.session.commit()
             
+            if is_ajax:
+                redirect_url = url_for('views.view_letters', user_id=current_user.id)
+                response = jsonify({'success': True, 'message': 'Letter created successfully!', 'redirect': redirect_url})
+                response.headers['Content-Type'] = 'application/json'
+                return response
             flash('Letter created successfully!', 'success')
+            return redirect(url_for('views.view_letters', user_id=current_user.id))
         except Exception as e:
             db.session.rollback()
-            flash('An error occurred while creating the letter.', 'error')
+            error_msg = f'An error occurred while creating the letter: {str(e)}'
             print(f"Error creating letter: {str(e)}")
-        return redirect(url_for('views.add_letter'))
+            if is_ajax:
+                return jsonify({'success': False, 'error': error_msg}), 500
+            flash('An error occurred while creating the letter.', 'error')
+            return redirect(url_for('views.add_letter'))
     # GET request - render form, optionally with an existing letter loaded
+    # Ensure any previous transaction errors are rolled back before starting
+    try:
+        db.session.rollback()
+    except Exception:
+        pass  # Ignore if no transaction exists
+    
     letter_id = request.args.get('letter_id')
     letter_to_edit = None
     media_attachments = []
     if letter_id:
-        letter_to_edit = Letter.query.get(letter_id)
-        if not letter_to_edit or letter_to_edit.user_id != current_user.id:
-            flash('You do not have permission to edit this letter.', 'error')
-            return redirect(url_for('views.view_letters', user_id=current_user.id))
         try:
-            media_attachments = MediaAttachment.query.filter_by(letter_id=letter_to_edit.id).all()
-        except Exception:
-            media_attachments = []
+            letter_to_edit = Letter.query.get(letter_id)
+            if not letter_to_edit or letter_to_edit.user_id != current_user.id:
+                flash('You do not have permission to edit this letter.', 'error')
+                return redirect(url_for('views.view_letters', user_id=current_user.id))
+            try:
+                media_attachments = MediaAttachment.query.filter_by(letter_id=letter_to_edit.id).all()
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error loading media attachments: {e}")
+                media_attachments = []
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error loading letter: {e}")
+            flash('Error loading letter. Please try again.', 'error')
+            return redirect(url_for('views.view_letters', user_id=current_user.id))
 
-    confirmed_contacts = current_user.trusted_contacts_list.filter_by(is_confirmed=True).all()
+    try:
+        confirmed_contacts = current_user.trusted_contacts_list.filter_by(is_confirmed=True).all()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error loading trusted contacts: {e}")
+        confirmed_contacts = []  # Default to empty list on error
     return render_template(
         "add_letter.html",
         user=current_user,

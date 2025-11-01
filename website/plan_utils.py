@@ -140,7 +140,7 @@ def get_plan_comparison():
             'price': '$0',
             'period': 'forever',
             'features': [
-                '1 letter included',
+                'Unlimited letters',
                 'Text only (no media)',
                 'Unlimited trusted contacts',
                 'Death verification delivery',
@@ -149,7 +149,6 @@ def get_plan_comparison():
                 'Email delivery tracking'
             ],
             'limitations': [
-                'Limited to 1 letter',
                 'No media attachments',
                 'No scheduled delivery',
                 'Standard support'

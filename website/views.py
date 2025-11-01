@@ -3126,6 +3126,27 @@ def google_test():
     """Test route to verify callback URL works"""
     return "Google callback URL is working! 🎉"
 
+@views.route('/store-hero-letter-data', methods=['POST'])
+def store_hero_letter_data():
+    """Store letter form data from landing page hero section"""
+    try:
+        data = request.get_json()
+        if data:
+            # Store letter data in Flask session
+            # If email is provided, store it with the email for email sign-up flow
+            email = data.pop('_email', None)
+            if email:
+                # Store with email key for email sign-up flow
+                session[f'pending_hero_letter_data_{email}'] = data
+            else:
+                # Store for Google auth flow (no email, will be available after login)
+                session['pending_hero_letter_data'] = data
+            return jsonify({'success': True}), 200
+        return jsonify({'success': False, 'error': 'No data provided'}), 400
+    except Exception as e:
+        print(f"Error storing hero letter data: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @views.route('/auth/google/callback')
 def google_callback():
     """Handle Google OAuth callback"""
@@ -3218,6 +3239,41 @@ def google_callback():
         # Log the user in
         login_user(user, remember=True)
         print(f"✅ User {user.email} logged in successfully with Google")
+        
+        # Check for pending letter from landing page (stored in session)
+        pending_letter_data = session.get('pending_hero_letter_data')
+        if pending_letter_data:
+            try:
+                from .models import Letter
+                
+                letter_data = pending_letter_data
+                new_letter = Letter(
+                    title=letter_data.get('title', 'Untitled Letter'),
+                    content=letter_data.get('content', ''),
+                    recipient_name=letter_data.get('recipient_name', ''),
+                    recipient_email=letter_data.get('recipient_email', ''),
+                    delivery_type=letter_data.get('delivery_type', 'date'),
+                    user_id=user.id,
+                    is_send_to_myself=letter_data.get('send_to_myself') == 'on',
+                    status='draft'  # Create as draft so user can review before finalizing
+                )
+                
+                if letter_data.get('delivery_type') == 'date' and letter_data.get('scheduled_date'):
+                    scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+                    new_letter.delivery_date = scheduled_date
+                    new_letter.delivery_status = 'pending'
+                
+                db.session.add(new_letter)
+                db.session.commit()
+                session.pop('pending_hero_letter_data', None)
+                flash('Your letter has been saved! Please review and finalize it.', 'success')
+                return redirect(url_for('views.add_letter', letter_id=new_letter.id))
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error creating letter from landing page data: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                session.pop('pending_hero_letter_data', None)
         
         flash('Successfully signed in with Google!', 'success')
         return redirect(url_for('views.home'))

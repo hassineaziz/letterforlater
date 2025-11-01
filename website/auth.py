@@ -288,6 +288,14 @@ def sign_up():
             session['intended_plan'] = intended_plan
             session['intended_cycle'] = intended_cycle
             session['user_email'] = email
+            
+            # Check for pending letter data from landing page hero section
+            # The letter data is stored with the email as key
+            pending_letter_data = session.get(f'pending_hero_letter_data_{email}')
+            if pending_letter_data:
+                # Store with user email for later retrieval after email confirmation
+                session[f'pending_hero_letter_data_for_user_{email}'] = pending_letter_data
+                session.pop(f'pending_hero_letter_data_{email}', None)
 
             # Check if this is a trusted contact signup
             trusted_contact_code = session.get('trusted_contact_code')
@@ -359,7 +367,7 @@ def sign_up():
 
     # If this is a trusted contact signup, pre-fill the email
     trusted_contact_code = session.get('trusted_contact_code')
-    email = None
+    email = request.args.get('email')  # Get email from URL if coming from landing page
     if trusted_contact_code:
         contact = TrustedContact.query.filter_by(confirmation_code=trusted_contact_code).first()
         if contact:
@@ -545,6 +553,56 @@ def confirm_email(token):
     user.password_reset_expires = None
     db.session.commit()
     
+    # Check for pending letter data from landing page hero section
+    pending_letter_data = session.get(f'pending_hero_letter_data_for_user_{user.email}')
+    if pending_letter_data:
+        try:
+            from .models import Letter
+            from datetime import datetime
+            
+            letter_data = pending_letter_data
+            new_letter = Letter(
+                title=letter_data.get('title', 'Untitled Letter'),
+                content=letter_data.get('content', ''),
+                recipient_name=letter_data.get('recipient_name', ''),
+                recipient_email=letter_data.get('recipient_email', ''),
+                delivery_type=letter_data.get('delivery_type', 'date'),
+                user_id=user.id,
+                is_send_to_myself=letter_data.get('send_to_myself') == 'on',
+                status='draft'  # Create as draft so user can review before finalizing
+            )
+            
+            if letter_data.get('delivery_type') == 'date' and letter_data.get('scheduled_date'):
+                scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0)
+                new_letter.delivery_date = scheduled_date
+                new_letter.delivery_status = 'pending'
+            
+            db.session.add(new_letter)
+            db.session.commit()
+            session.pop(f'pending_hero_letter_data_for_user_{user.email}', None)
+            
+            # Log user in automatically after email confirmation
+            login_user(user, remember=True)
+            
+            # Send welcome email after successful confirmation
+            try:
+                from .email_service import send_welcome_email
+                send_welcome_email(user)
+            except Exception as e:
+                print(f"Error sending welcome email: {str(e)}")
+            
+            flash('Your email has been confirmed! Your letter has been saved. Please review and finalize it.', 'success')
+            return redirect(url_for('views.add_letter', letter_id=new_letter.id))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating letter from landing page data: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            session.pop(f'pending_hero_letter_data_for_user_{user.email}', None)
+    
+    # Log user in automatically after email confirmation
+    login_user(user, remember=True)
+    
     # Send welcome email after successful confirmation
     try:
         from .email_service import send_welcome_email
@@ -552,8 +610,8 @@ def confirm_email(token):
     except Exception as e:
         print(f"Error sending welcome email: {str(e)}")
     
-    flash('Your email has been confirmed. You can now log in.', 'success')
-    return redirect(url_for('auth.login'))
+    flash('Your email has been confirmed. You can now access your account.', 'success')
+    return redirect(url_for('views.home'))
 
 @auth.route('/setup-2fa', methods=['GET', 'POST'])
 @login_required

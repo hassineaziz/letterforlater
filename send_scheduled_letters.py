@@ -89,7 +89,7 @@ def send_weekly_reminders():
 
 def main():
     """Main function to send scheduled letters and reminders"""
-    print(f"Starting scheduled letter processing at {datetime.now()}")
+    print(f"Starting scheduled letter processing at {datetime.now(timezone.utc)} (UTC)")
     
     try:
         # Create Flask app context
@@ -98,6 +98,9 @@ def main():
         with app.app_context():
             # Process scheduled letters
             now = datetime.now(timezone.utc)
+            print(f"Current UTC time: {now}")
+            
+            # Find letters that are scheduled and due for delivery
             scheduled_letters = Letter.query.filter(
                 Letter.status == 'scheduled',
                 Letter.delivery_status.in_(['scheduled', 'pending']),
@@ -105,11 +108,14 @@ def main():
             ).all()
             
             sent_count = 0
+            failed_count = 0
+            
             if scheduled_letters:
                 print(f"Found {len(scheduled_letters)} scheduled letters to process")
                 
                 for letter in scheduled_letters:
                     try:
+                        print(f"Processing letter {letter.id} - Scheduled for: {letter.delivery_date}, Recipient: {letter.recipient_email}")
                         success = send_letter_invite(
                             letter, 
                             letter.recipient_email, 
@@ -121,11 +127,15 @@ def main():
                             letter.delivery_status = 'delivered'
                             letter.delivery_date = datetime.now(timezone.utc)
                             sent_count += 1
-                            print(f"Sent scheduled letter {letter.id} to {letter.recipient_email}")
+                            print(f"✓ Successfully sent scheduled letter {letter.id} to {letter.recipient_email}")
                         else:
-                            print(f"Failed to send scheduled letter {letter.id} to {letter.recipient_email}")
+                            failed_count += 1
+                            print(f"✗ Failed to send scheduled letter {letter.id} to {letter.recipient_email} - will retry on next run")
                     except Exception as e:
-                        print(f"Error sending scheduled letter {letter.id}: {str(e)}")
+                        failed_count += 1
+                        print(f"✗ Error sending scheduled letter {letter.id}: {str(e)}")
+                        import traceback
+                        traceback.print_exc()
             else:
                 print("No scheduled letters to process")
             
@@ -136,10 +146,12 @@ def main():
             from website import db
             try:
                 db.session.commit()
-                print(f"Successfully processed {sent_count} letters and sent reminders")
+                print(f"✓ Successfully processed {sent_count} letters ({failed_count} failed), sent reminders")
             except Exception as e:
                 db.session.rollback()
-                print(f"Error committing changes: {str(e)}")
+                print(f"✗ Error committing changes: {str(e)}")
+                import traceback
+                traceback.print_exc()
                 
     except Exception as e:
         print(f"Error in main function: {str(e)}")

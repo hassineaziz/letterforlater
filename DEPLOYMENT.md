@@ -169,8 +169,12 @@ crontab -e
 Add these lines:
 
 ```bash
-# Send scheduled letters daily at midnight
-0 0 * * * cd /path/to/legacy-letter && /path/to/venv/bin/python send_scheduled_letters.py >> /var/log/legacy-letter/cron.log 2>&1
+# Send scheduled letters every 15 minutes (letters are scheduled for 8 PM UTC)
+# This ensures letters are sent on time, not up to 24 hours late
+*/15 * * * * cd /path/to/legacy-letter && /path/to/venv/bin/python send_scheduled_letters.py >> /var/log/legacy-letter/cron.log 2>&1
+
+# Alternative: If you prefer hourly instead of every 15 minutes:
+# 0 * * * * cd /path/to/legacy-letter && /path/to/venv/bin/python send_scheduled_letters.py >> /var/log/legacy-letter/cron.log 2>&1
 
 # Cleanup expired media daily at 2 AM
 0 2 * * * cd /path/to/legacy-letter && /path/to/venv/bin/python cleanup_expired_media.py >> /var/log/legacy-letter/cleanup.log 2>&1

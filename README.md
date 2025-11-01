@@ -117,11 +117,17 @@ The application includes scheduled tasks that should be run via cron:
 2. **Cleanup Expired Media**: `cleanup_expired_media.py`
    - Run daily to clean up temporary media files
 
-Example crontab:
+Example crontab (recommended: run every 15 minutes to ensure timely delivery):
 
 ```bash
-0 0 * * * cd /path/to/app && /path/to/venv/bin/python send_scheduled_letters.py
-0 2 * * * cd /path/to/app && /path/to/venv/bin/python cleanup_expired_media.py
+# Send scheduled letters every 15 minutes (ensures letters scheduled for 8 PM UTC are sent on time)
+*/15 * * * * cd /path/to/app && /path/to/venv/bin/python send_scheduled_letters.py >> /var/log/app/cron.log 2>&1
+
+# Alternative: Hourly (still better than daily)
+# 0 * * * * cd /path/to/app && /path/to/venv/bin/python send_scheduled_letters.py >> /var/log/app/cron.log 2>&1
+
+# Cleanup expired media daily at 2 AM
+0 2 * * * cd /path/to/app && /path/to/venv/bin/python cleanup_expired_media.py >> /var/log/app/cleanup.log 2>&1
 ```
 
 ## Security Considerations

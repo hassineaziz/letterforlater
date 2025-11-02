@@ -18,14 +18,16 @@ depends_on = None
 
 def upgrade():
     # Add is_send_to_myself column to letter table (only if it doesn't exist)
-    # Check if column already exists (for cases where it was added manually)
-    from sqlalchemy import inspect
-    from sqlalchemy.engine import reflection
+    # Check if column already exists using PostgreSQL information_schema
     conn = op.get_bind()
-    inspector = inspect(conn)
-    columns = [col['name'] for col in inspector.get_columns('letter')]
+    result = conn.execute(sa.text("""
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name='letter' AND column_name='is_send_to_myself'
+    """))
+    column_exists = result.fetchone() is not None
     
-    if 'is_send_to_myself' not in columns:
+    if not column_exists:
         op.add_column('letter', sa.Column('is_send_to_myself', sa.Boolean(), nullable=False, server_default='false'))
 
 

@@ -19,8 +19,9 @@ depends_on = None
 def upgrade():
     # Add is_send_to_myself column to letter table (only if it doesn't exist)
     # Check if column already exists using PostgreSQL information_schema
+    from sqlalchemy import text
     conn = op.get_bind()
-    result = conn.execute(sa.text("""
+    result = conn.execute(text("""
         SELECT column_name 
         FROM information_schema.columns 
         WHERE table_name='letter' AND column_name='is_send_to_myself'

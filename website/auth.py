@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from . import mail
 from flask_mail import Message
+from markupsafe import Markup
 import pyotp
 import qrcode
 import base64
@@ -15,6 +16,40 @@ import secrets
 
 
 auth = Blueprint('auth', __name__)
+
+def send_confirmation_email(user):
+    """Helper function to send email confirmation email to a user"""
+    try:
+        # Generate new confirmation token
+        confirm_token = str(uuid.uuid4())
+        user.password_reset_token = confirm_token
+        user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+        db.session.commit()
+
+        # Send confirmation email
+        confirm_link = url_for('auth.confirm_email', token=confirm_token, _external=True)
+        msg = Message('Confirm your LetterForLater account', recipients=[user.email])
+        
+        # Render HTML template
+        msg.html = render_template('emails/email_confirmation.html',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            confirm_link=confirm_link
+        )
+        
+        # Render text template
+        msg.body = render_template('emails/email_confirmation.txt',
+            user_name=f"{user.first_name} {user.last_name}",
+            user_email=user.email,
+            confirm_link=confirm_link
+        )
+        
+        mail.send(msg)
+        return True
+    except Exception as e:
+        print(f"Error sending confirmation email: {str(e)}")
+        db.session.rollback()
+        return False
 
 @auth.context_processor
 def utility_processor():
@@ -43,8 +78,12 @@ def login():
             # Check if user account is suspended/blocked
             if not user.is_active:
                 # Check if it's email confirmation or account suspension
-                # (Users who haven't confirmed email would have different state)
-                flash('Your account has been suspended or is not active. Please contact support if you believe this is an error.', 'error')
+                # Users who haven't confirmed email will have a password_reset_token (used for email confirmation)
+                if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
+                    resend_link = url_for('auth.resend_verification')
+                    flash(Markup('Please check your email and click the confirmation link to activate your account. If you didn\'t receive the email, <a href="{}" class="underline font-semibold">click here to resend the verification email</a>.'.format(resend_link)), 'error')
+                else:
+                    flash('Your account has been suspended. Please contact support if you believe this is an error.', 'error')
                 return render_template("login.html", user=current_user, next=next_page)
             if check_password_hash(user.password, password):
                 # Check if user has 2FA enabled
@@ -335,34 +374,8 @@ def sign_up():
                     flash('Account created successfully! Your trusted contact role has been confirmed. Please login to access your features.', category='success')
                     return redirect(url_for('auth.login'))
 
-            # Generate email confirmation token using existing reset fields for simplicity
-            confirm_token = str(uuid.uuid4())
-            new_user.password_reset_token = confirm_token
-            new_user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
-            db.session.commit()
-
-            # Send confirmation email
-            confirm_link = url_for('auth.confirm_email', token=confirm_token, _external=True)
-            msg = Message('Confirm your LetterForLater account', recipients=[email])
-            
-            # Render HTML template
-            msg.html = render_template('emails/email_confirmation.html',
-                user_name=f"{first_name} {last_name}",
-                user_email=email,
-                confirm_link=confirm_link
-            )
-            
-            # Render text template
-            msg.body = render_template('emails/email_confirmation.txt',
-                user_name=f"{first_name} {last_name}",
-                user_email=email,
-                confirm_link=confirm_link
-            )
-            
-            try:
-                mail.send(msg)
-            except Exception as e:
-                print(f"Error sending confirmation email: {str(e)}")
+            # Send confirmation email using helper function
+            send_confirmation_email(new_user)
             
             flash('Account created! Please check your email to confirm your account.', category='success')
             return redirect(url_for('auth.login', next=next_page))
@@ -509,6 +522,44 @@ def forgot_password():
         return redirect(url_for('auth.forgot_password'))
     
     return render_template('forgot_password.html')
+
+@auth.route('/resend-verification', methods=['GET', 'POST'])
+def resend_verification():
+    """Resend email verification link"""
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            # Check if user is already active
+            if user.is_active:
+                flash('Your account is already verified. You can log in normally.', 'info')
+                return redirect(url_for('auth.login'))
+            
+            # Check if user has a valid confirmation token (pending verification)
+            if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
+                # Resend the confirmation email
+                if send_confirmation_email(user):
+                    flash('Verification email sent! Please check your email and click the confirmation link.', 'success')
+                else:
+                    flash('Error sending verification email. Please try again later or contact support.', 'error')
+            else:
+                # Token expired or doesn't exist, generate new one
+                if send_confirmation_email(user):
+                    flash('New verification email sent! Please check your email and click the confirmation link.', 'success')
+                else:
+                    flash('Error sending verification email. Please try again later or contact support.', 'error')
+        else:
+            # Don't reveal if email exists or not for security
+            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+        
+        return redirect(url_for('auth.login'))
+    
+    # GET request - show form
+    return render_template('resend_verification.html')
 
 @auth.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):

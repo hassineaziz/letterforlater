@@ -1,7 +1,7 @@
 """add is_encrypted to letter
 
 Revision ID: add_is_encrypted
-Revises: add_is_send_to_myself
+Revises: 4e5ddfb95026
 Create Date: 2025-01-XX XX:XX:XX.XXXXXX
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'add_is_encrypted'
-down_revision = 'add_is_send_to_myself'
+down_revision = '4e5ddfb95026'  # Directly depends on merge migration (is_send_to_myself already exists)
 branch_labels = None
 depends_on = None
 

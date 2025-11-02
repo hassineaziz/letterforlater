@@ -46,9 +46,27 @@ class Letter(db.Model):
         try:
             from .encryption import encrypt_text, is_encrypted_text
             
-            # Check if fields are already encrypted
-            title_already_encrypted = self.title and is_encrypted_text(self.title)
-            content_already_encrypted = self.content and is_encrypted_text(self.content)
+            # Check if fields are already encrypted - try actual decryption to verify
+            title_already_encrypted = False
+            content_already_encrypted = False
+            
+            if self.title:
+                try:
+                    from .encryption import decrypt_text
+                    decrypt_text(self.title)  # If this succeeds, it's encrypted
+                    title_already_encrypted = True
+                except:
+                    # Decryption failed - not encrypted (or corrupted)
+                    title_already_encrypted = False
+            
+            if self.content:
+                try:
+                    from .encryption import decrypt_text
+                    decrypt_text(self.content)  # If this succeeds, it's encrypted
+                    content_already_encrypted = True
+                except:
+                    # Decryption failed - not encrypted (or corrupted)
+                    content_already_encrypted = False
             
             # Store original values for rollback if needed
             original_title = self.title

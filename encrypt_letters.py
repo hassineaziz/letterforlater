@@ -67,11 +67,16 @@ def diagnose_letters():
                     decrypt_text(letter.content)
                     content_can_decrypt = True
                     content_is_encrypted = True
-                except:
+                except Exception as e:
                     # Decryption failed - either it's plain text or corrupted
                     # Check if it looks like plain text (not base64-encoded)
                     content_is_encrypted = is_encrypted_text(letter.content)
                     content_can_decrypt = content_is_encrypted
+                    # Log the error for debugging (but don't show for every letter)
+                    if letter.id == 1145:
+                        print(f"   Debug: Letter 1145 content decryption failed: {e}")
+                        print(f"   Content preview: {letter.content[:100] if letter.content else 'None'}...")
+                        print(f"   is_encrypted_text check: {content_is_encrypted}")
             else:
                 content_is_encrypted = True  # Empty is OK
             
@@ -145,14 +150,14 @@ def encrypt_letters(letter_ids=None, dry_run=False):
                     try:
                         decrypt_text(letter.title)
                         title_enc = True  # Successfully decrypted = encrypted
-                    except:
+                    except Exception:
                         title_enc = False  # Decryption failed = not encrypted
                 
                 if letter.content:
                     try:
                         decrypt_text(letter.content)
                         content_enc = True  # Successfully decrypted = encrypted
-                    except:
+                    except Exception:
                         content_enc = False  # Decryption failed = not encrypted
                 
                 if not title_enc or not content_enc:
@@ -200,16 +205,43 @@ def encrypt_letters(letter_ids=None, dry_run=False):
                     except:
                         content_enc = is_encrypted_text(letter.content)
                 
+                # Store original content to verify encryption worked
+                original_content = letter.content
+                
                 # Encrypt the letter
                 success = letter.encrypt_fields()
                 
                 if success:
-                    encrypted_count += 1
-                    if encrypted_count % 10 == 0:
-                        print(f"  ✓ Encrypted {encrypted_count}/{total_count} letters...")
+                    # Verify encryption actually worked by trying to decrypt
+                    encryption_verified = True
+                    
+                    if letter.title:
+                        try:
+                            decrypt_text(letter.title)
+                        except Exception:
+                            encryption_verified = False
+                            print(f"  ✗ Letter {letter.id}: Title encryption verification failed")
+                    
+                    if letter.content:
+                        try:
+                            decrypt_text(letter.content)
+                        except Exception as e:
+                            encryption_verified = False
+                            print(f"  ✗ Letter {letter.id}: Content encryption verification failed: {e}")
+                            print(f"    Original content preview: {original_content[:50] if original_content else 'None'}...")
+                            print(f"    Content after encrypt_fields(): {letter.content[:50] if letter.content else 'None'}...")
+                            print(f"    is_encrypted flag: {letter.is_encrypted}")
+                    
+                    if encryption_verified:
+                        encrypted_count += 1
+                        if encrypted_count % 10 == 0:
+                            print(f"  ✓ Encrypted {encrypted_count}/{total_count} letters...")
+                    else:
+                        failed_count += 1
+                        print(f"  ✗ Letter {letter.id}: encrypt_fields() returned True but verification failed")
                 else:
                     failed_count += 1
-                    print(f"  ✗ Failed to encrypt letter {letter.id}")
+                    print(f"  ✗ Failed to encrypt letter {letter.id}: encrypt_fields() returned False")
             
             except Exception as e:
                 failed_count += 1

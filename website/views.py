@@ -2955,7 +2955,16 @@ def view_received_letter(letter_id):
     """View a specific received letter"""
     from website.models import RecipientInvite
     
-    # Verify the user has access to this letter
+    letter = Letter.query.get_or_404(letter_id)
+    
+    # Check if this is a send-to-myself letter that has been delivered
+    # Allow the author to view their own delivered send-to-myself letter
+    if letter.is_send_to_myself and letter.status == 'delivered' and letter.user_id == current_user.id:
+        # Author viewing their own delivered send-to-myself letter
+        media_attachments = letter.media_files.all()
+        return render_template('view_received_letter.html', letter=letter, media_attachments=media_attachments)
+    
+    # Otherwise, verify the user has access via RecipientInvite
     invite = RecipientInvite.query.filter(
         RecipientInvite.letter_id == letter_id,
         RecipientInvite.recipient_user_id == current_user.id,

@@ -142,8 +142,12 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
                                 {% if is_owner %}
-                                    {% if letter.is_send_to_myself and letter.status != 'draft' %}
-                                        {# Send-to-myself letters that are scheduled/delivered cannot be viewed, edited, or deleted #}
+                                    {% if letter.is_send_to_myself and letter.status == 'delivered' %}
+                                        {# Send-to-myself letters that are delivered can be viewed as received letters #}
+                                        <a href="{{ url_for('views.view_received_letter', letter_id=letter.id) }}" 
+                                           class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5">View Letter</a>
+                                    {% elif letter.is_send_to_myself and letter.status != 'draft' %}
+                                        {# Send-to-myself letters that are scheduled (not yet delivered) cannot be viewed, edited, or deleted #}
                                         <span class="text-gray-400 text-xs italic" title="This letter is scheduled to be sent to you. You can view, edit, or delete it only while it's a draft.">Locked until delivery</span>
                                     {% else %}
                                         {# Draft letters and regular letters can be viewed/edited/deleted #}

@@ -51,11 +51,14 @@ def send_weekly_reminders():
             )
             
             # Render HTML template
+            # Decrypt letter title for email
+            letter_title = invite.letter.decrypted_title
+            
             msg.html = render_template('emails/letter_reminder.html',
                 recipient_name=invite.recipient_name,
                 author_name=f"{invite.letter.author.first_name} {invite.letter.author.last_name}",
                 sent_date=invite.sent_at.strftime('%B %d, %Y'),
-                letter_title=invite.letter.title,
+                letter_title=letter_title,
                 invite_url=invite_url
             )
             
@@ -64,7 +67,7 @@ def send_weekly_reminders():
                 recipient_name=invite.recipient_name,
                 author_name=f"{invite.letter.author.first_name} {invite.letter.author.last_name}",
                 sent_date=invite.sent_at.strftime('%B %d, %Y'),
-                letter_title=invite.letter.title,
+                letter_title=letter_title,
                 invite_url=invite_url
             )
             

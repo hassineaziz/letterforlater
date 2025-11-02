@@ -43,7 +43,7 @@
                 <input type="text"
                     class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white/80 backdrop-blur-sm transition-all duration-300"
                     id="title" name="title" required
-                    value="{% if letter_to_edit %}{{ letter_to_edit.title }}{% endif %}"
+                    value="{% if letter_to_edit %}{{ letter_to_edit.decrypted_title }}{% endif %}"
                     placeholder="Enter a meaningful title for your letter">
             </div>
 
@@ -53,7 +53,7 @@
                 <textarea
                     class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-serif leading-relaxed bg-white/80 backdrop-blur-sm transition-all duration-300 resize-none"
                     id="content" name="content" rows="8" required
-                    placeholder="Write your letter here... Share your thoughts, memories, wisdom, or love for your recipient.">{% if letter_to_edit %}{{ letter_to_edit.content }}{% endif %}</textarea>
+                    placeholder="Write your letter here... Share your thoughts, memories, wisdom, or love for your recipient.">{% if letter_to_edit %}{{ letter_to_edit.decrypted_content }}{% endif %}</textarea>
             </div>
 
             <!-- Media Attachments Section -->
@@ -2222,8 +2222,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const letterData = {
         id: {{ letter_to_edit.id }},
-        title: '{{ letter_to_edit.title }}',
-        content: '{{ letter_to_edit.content }}',
+        title: '{{ letter_to_edit.decrypted_title }}',
+        content: '{{ letter_to_edit.decrypted_content }}',
         recipient_name: '{{ letter_to_edit.recipient_name }}',
         recipient_email: '{{ letter_to_edit.recipient_email }}',
         delivery_type: '{{ letter_to_edit.delivery_type }}',

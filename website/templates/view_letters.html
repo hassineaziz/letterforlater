@@ -94,7 +94,7 @@
                 <tr class="hover:bg-gray-50 {% if letter.is_send_to_myself %}bg-purple-50/30{% endif %}">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-2">
-                            <div class="text-sm font-medium text-gray-900">{{ letter.title }}</div>
+                            <div class="text-sm font-medium text-gray-900">{{ letter.decrypted_title }}</div>
                             {% if letter.is_send_to_myself %}
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700" title="This letter is scheduled to be sent to yourself">
                                 <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -156,7 +156,7 @@
                                     {% endif %}
                                 {% elif letter.delivery_type == 'date' and letter.status == 'delivered' %}
                                     <button type="button" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5" 
-                                            onclick="showViewLetterModal({{ letter.id }}, '{{ letter.title|e }}', '{{ letter.recipient_name|e }}', '{{ letter.content|e }}', '{{ letter.delivery_schedule.delivery_date.strftime('%B %d, %Y') if letter.delivery_schedule and letter.delivery_schedule.delivery_date else 'Not scheduled' }}')">View Letter</button>
+                                            onclick="showViewLetterModal({{ letter.id }}, '{{ letter.decrypted_title|e }}', '{{ letter.recipient_name|e }}', '{{ letter.decrypted_content|e }}', '{{ letter.delivery_schedule.delivery_date.strftime('%B %d, %Y') if letter.delivery_schedule and letter.delivery_schedule.delivery_date else 'Not scheduled' }}')">View Letter</button>
                                 {% else %}
                                     <span class="text-gray-500 text-sm">Not yet delivered</span>
                                 {% endif %}

@@ -28,9 +28,64 @@ class Letter(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     delay_after_verification = db.Column(db.Integer, nullable=True)  # Days to wait after death verification
     is_send_to_myself = db.Column(db.Boolean, default=False)  # True if letter is sent to the user themselves
+    is_encrypted = db.Column(db.Boolean, default=False)  # True if title and content are encrypted
     
     # Media attachments
     media_attachments = db.Column(JSONB, default=[])  # Array of media file info
+    
+    def encrypt_fields(self):
+        """Encrypt title and content fields and mark as encrypted"""
+        try:
+            from .encryption import encrypt_text
+            
+            if not self.is_encrypted:
+                if self.title:
+                    self.title = encrypt_text(self.title)
+                if self.content:
+                    self.content = encrypt_text(self.content)
+                self.is_encrypted = True
+        except Exception as e:
+            print(f"Error encrypting letter {self.id}: {e}")
+            raise
+    
+    def decrypt_fields(self):
+        """Decrypt title and content fields if encrypted, otherwise return as-is"""
+        try:
+            if self.is_encrypted:
+                from .encryption import decrypt_text
+                
+                if self.title:
+                    self.title = decrypt_text(self.title)
+                if self.content:
+                    self.content = decrypt_text(self.content)
+            # If not encrypted, return as-is (backward compatibility)
+        except Exception as e:
+            print(f"Error decrypting letter {self.id}: {e}")
+            raise
+    
+    @property
+    def decrypted_title(self):
+        """Get decrypted title (creates a copy, doesn't modify original)"""
+        try:
+            if self.is_encrypted:
+                from .encryption import decrypt_text
+                return decrypt_text(self.title) if self.title else None
+            return self.title
+        except Exception as e:
+            print(f"Error getting decrypted title for letter {self.id}: {e}")
+            return self.title  # Fallback to original
+    
+    @property
+    def decrypted_content(self):
+        """Get decrypted content (creates a copy, doesn't modify original)"""
+        try:
+            if self.is_encrypted:
+                from .encryption import decrypt_text
+                return decrypt_text(self.content) if self.content else None
+            return self.content
+        except Exception as e:
+            print(f"Error getting decrypted content for letter {self.id}: {e}")
+            return self.content  # Fallback to original
     
     # REMOVED: delivery_schedule = db.relationship('DeliverySchedule', backref='letter', uselist=False, cascade='all, delete-orphan')
 

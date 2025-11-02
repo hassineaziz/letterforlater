@@ -8,7 +8,7 @@
         <div class="max-w-4xl mx-auto px-4">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                 <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {{ letter.title }}
+                    {{ letter.decrypted_title }}
                 </span>
             </h1>
             <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -120,7 +120,7 @@
             <div class="prose prose-lg max-w-4xl mx-auto max-w-none">
                 <h3 class="text-xl font-semibold text-gray-900 mb-4">Message</h3>
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 sm:p-6">
-                    <div class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ letter.content|safe }}</div>
+                    <div class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ letter.decrypted_content|safe }}</div>
                 </div>
             </div>
 

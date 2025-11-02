@@ -583,6 +583,9 @@ def confirm_email(token):
                 status='draft'  # Create as draft so user can review before finalizing
             )
             
+            # Encrypt title and content before saving
+            new_letter.encrypt_fields()
+            
             if letter_data.get('delivery_type') == 'date' and letter_data.get('scheduled_date'):
                 scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
                 new_letter.delivery_date = scheduled_date

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ letter.title }} - LetterForLater{% endblock %}
+{% block title %}{{ letter.decrypted_title }} - LetterForLater{% endblock %}
 {% block content %}
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
@@ -21,7 +21,7 @@
             <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-8 text-white">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex-1">
-                        <h1 class="text-3xl font-bold mb-2">{{ letter.title }}</h1>
+                        <h1 class="text-3xl font-bold mb-2">{{ letter.decrypted_title }}</h1>
                         <p class="text-blue-100 text-lg">
                             From {{ letter.author.first_name }} {{ letter.author.last_name }}
                         </p>
@@ -46,7 +46,7 @@
             <!-- Letter Content -->
             <div class="p-8">
                 <div class="prose prose-lg max-w-none">
-                    <div class="whitespace-pre-wrap text-gray-800 leading-relaxed">{{ letter.content }}</div>
+                    <div class="whitespace-pre-wrap text-gray-800 leading-relaxed">{{ letter.decrypted_content }}</div>
                 </div>
 
                 <!-- Media Attachments -->

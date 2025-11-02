@@ -840,9 +840,15 @@ def add_letter():
                 flash('This letter is scheduled to be sent to you. You can only edit it while it is a draft.', 'info')
                 return redirect(url_for('views.view_letters', user_id=current_user.id))
             
-            # Update fields
+            # Update fields - decrypt first if encrypted, then encrypt new values
+            if letter.is_encrypted:
+                letter.decrypt_fields()
+            
             letter.title = request.form.get('title')
             letter.content = request.form.get('content')
+            
+            # Encrypt the updated fields
+            letter.encrypt_fields()
             
             # Handle "send to myself" checkbox
             send_to_myself = request.form.get('send_to_myself') == 'on'
@@ -1024,6 +1030,8 @@ def add_letter():
             user_id=current_user.id,
             is_send_to_myself=send_to_myself
         )
+        # Encrypt title and content before saving
+        new_letter.encrypt_fields()
         db.session.add(new_letter)
         db.session.flush()
 
@@ -1591,10 +1599,17 @@ def edit_letter():
         letterId = letter['letterId']
         letter = Letter.query.get(letterId)
         if letter and letter.user_id == current_user.id:
+            # Decrypt first if encrypted
+            if letter.is_encrypted:
+                letter.decrypt_fields()
+            
             letter.title = letter['title']
             letter.content = letter['content']
             letter.recipient_name = letter['recipient_name']
             letter.recipient_email = letter['recipient_email']
+            
+            # Encrypt the updated fields
+            letter.encrypt_fields()
             
             # Handle delay after verification if provided
             if 'delay_option' in letter and letter.delivery_type == 'death_verification':
@@ -1624,10 +1639,17 @@ def edit_letter():
         letterId = request.form.get('letterId')
         letter = Letter.query.get(letterId)
         if letter and letter.user_id == current_user.id:
+            # Decrypt first if encrypted
+            if letter.is_encrypted:
+                letter.decrypt_fields()
+            
             letter.title = request.form.get('title')
             letter.content = request.form.get('content')
             letter.recipient_name = request.form.get('recipient_name')
             letter.recipient_email = request.form.get('recipient_email')
+            
+            # Encrypt the updated fields
+            letter.encrypt_fields()
             
             # Handle delay after verification if provided
             if letter.delivery_type == 'death_verification':
@@ -1928,6 +1950,8 @@ def view_letters(user_id):
             letters_query = letters_query.filter_by(status=status_filter)
             
         letters = letters_query.all()
+        # Decrypt letters before displaying (creates copies, doesn't modify originals)
+        # Templates will use decrypted_title and decrypted_content properties
         return render_template('view_letters.html', user=current_user, letters=letters, contact=None, is_owner=True, now=datetime.now(timezone.utc), status_filter=status_filter)
     
     # Otherwise, check if current user is a trusted contact for this user
@@ -1946,6 +1970,7 @@ def view_letters(user_id):
         letters_query = letters_query.filter_by(status=status_filter)
         
     letters = letters_query.all()
+    # Decrypt letters before displaying (templates use decrypted_title and decrypted_content properties)
     return render_template('view_letters.html', user=current_user, letters=letters, contact=contact, is_owner=False, now=datetime.now(timezone.utc), status_filter=status_filter)
 
 @views.route('/view-letter/<int:letter_id>')
@@ -1960,6 +1985,7 @@ def view_letter(letter_id):
         if letter.is_send_to_myself and letter.status != 'draft':
             flash('This letter is scheduled to be sent to you on the delivery date. You cannot view it until it is delivered.', category='info')
             return redirect(url_for('views.view_letters', user_id=current_user.id))
+        # Templates will use decrypted_title and decrypted_content properties
         return render_template('view_letter.html', letter=letter, is_owner=True)
     
     # Check if current user is a trusted contact for the letter owner
@@ -1972,6 +1998,7 @@ def view_letter(letter_id):
         flash('You do not have permission to view this letter.', category='error')
         return redirect(url_for('views.home'))
     
+    # Templates will use decrypted_title and decrypted_content properties
     return render_template('view_letter.html', letter=letter, is_owner=False)
 
 @views.route('/settings', methods=['GET', 'POST'])
@@ -2250,13 +2277,19 @@ def save_draft():
     # Otherwise, update or create the draft as before
     draft = Letter.query.filter_by(user_id=current_user.id, status='draft').order_by(Letter.last_modified.desc()).first()
     if draft:
-        # Update the existing draft
+        # Update the existing draft - decrypt first if encrypted
+        if draft.is_encrypted:
+            draft.decrypt_fields()
+        
         draft.title = title or ''
         draft.content = content or ''
         draft.recipient_name = recipient_name or ''
         draft.recipient_email = recipient_email or ''
         draft.delivery_type = delivery_type or 'date'
         draft.last_modified = datetime.now(timezone.utc)
+        
+        # Encrypt the updated fields
+        draft.encrypt_fields()
         
         # Handle media files - attach them to the draft
         if media_files:
@@ -2300,6 +2333,8 @@ def save_draft():
             status='draft',
             user_id=current_user.id
         )
+        # Encrypt title and content before saving
+        draft.encrypt_fields()
         db.session.add(draft)
         db.session.commit()
         
@@ -2344,10 +2379,14 @@ def get_draft():
             'media_id': attachment.id  # For serving media
         })
     
+    # Decrypt draft fields before returning
+    draft_title = draft.decrypted_title
+    draft_content = draft.decrypted_content
+    
     draft_data = {
         'letter_id': draft.id,  # Include the actual letter ID
-        'title': draft.title,
-        'content': draft.content,
+        'title': draft_title,
+        'content': draft_content,
         'recipient_name': draft.recipient_name,
         'recipient_email': draft.recipient_email,
         'delivery_type': draft.delivery_type,
@@ -3368,6 +3407,9 @@ def google_callback():
                     is_send_to_myself=letter_data.get('send_to_myself') == 'on',
                     status='draft'  # Create as draft so user can review before finalizing
                 )
+                
+                # Encrypt title and content before saving
+                new_letter.encrypt_fields()
                 
                 if letter_data.get('delivery_type') == 'date' and letter_data.get('scheduled_date'):
                     scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)

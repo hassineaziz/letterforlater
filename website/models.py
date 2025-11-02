@@ -34,7 +34,15 @@ class Letter(db.Model):
     media_attachments = db.Column(JSONB, default=[])  # Array of media file info
     
     def encrypt_fields(self):
-        """Encrypt title and content fields and mark as encrypted"""
+        """
+        Encrypt title and content fields and mark as encrypted.
+        
+        Returns:
+            bool: True if encryption succeeded, False otherwise
+        
+        Note: This method does NOT raise exceptions - encryption failure is non-blocking.
+        If encryption fails, the letter will be saved unencrypted and the error is logged.
+        """
         try:
             from .encryption import encrypt_text, is_encrypted_text
             
@@ -47,14 +55,18 @@ class Letter(db.Model):
                 encrypted_title = encrypt_text(self.title)
                 # Verify encryption worked
                 if not is_encrypted_text(encrypted_title):
-                    raise ValueError("Title encryption failed - result is not encrypted")
+                    print(f"WARNING: Letter {self.id} title encryption verification failed - saving unencrypted")
+                    self.is_encrypted = False
+                    return False
                 self.title = encrypted_title
             
             if not content_already_encrypted and self.content:
                 encrypted_content = encrypt_text(self.content)
                 # Verify encryption worked
                 if not is_encrypted_text(encrypted_content):
-                    raise ValueError("Content encryption failed - result is not encrypted")
+                    print(f"WARNING: Letter {self.id} content encryption verification failed - saving unencrypted")
+                    self.is_encrypted = False
+                    return False
                 self.content = encrypted_content
             
             # Mark as encrypted only if encryption succeeded
@@ -63,16 +75,22 @@ class Letter(db.Model):
             
             if title_ok and content_ok:
                 self.is_encrypted = True
+                return True
             else:
                 # If encryption failed, don't mark as encrypted
+                print(f"WARNING: Letter {self.id} encryption verification failed - saving unencrypted")
                 self.is_encrypted = False
-                raise ValueError("Failed to encrypt letter fields - encryption verification failed")
+                return False
                 
         except Exception as e:
-            print(f"Error encrypting letter {self.id}: {e}")
+            # Log error but don't block letter creation
+            print(f"ERROR: Failed to encrypt letter {self.id}: {e}")
+            print(f"       Letter will be saved unencrypted. Please check ENCRYPTION_KEY configuration.")
+            import traceback
+            traceback.print_exc()
             # Ensure is_encrypted is False if encryption fails
             self.is_encrypted = False
-            raise
+            return False  # Return False instead of raising
     
     def decrypt_fields(self):
         """Decrypt title and content fields if encrypted, otherwise return as-is"""

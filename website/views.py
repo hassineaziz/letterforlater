@@ -3007,6 +3007,8 @@ def create_draft_letter():
             status='draft',
             user_id=current_user.id
         )
+        # Encrypt fields (even if empty, ensures consistency)
+        draft_letter.encrypt_fields()
         db.session.add(draft_letter)
         db.session.commit()
         

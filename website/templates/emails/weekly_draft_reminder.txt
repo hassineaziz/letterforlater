@@ -1,0 +1,33 @@
+Complete Your Unfinished Letter
+================================
+
+Hi {{ user_name }},
+
+You've had a draft letter saved for {{ days_since_draft }} day{{ 's' if days_since_draft != 1 else '' }}. Your letter is waiting for you to finish it, and your thoughts are worth sharing!
+
+YOUR DRAFT:
+-----------
+{{ letter_title }}
+Started {{ days_since_draft }} day{{ 's' if days_since_draft != 1 else '' }} ago
+
+WHY FINISH NOW?
+---------------
+💡 Life is unpredictable, and your words matter. Finishing your letter ensures your thoughts, memories, and love reach those who matter most. Don't let your draft remain unfinished - complete it today!
+
+READY TO COMPLETE IT?
+---------------------
+Your draft is waiting. Click the link below to continue writing and finish your letter today!
+
+Continue Writing Now: {{ edit_url }}
+
+If you're having trouble or have questions, we're here to help. Just reply to this email or contact support@letterforlater.com.
+
+Need help? Contact us at support@letterforlater.com
+Visit Dashboard: {{ dashboard_url }}
+Settings: {{ dashboard_url }}/settings
+
+---
+This email was sent to {{ user_email }}.
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+

@@ -1,0 +1,31 @@
+Ready to Write Your First Letter?
+===================================
+
+Hi {{ user_name }},
+
+We noticed you created your LetterForLater account a couple of days ago, but haven't written your first letter yet. Don't worry - we're here to help you get started!
+
+WHY START WRITING NOW?
+-----------------------
+✉️ Share your thoughts, wisdom, and memories with loved ones
+✉️ Create something meaningful that will last forever
+✉️ Give yourself peace of mind knowing your legacy is preserved
+✉️ It only takes a few minutes to get started
+
+READY TO GET STARTED?
+---------------------
+Creating your first letter is simple and takes just a few minutes. Click the link below to start writing!
+
+Create Your First Letter: {{ dashboard_url }}/add-letter
+
+If you have any questions or need help getting started, don't hesitate to reach out. We're here to support you every step of the way.
+
+Need help? Contact us at support@letterforlater.com
+Visit Dashboard: {{ dashboard_url }}
+Settings: {{ dashboard_url }}/settings
+
+---
+This email was sent to {{ user_email }}.
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+

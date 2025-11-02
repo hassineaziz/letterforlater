@@ -1,0 +1,50 @@
+Unlock Premium Features - LetterForLater
+==========================================
+
+Hi {{ user_name }},
+
+Great job! You've created {{ letter_count }} letter{{ 's' if letter_count != 1 else '' }} on LetterForLater. We're excited to see you're preserving your legacy!
+
+YOUR PROGRESS
+-------------
+{{ letter_count }} Letter{{ 's' if letter_count != 1 else '' }} Created
+
+KEEP WRITING!
+-------------
+💝 Every letter you write is a gift to your loved ones. Whether you're on the free plan or premium, you can create unlimited letters to preserve your legacy. Keep sharing your thoughts, memories, and wisdom!
+
+READY TO UPGRADE?
+-----------------
+
+PREMIUM - $2.99/month
+---------------------
+✓ Photos, videos, and audio attachments
+✓ Schedule letters for birthdays & milestones
+✓ Priority support
+✓ All free features included
+
+LIFETIME - $99.99 one-time payment
+-----------------------------------
+✓ Everything in Premium
+✓ Pay once, use forever
+✓ Unlimited storage
+✓ VIP support
+
+UPGRADE TO PREMIUM
+------------------
+Attach photos, videos, and audio to make your letters even more meaningful. Start your premium journey today!
+
+View Pricing Plans: {{ pricing_url }}
+Continue Writing Free: {{ dashboard_url }}/add-letter
+
+Remember, you can always create unlimited letters on the free plan! Premium adds media attachments and scheduled delivery to make your letters even more special.
+
+Need help? Contact us at support@letterforlater.com
+Visit Dashboard: {{ dashboard_url }}
+View Pricing: {{ pricing_url }}
+
+---
+This email was sent to {{ user_email }}.
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+

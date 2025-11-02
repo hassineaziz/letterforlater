@@ -1,0 +1,29 @@
+Continue Where You Left Off
+============================
+
+Hi {{ user_name }},
+
+We noticed you started writing a letter a couple of days ago but haven't finished it yet. Don't worry - your draft is safely saved and ready for you to continue!
+
+YOUR DRAFT:
+-----------
+{{ letter_title }}
+Started {{ days_since_draft }} day{{ 's' if days_since_draft != 1 else '' }} ago
+
+READY TO FINISH YOUR LETTER?
+----------------------------
+Your draft is waiting for you. Click the link below to continue writing and complete your letter!
+
+Continue Writing: {{ edit_url }}
+
+Remember, your draft is automatically saved as you write, so you can pick up right where you left off anytime.
+
+Need help? Contact us at support@letterforlater.com
+Visit Dashboard: {{ dashboard_url }}
+Settings: {{ dashboard_url }}/settings
+
+---
+This email was sent to {{ user_email }}.
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+

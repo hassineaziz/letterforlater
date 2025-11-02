@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Writing Your First Letter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .reminder-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        h1 {
+            color: #1F2937;
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+        .intro-text {
+            font-size: 16px;
+            color: #374151;
+            margin: 20px 0;
+            line-height: 1.7;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border: 1px solid #FCD34D;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .cta-title {
+            color: #92400E;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+        }
+        .cta-text {
+            color: #78350F;
+            font-size: 14px;
+            margin: 0 0 20px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #D97706, #B45309);
+        }
+        .reasons {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .reasons-title {
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+        }
+        .reason-item {
+            color: #4B5563;
+            margin: 12px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .reason-item::before {
+            content: "✉️";
+            position: absolute;
+            left: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            color: #6B7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="reminder-icon">✉️</div>
+            <h1>Ready to Write Your First Letter?</h1>
+        </div>
+        
+        <p class="intro-text">
+            Hi {{ user_name }},
+        </p>
+        
+        <p class="intro-text">
+            We noticed you created your LetterForLater account a couple of days ago, but haven't written your first letter yet. Don't worry - we're here to help you get started!
+        </p>
+        
+        <div class="reasons">
+            <h3 class="reasons-title">Why start writing now?</h3>
+            <div class="reason-item">Share your thoughts, wisdom, and memories with loved ones</div>
+            <div class="reason-item">Create something meaningful that will last forever</div>
+            <div class="reason-item">Give yourself peace of mind knowing your legacy is preserved</div>
+            <div class="reason-item">It only takes a few minutes to get started</div>
+        </div>
+        
+        <div class="cta-section">
+            <h2 class="cta-title">Ready to Get Started?</h2>
+            <p class="cta-text">Creating your first letter is simple and takes just a few minutes. Click below to start writing!</p>
+            <a href="{{ dashboard_url }}/add-letter" class="cta-button">Create Your First Letter</a>
+        </div>
+        
+        <p class="intro-text">
+            If you have any questions or need help getting started, don't hesitate to reach out. We're here to support you every step of the way.
+        </p>
+        
+        <div class="footer">
+            <p>Need help? Contact us at support@letterforlater.com</p>
+            <p style="margin-top: 10px;">
+                <a href="{{ dashboard_url }}" style="color: #3B82F6; text-decoration: none;">Visit Dashboard</a> | 
+                <a href="{{ dashboard_url }}/settings" style="color: #3B82F6; text-decoration: none;">Settings</a>
+            </p>
+            <p style="margin-top: 15px; font-size: 12px; color: #9CA3AF;">
+                This email was sent to {{ user_email }}. 
+                <br>LetterForLater - Preserve Your Legacy
+                <br>https://letterforlater.com
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+

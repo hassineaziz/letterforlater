@@ -117,6 +117,15 @@ The application includes scheduled tasks that should be run via cron:
 2. **Cleanup Expired Media**: `cleanup_expired_media.py`
    - Run daily to clean up temporary media files
 
+3. **Send No-Letter, Draft, and Pricing Reminders**: `send_no_letter_reminders.py`
+   - Run daily to send reminders to:
+     - Users who created accounts but haven't written any letters
+     - Users who have draft letters but haven't finished them
+     - Users who have created letters (pricing/upsell reminders)
+   - Reminder schedule:
+     - **No letters/Drafts**: First reminder 2 days after signup/draft creation, then 7 days, then weekly
+     - **Pricing reminders**: Every 14 days after first letter creation (only for free plan users with letters)
+
 Example crontab (recommended: run every 15 minutes to ensure timely delivery):
 
 ```bash
@@ -128,6 +137,9 @@ Example crontab (recommended: run every 15 minutes to ensure timely delivery):
 
 # Cleanup expired media daily at 2 AM
 0 2 * * * cd /path/to/app && /path/to/venv/bin/python cleanup_expired_media.py >> /var/log/app/cleanup.log 2>&1
+
+# Send no-letter reminders daily at 9 AM
+0 9 * * * cd /path/to/app && /path/to/venv/bin/python send_no_letter_reminders.py >> /var/log/app/reminders.log 2>&1
 ```
 
 ## Security Considerations

@@ -33,6 +33,9 @@ class Letter(db.Model):
     # Media attachments
     media_attachments = db.Column(JSONB, default=[])  # Array of media file info
     
+    # Reminder tracking for draft letters
+    last_draft_reminder_sent_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    
     def encrypt_fields(self):
         """
         Encrypt title and content fields and mark as encrypted.
@@ -268,6 +271,12 @@ class User(db.Model, UserMixin):
     
     # Marketing consent
     marketing_consent = db.Column(db.Boolean, default=False)
+    
+    # Reminder tracking for users without letters
+    last_no_letter_reminder_sent_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    
+    # Reminder tracking for pricing/upsell emails
+    last_pricing_reminder_sent_at = db.Column(db.DateTime(timezone=True), nullable=True)
     
     # Relationships
     letters = db.relationship('Letter', backref='author', lazy='dynamic', cascade='all, delete-orphan')

@@ -17,8 +17,16 @@ depends_on = None
 
 
 def upgrade():
-    # Add is_send_to_myself column to letter table
-    op.add_column('letter', sa.Column('is_send_to_myself', sa.Boolean(), nullable=False, server_default='false'))
+    # Add is_send_to_myself column to letter table (only if it doesn't exist)
+    # Check if column already exists (for cases where it was added manually)
+    from sqlalchemy import inspect
+    from sqlalchemy.engine import reflection
+    conn = op.get_bind()
+    inspector = inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('letter')]
+    
+    if 'is_send_to_myself' not in columns:
+        op.add_column('letter', sa.Column('is_send_to_myself', sa.Boolean(), nullable=False, server_default='false'))
 
 
 def downgrade():

@@ -373,10 +373,14 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
         # Add tracking pixel for email opens
         tracking_pixel_url = url_for('views.track_email_open', token=invite.invite_token, _external=True)
         
+        # Decrypt letter title for email (if templates need it)
+        letter_title = letter.decrypted_title
+        
         # Render HTML template
         msg.html = render_template('emails/letter_received.html',
             recipient_name=recipient_name,
             author_name=author_name,
+            letter_title=letter_title,
             invite_url=invite_url,
             tracking_pixel_url=tracking_pixel_url
         )
@@ -385,6 +389,7 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
         msg.body = render_template('emails/letter_received.txt',
             recipient_name=recipient_name,
             author_name=author_name,
+            letter_title=letter_title,
             invite_url=invite_url
         )
         

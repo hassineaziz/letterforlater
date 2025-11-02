@@ -241,13 +241,6 @@ class PremiumFeatures {
         bar.className = 'fixed-upgrade-bar';
         bar.innerHTML = this.renderBannerVariant(variant);
         
-        // Wire up countdown if present
-        const countdownEl = bar.querySelector('[data-countdown-deadline]');
-        if (countdownEl) {
-            const deadline = parseInt(countdownEl.getAttribute('data-countdown-deadline'), 10);
-            this.startCountdown(deadline, countdownEl);
-        }
-        
         // Close handler persists dismissal window
         const closeBtn = bar.querySelector('.fixed-upgrade-close');
         if (closeBtn) {
@@ -295,11 +288,10 @@ class PremiumFeatures {
             {
                 id: 'lifetime-countdown',
                 template: (() => {
-                    const deadline = this.getOrCreateDeadline('upgrade-lifetime-deadline', 24); // 24 hours
                     return `
                     <div class="fixed-upgrade-content">
                         <div class="fixed-upgrade-text">
-                            <div class="fixed-upgrade-title">Lifetime Deal Ends Soon</div>
+                            <div class="fixed-upgrade-title">Lifetime Deal</div>
                             <div class="fixed-upgrade-subtitle"><span style="text-decoration:line-through;color:#9ca3af;">$149.99</span> → <strong>$99.99</strong> — Save 33%</div>
                         </div>
                         <div class="fixed-upgrade-buttons">
@@ -311,7 +303,7 @@ class PremiumFeatures {
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Upgrade to Premium
                             </a>
-                            <span class="fixed-upgrade-savings">Ends in <span data-countdown-deadline="${deadline}">--:--:--</span></span>
+                            <span class="fixed-upgrade-savings">Save 33%</span>
                         </div>
                         <button class="fixed-upgrade-close" title="Close banner">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>

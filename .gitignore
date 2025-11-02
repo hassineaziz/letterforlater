@@ -74,8 +74,6 @@ Thumbs.db
 .coverage
 htmlcov/
 .tox/
-test_*.py
-*_test.py
 
 # Documentation (keep only README.md and deployment docs)
 *.md

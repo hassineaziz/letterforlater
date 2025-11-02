@@ -26,10 +26,12 @@ from website.encryption import is_encrypted_text, get_encryption_key
 
 
 def diagnose_letters():
-    """Show encryption status of all letters"""
+    """Show encryption status of all letters - uses actual decryption to verify"""
     app = create_app()
     
     with app.app_context():
+        from website.encryption import decrypt_text
+        
         all_letters = Letter.query.all()
         print(f"\n🔍 Checking {len(all_letters)} total letters...\n")
         
@@ -41,9 +43,39 @@ def diagnose_letters():
         needs_encryption = []
         
         for letter in all_letters:
-            title_enc = not letter.title or is_encrypted_text(letter.title)
-            content_enc = not letter.content or is_encrypted_text(letter.content)
-            actually_encrypted = title_enc and content_enc
+            # Actually try to decrypt to verify encryption (more reliable than is_encrypted_text)
+            title_can_decrypt = True
+            content_can_decrypt = True
+            
+            if letter.title:
+                try:
+                    # If it's encrypted, decrypt will work. If it's plain text, it will fail
+                    decrypt_text(letter.title)
+                    title_can_decrypt = True
+                    title_is_encrypted = True
+                except:
+                    # Decryption failed - either it's plain text or corrupted
+                    # Check if it looks like plain text (not base64-encoded)
+                    title_is_encrypted = is_encrypted_text(letter.title)
+                    title_can_decrypt = title_is_encrypted
+            else:
+                title_is_encrypted = True  # Empty is OK
+            
+            if letter.content:
+                try:
+                    # If it's encrypted, decrypt will work. If it's plain text, it will fail
+                    decrypt_text(letter.content)
+                    content_can_decrypt = True
+                    content_is_encrypted = True
+                except:
+                    # Decryption failed - either it's plain text or corrupted
+                    # Check if it looks like plain text (not base64-encoded)
+                    content_is_encrypted = is_encrypted_text(letter.content)
+                    content_can_decrypt = content_is_encrypted
+            else:
+                content_is_encrypted = True  # Empty is OK
+            
+            actually_encrypted = title_is_encrypted and content_is_encrypted
             
             if actually_encrypted and letter.is_encrypted:
                 properly_encrypted.append(letter.id)
@@ -55,6 +87,12 @@ def diagnose_letters():
             elif not actually_encrypted and letter.is_encrypted:
                 marked_encrypted_but_unencrypted.append(letter.id)
                 needs_encryption.append(letter.id)
+                # Show details for this problematic letter
+                print(f"\n⚠️  Letter ID {letter.id} is marked encrypted but content is NOT encrypted!")
+                print(f"   Title encrypted: {title_is_encrypted}")
+                print(f"   Content encrypted: {content_is_encrypted}")
+                print(f"   Title preview: {letter.title[:50] if letter.title else 'None'}...")
+                print(f"   Content preview: {letter.content[:50] if letter.content else 'None'}...")
         
         print("📊 DIAGNOSIS RESULTS:")
         print(f"  ✅ Properly encrypted: {len(properly_encrypted)} letters")
@@ -95,12 +133,28 @@ def encrypt_letters(letter_ids=None, dry_run=False):
         if letter_ids:
             letters_to_encrypt = Letter.query.filter(Letter.id.in_(letter_ids)).all()
         else:
-            # Find all letters that need encryption
+            # Find all letters that need encryption - actually try decrypting to verify
+            from website.encryption import decrypt_text
             all_letters = Letter.query.all()
             letters_to_encrypt = []
             for letter in all_letters:
-                title_enc = not letter.title or is_encrypted_text(letter.title)
-                content_enc = not letter.content or is_encrypted_text(letter.content)
+                title_enc = True
+                content_enc = True
+                
+                if letter.title:
+                    try:
+                        decrypt_text(letter.title)
+                        title_enc = True  # Successfully decrypted = encrypted
+                    except:
+                        title_enc = False  # Decryption failed = not encrypted
+                
+                if letter.content:
+                    try:
+                        decrypt_text(letter.content)
+                        content_enc = True  # Successfully decrypted = encrypted
+                    except:
+                        content_enc = False  # Decryption failed = not encrypted
+                
                 if not title_enc or not content_enc:
                     letters_to_encrypt.append(letter)
         
@@ -128,9 +182,23 @@ def encrypt_letters(letter_ids=None, dry_run=False):
         
         for letter in letters_to_encrypt:
             try:
-                # Check current state
-                title_enc = is_encrypted_text(letter.title) if letter.title else True
-                content_enc = is_encrypted_text(letter.content) if letter.content else True
+                # Check current state by actually trying to decrypt
+                title_enc = True
+                content_enc = True
+                
+                if letter.title:
+                    try:
+                        decrypt_text(letter.title)
+                        title_enc = True
+                    except:
+                        title_enc = is_encrypted_text(letter.title)
+                
+                if letter.content:
+                    try:
+                        decrypt_text(letter.content)
+                        content_enc = True
+                    except:
+                        content_enc = is_encrypted_text(letter.content)
                 
                 # Encrypt the letter
                 success = letter.encrypt_fields()
@@ -168,12 +236,28 @@ def encrypt_letters(letter_ids=None, dry_run=False):
         print(f"⏰ Completed at: {datetime.now(timezone.utc)}")
         print(f"{'='*60}\n")
         
-        # Verify encryption
+        # Verify encryption by actually trying to decrypt
+        from website.encryption import decrypt_text
         remaining_unencrypted = []
         all_letters = Letter.query.all()
         for letter in all_letters:
-            title_enc = not letter.title or is_encrypted_text(letter.title)
-            content_enc = not letter.content or is_encrypted_text(letter.content)
+            title_enc = True
+            content_enc = True
+            
+            if letter.title:
+                try:
+                    decrypt_text(letter.title)
+                    title_enc = True  # Successfully decrypted = encrypted
+                except:
+                    title_enc = False  # Decryption failed = not encrypted
+            
+            if letter.content:
+                try:
+                    decrypt_text(letter.content)
+                    content_enc = True  # Successfully decrypted = encrypted
+                except:
+                    content_enc = False  # Decryption failed = not encrypted
+            
             if not title_enc or not content_enc:
                 remaining_unencrypted.append(letter.id)
         

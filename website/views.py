@@ -853,7 +853,10 @@ def add_letter():
             letter.content = request.form.get('content')
             
             # Encrypt the updated fields
-            letter.encrypt_fields()
+            encryption_success = letter.encrypt_fields()
+            if not encryption_success:
+                # Encryption failed - log error but continue (non-blocking)
+                print(f"WARNING: Failed to encrypt letter {letter.id} - saving unencrypted")
             
             # Handle "send to myself" checkbox
             send_to_myself = request.form.get('send_to_myself') == 'on'
@@ -1036,7 +1039,10 @@ def add_letter():
             is_send_to_myself=send_to_myself
         )
         # Encrypt title and content before saving
-        new_letter.encrypt_fields()
+        encryption_success = new_letter.encrypt_fields()
+        if not encryption_success:
+            # Encryption failed - log error but continue (non-blocking)
+            print(f"WARNING: Failed to encrypt new letter - saving unencrypted")
         db.session.add(new_letter)
         db.session.flush()
 
@@ -1614,7 +1620,10 @@ def edit_letter():
             letter.recipient_email = letter['recipient_email']
             
             # Encrypt the updated fields
-            letter.encrypt_fields()
+            encryption_success = letter.encrypt_fields()
+            if not encryption_success:
+                # Encryption failed - log error but continue (non-blocking)
+                print(f"WARNING: Failed to encrypt letter {letter.id} - saving unencrypted")
             
             # Handle delay after verification if provided
             if 'delay_option' in letter and letter.delivery_type == 'death_verification':
@@ -1654,7 +1663,10 @@ def edit_letter():
             letter.recipient_email = request.form.get('recipient_email')
             
             # Encrypt the updated fields
-            letter.encrypt_fields()
+            encryption_success = letter.encrypt_fields()
+            if not encryption_success:
+                # Encryption failed - log error but continue (non-blocking)
+                print(f"WARNING: Failed to encrypt letter {letter.id} - saving unencrypted")
             
             # Handle delay after verification if provided
             if letter.delivery_type == 'death_verification':
@@ -2294,7 +2306,10 @@ def save_draft():
         draft.last_modified = datetime.now(timezone.utc)
         
         # Encrypt the updated fields
-        draft.encrypt_fields()
+        encryption_success = draft.encrypt_fields()
+        if not encryption_success:
+            # Encryption failed - log error but continue (non-blocking)
+            print(f"WARNING: Failed to encrypt draft {draft.id} - saving unencrypted")
         
         # Handle media files - attach them to the draft
         if media_files:
@@ -2339,7 +2354,10 @@ def save_draft():
             user_id=current_user.id
         )
         # Encrypt title and content before saving
-        draft.encrypt_fields()
+        encryption_success = draft.encrypt_fields()
+        if not encryption_success:
+            # Encryption failed - log error but continue (non-blocking)
+            print(f"WARNING: Failed to encrypt new draft - saving unencrypted")
         db.session.add(draft)
         db.session.commit()
         
@@ -3008,7 +3026,10 @@ def create_draft_letter():
             user_id=current_user.id
         )
         # Encrypt fields (even if empty, ensures consistency)
-        draft_letter.encrypt_fields()
+        encryption_success = draft_letter.encrypt_fields()
+        if not encryption_success:
+            # Encryption failed - log error but continue (non-blocking)
+            print(f"WARNING: Failed to encrypt draft letter - saving unencrypted")
         db.session.add(draft_letter)
         db.session.commit()
         
@@ -3425,7 +3446,10 @@ def google_callback():
                 )
                 
                 # Encrypt title and content before saving
-                new_letter.encrypt_fields()
+                encryption_success = new_letter.encrypt_fields()
+                if not encryption_success:
+                    # Encryption failed - log error but continue (non-blocking)
+                    print(f"WARNING: Failed to encrypt new letter from hero form - saving unencrypted")
                 
                 if letter_data.get('delivery_type') == 'date' and letter_data.get('scheduled_date'):
                     scheduled_date = datetime.strptime(letter_data['scheduled_date'], '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)

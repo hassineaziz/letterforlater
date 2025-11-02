@@ -50,23 +50,54 @@ class Letter(db.Model):
             title_already_encrypted = self.title and is_encrypted_text(self.title)
             content_already_encrypted = self.content and is_encrypted_text(self.content)
             
-            # Only encrypt if not already encrypted
+            # Store original values for rollback if needed
+            original_title = self.title
+            original_content = self.content
+            
+            # Only encrypt if not already encrypted - prepare encrypted values first
+            encrypted_title = None
+            encrypted_content = None
+            
             if not title_already_encrypted and self.title:
-                encrypted_title = encrypt_text(self.title)
-                # Verify encryption worked
-                if not is_encrypted_text(encrypted_title):
-                    print(f"WARNING: Letter {self.id} title encryption verification failed - saving unencrypted")
+                try:
+                    encrypted_title = encrypt_text(self.title)
+                    # Verify encryption worked
+                    if not encrypted_title or not is_encrypted_text(encrypted_title):
+                        print(f"WARNING: Letter {self.id} title encryption verification failed - saving unencrypted")
+                        self.is_encrypted = False
+                        return False
+                except Exception as e:
+                    print(f"ERROR: Letter {self.id} title encryption exception: {e}")
                     self.is_encrypted = False
                     return False
-                self.title = encrypted_title
             
             if not content_already_encrypted and self.content:
-                encrypted_content = encrypt_text(self.content)
-                # Verify encryption worked
-                if not is_encrypted_text(encrypted_content):
-                    print(f"WARNING: Letter {self.id} content encryption verification failed - saving unencrypted")
+                try:
+                    encrypted_content = encrypt_text(self.content)
+                    # Verify encryption worked
+                    # Note: encrypt_text() returns None for empty strings, which is valid
+                    if encrypted_content is None:
+                        # Empty string - no encryption needed, leave as is
+                        pass
+                    elif not is_encrypted_text(encrypted_content):
+                        print(f"WARNING: Letter {self.id} content encryption verification failed - saving unencrypted")
+                        # Don't modify title if it was encrypted - rollback everything
+                        self.is_encrypted = False
+                        return False
+                    else:
+                        # Encryption succeeded - will apply it below
+                        pass
+                except Exception as e:
+                    # If encryption raises exception (e.g., ENCRYPTION_KEY issue), fail
+                    # Don't modify title if it was encrypted - rollback everything
+                    print(f"ERROR: Letter {self.id} content encryption exception: {e}")
                     self.is_encrypted = False
                     return False
+            
+            # Apply encryption atomically - only if both succeeded
+            if encrypted_title is not None:
+                self.title = encrypted_title
+            if encrypted_content is not None:
                 self.content = encrypted_content
             
             # Mark as encrypted only if encryption succeeded

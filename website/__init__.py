@@ -5,11 +5,15 @@ from flask_mail import Mail
 from os import path
 from flask_login import LoginManager
 import os
+import warnings
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 from flask_login import current_user
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+
+# Suppress flask_admin pkg_resources deprecation warnings
+warnings.filterwarnings('ignore', message='.*pkg_resources is deprecated.*', category=UserWarning)
 
 db = SQLAlchemy()
 migrate = Migrate(db)

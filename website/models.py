@@ -36,16 +36,42 @@ class Letter(db.Model):
     def encrypt_fields(self):
         """Encrypt title and content fields and mark as encrypted"""
         try:
-            from .encryption import encrypt_text
+            from .encryption import encrypt_text, is_encrypted_text
             
-            if not self.is_encrypted:
-                if self.title:
-                    self.title = encrypt_text(self.title)
-                if self.content:
-                    self.content = encrypt_text(self.content)
+            # Check if fields are already encrypted
+            title_already_encrypted = self.title and is_encrypted_text(self.title)
+            content_already_encrypted = self.content and is_encrypted_text(self.content)
+            
+            # Only encrypt if not already encrypted
+            if not title_already_encrypted and self.title:
+                encrypted_title = encrypt_text(self.title)
+                # Verify encryption worked
+                if not is_encrypted_text(encrypted_title):
+                    raise ValueError("Title encryption failed - result is not encrypted")
+                self.title = encrypted_title
+            
+            if not content_already_encrypted and self.content:
+                encrypted_content = encrypt_text(self.content)
+                # Verify encryption worked
+                if not is_encrypted_text(encrypted_content):
+                    raise ValueError("Content encryption failed - result is not encrypted")
+                self.content = encrypted_content
+            
+            # Mark as encrypted only if encryption succeeded
+            title_ok = not self.title or title_already_encrypted or is_encrypted_text(self.title)
+            content_ok = not self.content or content_already_encrypted or is_encrypted_text(self.content)
+            
+            if title_ok and content_ok:
                 self.is_encrypted = True
+            else:
+                # If encryption failed, don't mark as encrypted
+                self.is_encrypted = False
+                raise ValueError("Failed to encrypt letter fields - encryption verification failed")
+                
         except Exception as e:
             print(f"Error encrypting letter {self.id}: {e}")
+            # Ensure is_encrypted is False if encryption fails
+            self.is_encrypted = False
             raise
     
     def decrypt_fields(self):

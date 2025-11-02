@@ -2316,7 +2316,8 @@ def save_draft():
             try:
                 media_ids = [media_info.get('media_id') for media_info in media_files if media_info.get('media_id')]
                 if media_ids:
-                    result = production_media_handlers.media_handler.attach_media_to_letter(
+                    from .s3_media_handler import s3_media_handler
+                    result = s3_media_handler.attach_media_to_letter(
                         current_user.id,
                         draft.id,
                         media_ids
@@ -2366,7 +2367,8 @@ def save_draft():
             try:
                 media_ids = [media_info.get('media_id') for media_info in media_files if media_info.get('media_id')]
                 if media_ids:
-                    result = production_media_handlers.media_handler.attach_media_to_letter(
+                    from .s3_media_handler import s3_media_handler
+                    result = s3_media_handler.attach_media_to_letter(
                         current_user.id,
                         draft.id,
                         media_ids
@@ -3206,7 +3208,8 @@ def delete_media_session():
 @login_required
 def serve_media_session(media_id):
     """Serve temporary media files from database"""
-    return production_media_handlers.media_handler.serve_media(media_id, current_user.id)
+    from .s3_media_handler import s3_media_handler
+    return s3_media_handler.serve_media(media_id, current_user.id)
 
 @views.route('/download-media-session/<media_id>')
 @login_required
@@ -3245,7 +3248,8 @@ def download_media_session(media_id):
 @login_required
 def media_stats():
     """Get current user's media statistics"""
-    stats = production_media_handlers.media_handler.get_user_media_stats(current_user.id)
+    from .s3_media_handler import s3_media_handler
+    stats = s3_media_handler.get_user_media_stats(current_user.id)
     if stats:
         return jsonify(stats)
     else:
@@ -3258,7 +3262,8 @@ def cleanup_expired_media():
     if current_user.role != 'admin':
         return jsonify({'error': 'Unauthorized'}), 403
     
-    cleaned_count = production_media_handlers.media_handler.cleanup_expired_media()
+    from .s3_media_handler import s3_media_handler
+    cleaned_count = s3_media_handler.cleanup_expired_media()
     return jsonify({
         'success': True,
         'cleaned_count': cleaned_count,

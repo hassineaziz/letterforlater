@@ -142,24 +142,42 @@ class Letter(db.Model):
     def decrypted_title(self):
         """Get decrypted title (creates a copy, doesn't modify original)"""
         try:
-            if self.is_encrypted:
-                from .encryption import decrypt_text
-                return decrypt_text(self.title) if self.title else None
-            return self.title
+            from .encryption import decrypt_text, is_encrypted_text
+            
+            # Check if title is actually encrypted (might be plain text despite is_encrypted flag)
+            if self.is_encrypted and self.title:
+                # Verify title is actually encrypted before trying to decrypt
+                if is_encrypted_text(self.title):
+                    return decrypt_text(self.title)
+                else:
+                    # Title is plain text even though is_encrypted=True - return as-is
+                    print(f"Warning: Letter {self.id} is marked encrypted but title appears plain text - returning as-is")
+                    return self.title
+            return self.title if self.title else None
         except Exception as e:
             print(f"Error getting decrypted title for letter {self.id}: {e}")
+            # If decryption fails, it might be plain text - return as-is
             return self.title  # Fallback to original
     
     @property
     def decrypted_content(self):
         """Get decrypted content (creates a copy, doesn't modify original)"""
         try:
-            if self.is_encrypted:
-                from .encryption import decrypt_text
-                return decrypt_text(self.content) if self.content else None
-            return self.content
+            from .encryption import decrypt_text, is_encrypted_text
+            
+            # Check if content is actually encrypted (might be plain text despite is_encrypted flag)
+            if self.is_encrypted and self.content:
+                # Verify content is actually encrypted before trying to decrypt
+                if is_encrypted_text(self.content):
+                    return decrypt_text(self.content)
+                else:
+                    # Content is plain text even though is_encrypted=True - return as-is
+                    print(f"Warning: Letter {self.id} is marked encrypted but content appears plain text - returning as-is")
+                    return self.content
+            return self.content if self.content else None
         except Exception as e:
             print(f"Error getting decrypted content for letter {self.id}: {e}")
+            # If decryption fails, it might be plain text - return as-is
             return self.content  # Fallback to original
     
     # REMOVED: delivery_schedule = db.relationship('DeliverySchedule', backref='letter', uselist=False, cascade='all, delete-orphan')

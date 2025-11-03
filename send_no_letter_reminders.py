@@ -137,7 +137,7 @@ def send_weekly_draft_reminder(user, letter):
         days_since_draft = (datetime.now(timezone.utc) - letter.created_date).days
         
         msg = Message(
-            'Finish Your Letter - Don't Leave It Unfinished',
+            "Finish Your Letter - Don't Leave It Unfinished",
             recipients=[user.email],
             sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )
@@ -220,7 +220,7 @@ def send_weekly_reminder(user):
         days_since_signup = (datetime.now(timezone.utc) - user.created_date).days
         
         msg = Message(
-            'Don't Forget - Create Your First Letter',
+            "Don't Forget - Create Your First Letter",
             recipients=[user.email],
             sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )

@@ -78,15 +78,24 @@
     <!-- Microsoft Verification -->
     <meta name="msvalidate.01" content="B1A3E5DA1DE239A9DC6CF01E1A778CCE" />
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
-    <link rel="shortcut icon" href="{{ url_for('views.favicon', _external=True) }}" />
-    <link rel="icon" href="{{ url_for('views.favicon', _external=True) }}" type="image/png" />
-    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo.png', _external=True) }}" />
-    <meta name="msapplication-TileColor" content="#3B82F6" />
-    <meta name="theme-color" content="#3B82F6" />
+<!-- Favicon & App Icons -->
+<link rel="icon" href="{{ url_for('static', filename='logo.png', _external=True) }}" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
+<meta name="theme-color" content="#3B82F6" />
+<meta name="msapplication-TileColor" content="#3B82F6" />
+<meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo.png', _external=True) }}" />
+
+<!-- Organization Schema for Google Search logo -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "url": "https://letterforlater.com/",
+  "logo": "https://letterforlater.com/static/logo.png"
+}
+</script>
+
+
     
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">

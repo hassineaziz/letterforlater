@@ -130,6 +130,7 @@ def create_app():
             'notification_preferences',  # JSONB - complex to edit
             'delivery_preferences',  # JSONB - complex to edit
             'backup_codes',  # JSONB - complex to edit
+            'two_factor_secret',  # Security sensitive
             'letters',  # Relationship - use backref
             'trusted_contacts',  # Relationship - use backref
             'trusted_by',  # Relationship - use backref
@@ -142,24 +143,12 @@ def create_app():
             'plan', 'created_date', 'last_login_ip', 'registration_ip'
         )
         
-        # Columns that can be edited
-        form_columns = (
-            'email', 'first_name', 'last_name', 'is_active', 'role',
-            'plan', 'subscription_cycle', 'subscription_status',
-            'stripe_customer_id', 'subscription_id',
-            'subscription_end_date', 'subscription_cancel_at_period_end',
-            'marketing_consent', 'two_factor_enabled',
-            'last_login_ip', 'registration_ip',
-            'last_no_letter_reminder_sent_at', 'last_pricing_reminder_sent_at',
-            'created_date', 'password_reset_token', 'password_reset_expires'
+        # Make some fields readonly (these will appear but can't be edited)
+        column_readonly_fields = (
+            'created_date',
+            'password_reset_token',
+            'password_reset_expires',
         )
-        
-        # Make some fields readonly
-        form_widget_args = {
-            'created_date': {'readonly': True},
-            'password_reset_token': {'readonly': True},
-            'password_reset_expires': {'readonly': True},
-        }
     
     # Initialize Flask-Admin at default /admin URL
     admin = Admin(app, name='Database Admin', index_view=CustomAdminIndexView())

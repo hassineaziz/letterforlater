@@ -590,6 +590,14 @@ def sign_up():
 @auth.route('/sign-up-with-invite/<token>', methods=['GET', 'POST'])
 def sign_up_with_invite(token):
     """Sign up using an invite token from a letter delivery"""
+    # Check IP blocking before allowing signup
+    client_ip = get_client_ip()
+    ip_blocked, block_record = is_ip_blocked(client_ip)
+    if ip_blocked:
+        print(f"[BLOCK] Invite signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
+        flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
+        return redirect(url_for('auth.login'))
+    
     if current_user.is_authenticated:
         return redirect(url_for('views.received_letters'))
     
@@ -632,6 +640,9 @@ def sign_up_with_invite(token):
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', 'error')
         else:
+            # Get IP address for registration
+            client_ip = get_client_ip()
+            
             new_user = User(
                 email=email,
                 first_name=first_name,
@@ -639,7 +650,8 @@ def sign_up_with_invite(token):
                 password=generate_password_hash(password1, method='pbkdf2:sha256'),
                 notification_preferences={'email_notifications': True},
                 delivery_preferences={'delivery_method': 'email'},
-                is_active=True  # Auto-activate for invite signups
+                is_active=True,  # Auto-activate for invite signups
+                registration_ip=client_ip
             )
             db.session.add(new_user)
             db.session.flush()

@@ -3494,6 +3494,11 @@ def google_callback():
         last_name = user_info.get('family_name', '')
         profile_picture = user_info.get('picture', '')
         
+        # Check IP blocking BEFORE allowing new signups
+        from .blocking import get_client_ip, is_ip_blocked
+        client_ip = get_client_ip()
+        ip_blocked, block_record = is_ip_blocked(client_ip)
+        
         # Check if user already exists
         user = User.query.filter_by(email=email).first()
         
@@ -3505,10 +3510,63 @@ def google_callback():
                 user.is_google_user = True
                 db.session.commit()
         else:
-            # Create new user
-            from .blocking import get_client_ip
-            client_ip = get_client_ip()
+            # BLOCK NEW SIGNUPS FROM BLOCKED IPs
+            if ip_blocked:
+                print(f"[BLOCK] Google OAuth signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
+                flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
+                return redirect(url_for('auth.login'))
             
+            # Check signup rate limit (prevent spam signups via Google OAuth)
+            from datetime import timedelta
+            from .blocking import block_ip
+            
+            # Check last 5 minutes (rapid spam detection)
+            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+            rapid_signups = User.query.filter(
+                User.registration_ip == client_ip,
+                User.created_date >= five_minutes_ago
+            ).count()
+            
+            # AUTO-BLOCK if 2+ signups already (catch them at attempt #3)
+            if rapid_signups >= 2:
+                print(f"[SPAM ALERT] Auto-blocking IP {client_ip} (Google OAuth): {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
+                block_ip(client_ip, reason=f"Spam signups (Google OAuth): {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
+                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                return redirect(url_for('auth.login'))
+            
+            # Also check last 30 seconds for VERY rapid spam
+            thirty_seconds_ago = datetime.now(timezone.utc) - timedelta(seconds=30)
+            very_rapid_signups = User.query.filter(
+                User.registration_ip == client_ip,
+                User.created_date >= thirty_seconds_ago
+            ).count()
+            
+            # AUTO-BLOCK if 2+ signups in 30 seconds (definitely spam!)
+            if very_rapid_signups >= 2:
+                print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip} (Google OAuth): {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
+                block_ip(client_ip, reason=f"Critical spam (Google OAuth): {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
+                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                return redirect(url_for('auth.login'))
+            
+            # Check last hour (general rate limit)
+            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+            recent_signups = User.query.filter(
+                User.registration_ip == client_ip,
+                User.created_date >= one_hour_ago
+            ).count()
+            
+            if recent_signups >= 5:  # Max 5 signups per hour from same IP
+                print(f"[SIGNUP RATE LIMIT] Blocked Google OAuth signup from IP {client_ip}: {recent_signups} signups in last hour")
+                # Auto-block if they hit the limit
+                if recent_signups >= 10:
+                    print(f"[SPAM ALERT] Auto-blocking IP {client_ip} (Google OAuth): {recent_signups} signups in 1 hour - SPAM DETECTED!")
+                    block_ip(client_ip, reason=f"Spam signups (Google OAuth): {recent_signups} signups in 1 hour", blocked_by_user_id=None)
+                    flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                else:
+                    flash('Too many signup attempts from this IP address. Please try again later or contact support.', 'error')
+                return redirect(url_for('auth.login'))
+            
+            # Create new user
             user = User(
                 email=email,
                 first_name=first_name,
@@ -3530,8 +3588,6 @@ def google_callback():
                 print(f"Error sending welcome email to Google user: {str(e)}")
         
         # Log IP address and log the user in
-        from .blocking import get_client_ip
-        client_ip = get_client_ip()
         user.last_login_ip = client_ip
         db.session.commit()
         

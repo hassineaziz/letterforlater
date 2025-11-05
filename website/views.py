@@ -1774,6 +1774,13 @@ def add_trusted_contact():
     if email.lower() == current_user.email.lower():
         flash('You cannot add yourself as a trusted contact!', category='error')
         return redirect(url_for('views.trusted_contacts'))
+    
+    # Check trusted contact limit (max 15 per user)
+    MAX_TRUSTED_CONTACTS = 10
+    current_contact_count = TrustedContact.query.filter_by(user_id=current_user.id).count()
+    if current_contact_count >= MAX_TRUSTED_CONTACTS:
+        flash(f'You have reached the maximum limit of {MAX_TRUSTED_CONTACTS} trusted contacts. Please remove an existing contact before adding a new one.', category='error')
+        return redirect(url_for('views.trusted_contacts'))
 
     full_name = f"{first_name} {last_name}"
     confirmation_code = str(uuid.uuid4())
@@ -2484,6 +2491,13 @@ def invite_trusted_contact():
         except Exception as e:
             print(f"Error sending email: {str(e)}")
             flash('Confirmation email will be sent shortly.', category='success')
+        return redirect(url_for('views.trusted_contacts'))
+
+    # Check trusted contact limit (max 15 per user)
+    MAX_TRUSTED_CONTACTS = 10
+    current_contact_count = TrustedContact.query.filter_by(user_id=current_user.id).count()
+    if current_contact_count >= MAX_TRUSTED_CONTACTS:
+        flash(f'You have reached the maximum limit of {MAX_TRUSTED_CONTACTS} trusted contacts. Please remove an existing contact before adding a new one.', category='error')
         return redirect(url_for('views.trusted_contacts'))
 
     # Create new invite

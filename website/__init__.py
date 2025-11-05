@@ -76,7 +76,7 @@ def create_app():
     app.register_blueprint(stripe_bp, url_prefix='/')
     app.register_blueprint(webhook_bp, url_prefix='/')
 
-    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment
+    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment, BlockedIP
     
     # Create database tables
     with app.app_context():
@@ -93,6 +93,17 @@ def create_app():
         # Don't allow blocked/suspended users to login
         if user and not user.is_active:
             return None  # This will force re-login and show error
+        
+        # Also check IP blocking if user is loaded (for security)
+        if user:
+            from flask import request
+            from .blocking import get_client_ip, is_ip_blocked
+            client_ip = get_client_ip()
+            ip_blocked, _ = is_ip_blocked(client_ip)
+            if ip_blocked:
+                print(f"[BLOCK] User {user.email} (ID: {id}) attempted access from blocked IP: {client_ip}")
+                return None  # Block access even if user exists
+        
         return user
     
     # Configure Flask-Admin (after login manager is set up)

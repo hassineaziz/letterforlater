@@ -3,6 +3,7 @@ from .models import User, TrustedContact, DeathVerification, Letter, NewsletterS
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
+from .blocking import get_client_ip, is_ip_blocked
 import uuid
 from datetime import datetime, timedelta, timezone
 from . import mail
@@ -66,6 +67,14 @@ def utility_processor():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    # Check IP blocking before allowing login
+    client_ip = get_client_ip()
+    ip_blocked, block_record = is_ip_blocked(client_ip)
+    if ip_blocked:
+        print(f"[BLOCK] Login attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
+        flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
+        return render_template("login.html", user=current_user)
+    
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     next_page = request.args.get('next')
@@ -96,6 +105,11 @@ def login():
                     return redirect(url_for('auth.login_2fa'))
                 else:
                     # No 2FA, proceed with normal login
+                    # Log IP address
+                    client_ip = get_client_ip()
+                    user.last_login_ip = client_ip
+                    db.session.commit()
+                    
                     login_user(user, remember=True)
                     
                     # Check for pending letter invites for this email
@@ -259,6 +273,14 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    # Check IP blocking before allowing signup
+    client_ip = get_client_ip()
+    ip_blocked, block_record = is_ip_blocked(client_ip)
+    if ip_blocked:
+        print(f"[BLOCK] Signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
+        flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
+        return render_template("sign_up.html", user=current_user)
+    
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     
@@ -294,6 +316,9 @@ def sign_up():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
+            # Get IP address for registration
+            client_ip = get_client_ip()
+            
             new_user = User(
                 email=email,
                 first_name=first_name,
@@ -304,7 +329,8 @@ def sign_up():
                 notification_preferences={'email_notifications': True},
                 delivery_preferences={'delivery_method': 'email'},
                 is_active=False,
-                marketing_consent=(request.form.get('marketing_consent') == 'yes')
+                marketing_consent=(request.form.get('marketing_consent') == 'yes'),
+                registration_ip=client_ip
             )
             db.session.add(new_user)
             db.session.commit()

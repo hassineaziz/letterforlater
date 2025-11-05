@@ -541,23 +541,68 @@ def blog_feed():
 @views.route('/admin-cms/block-user/<int:user_id>', methods=['POST'])
 @login_required
 @admin_required
-def block_user(user_id):
+def block_user_view(user_id):
     """Block/suspend a user account"""
+    from .blocking import block_user, unblock_user
+    
     user = User.query.get_or_404(user_id)
     action = request.form.get('action', 'block')  # 'block' or 'unblock'
+    reason = request.form.get('reason', '')
     
     if action == 'block':
-        user.is_active = False
-        db.session.commit()
-        flash(f'User {user.email} has been blocked.', 'success')
-        print(f"[ADMIN] User {user.email} (ID: {user_id}) blocked by admin {current_user.email}")
+        success, message, user_obj = block_user(user_id, reason=reason, blocked_by_user_id=current_user.id)
+        if success:
+            flash(message, 'success')
+        else:
+            flash(message, 'error')
     elif action == 'unblock':
-        user.is_active = True
-        db.session.commit()
-        flash(f'User {user.email} has been unblocked.', 'success')
-        print(f"[ADMIN] User {user.email} (ID: {user_id}) unblocked by admin {current_user.email}")
+        success, message, user_obj = unblock_user(user_id)
+        if success:
+            flash(message, 'success')
+        else:
+            flash(message, 'error')
     
     return redirect(request.referrer or url_for('views.blog_dashboard'))
+
+@views.route('/admin-cms/block-ip', methods=['POST'])
+@login_required
+@admin_required
+def block_ip_view():
+    """Block an IP address permanently"""
+    from .blocking import block_ip, unblock_ip, get_blocked_ips
+    
+    ip_address = request.form.get('ip_address', '').strip()
+    reason = request.form.get('reason', '').strip()
+    action = request.form.get('action', 'block')  # 'block' or 'unblock'
+    
+    if not ip_address:
+        flash('IP address is required', 'error')
+        return redirect(request.referrer or url_for('views.blog_dashboard'))
+    
+    if action == 'block':
+        success, message, block_record = block_ip(ip_address, reason=reason, blocked_by_user_id=current_user.id)
+        if success:
+            flash(message, 'success')
+        else:
+            flash(message, 'error')
+    elif action == 'unblock':
+        success, message = unblock_ip(ip_address)
+        if success:
+            flash(message, 'success')
+        else:
+            flash(message, 'error')
+    
+    return redirect(request.referrer or url_for('views.blog_dashboard'))
+
+@views.route('/admin-cms/blocked-ips')
+@login_required
+@admin_required
+def blocked_ips_view():
+    """View all blocked IP addresses"""
+    from .blocking import get_blocked_ips
+    
+    blocked_ips = get_blocked_ips()
+    return render_template('admin/blocked_ips.html', blocked_ips=blocked_ips)
 
 @views.route('/admin-cms')
 @login_required
@@ -1775,7 +1820,7 @@ def add_trusted_contact():
         flash('You cannot add yourself as a trusted contact!', category='error')
         return redirect(url_for('views.trusted_contacts'))
     
-    # Check trusted contact limit (max 15 per user)
+    # Check trusted contact limit (max 10 per user)
     MAX_TRUSTED_CONTACTS = 10
     current_contact_count = TrustedContact.query.filter_by(user_id=current_user.id).count()
     if current_contact_count >= MAX_TRUSTED_CONTACTS:
@@ -2493,7 +2538,7 @@ def invite_trusted_contact():
             flash('Confirmation email will be sent shortly.', category='success')
         return redirect(url_for('views.trusted_contacts'))
 
-    # Check trusted contact limit (max 15 per user)
+    # Check trusted contact limit (max 10 per user)
     MAX_TRUSTED_CONTACTS = 10
     current_contact_count = TrustedContact.query.filter_by(user_id=current_user.id).count()
     if current_contact_count >= MAX_TRUSTED_CONTACTS:
@@ -3415,6 +3460,9 @@ def google_callback():
                 db.session.commit()
         else:
             # Create new user
+            from .blocking import get_client_ip
+            client_ip = get_client_ip()
+            
             user = User(
                 email=email,
                 first_name=first_name,
@@ -3422,7 +3470,8 @@ def google_callback():
                 google_id=google_id,
                 profile_picture=profile_picture,
                 is_google_user=True,
-                password=None  # No password for Google users
+                password=None,  # No password for Google users
+                registration_ip=client_ip
             )
             db.session.add(user)
             db.session.commit()
@@ -3434,7 +3483,12 @@ def google_callback():
             except Exception as e:
                 print(f"Error sending welcome email to Google user: {str(e)}")
         
-        # Log the user in
+        # Log IP address and log the user in
+        from .blocking import get_client_ip
+        client_ip = get_client_ip()
+        user.last_login_ip = client_ip
+        db.session.commit()
+        
         login_user(user, remember=True)
         print(f"✅ User {user.email} logged in successfully with Google")
         

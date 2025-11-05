@@ -278,6 +278,10 @@ class User(db.Model, UserMixin):
     # Reminder tracking for pricing/upsell emails
     last_pricing_reminder_sent_at = db.Column(db.DateTime(timezone=True), nullable=True)
     
+    # IP address tracking
+    last_login_ip = db.Column(db.String(45), nullable=True)  # Last IP address used for login
+    registration_ip = db.Column(db.String(45), nullable=True)  # IP address when account was created
+    
     # Relationships
     letters = db.relationship('Letter', backref='author', lazy='dynamic', cascade='all, delete-orphan')
     trusted_contacts = db.relationship(
@@ -431,6 +435,20 @@ class NewsletterSubscriber(db.Model):
 
     __table_args__ = (
         db.Index('idx_newsletter_status', 'status'),
+    )
+
+class BlockedIP(db.Model):
+    """Model to store permanently blocked IP addresses"""
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(45), nullable=False, unique=True, index=True)  # IPv4 or IPv6
+    reason = db.Column(db.Text, nullable=True)  # Reason for blocking
+    blocked_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Admin who blocked
+    blocked_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    is_active = db.Column(db.Boolean, default=True)  # Can be temporarily disabled without deleting
+    
+    __table_args__ = (
+        db.Index('idx_blocked_ip_address', 'ip_address'),
+        db.Index('idx_blocked_ip_active', 'is_active'),
     )
 
 class BlogPost(db.Model):

@@ -122,11 +122,50 @@ def create_app():
     class CustomAdminIndexView(AdminAuthMixin, AdminIndexView):
         pass
     
+    # Custom User view to handle complex fields
+    class UserAdminView(AdminAuthMixin, ModelView):
+        # Exclude problematic fields from editing
+        form_excluded_columns = (
+            'password',  # Password should never be edited directly
+            'notification_preferences',  # JSONB - complex to edit
+            'delivery_preferences',  # JSONB - complex to edit
+            'backup_codes',  # JSONB - complex to edit
+            'letters',  # Relationship - use backref
+            'trusted_contacts',  # Relationship - use backref
+            'trusted_by',  # Relationship - use backref
+            'death_verifications',  # Relationship - use backref
+        )
+        
+        # Columns to show in list view
+        column_list = (
+            'id', 'email', 'first_name', 'last_name', 'is_active', 'role',
+            'plan', 'created_date', 'last_login_ip', 'registration_ip'
+        )
+        
+        # Columns that can be edited
+        form_columns = (
+            'email', 'first_name', 'last_name', 'is_active', 'role',
+            'plan', 'subscription_cycle', 'subscription_status',
+            'stripe_customer_id', 'subscription_id',
+            'subscription_end_date', 'subscription_cancel_at_period_end',
+            'marketing_consent', 'two_factor_enabled',
+            'last_login_ip', 'registration_ip',
+            'last_no_letter_reminder_sent_at', 'last_pricing_reminder_sent_at',
+            'created_date', 'password_reset_token', 'password_reset_expires'
+        )
+        
+        # Make some fields readonly
+        form_widget_args = {
+            'created_date': {'readonly': True},
+            'password_reset_token': {'readonly': True},
+            'password_reset_expires': {'readonly': True},
+        }
+    
     # Initialize Flask-Admin at default /admin URL
     admin = Admin(app, name='Database Admin', index_view=CustomAdminIndexView())
     
     # Add model views
-    admin.add_view(AdminModelView(User, db.session, name='Users'))
+    admin.add_view(UserAdminView(User, db.session, name='Users'))
     admin.add_view(AdminModelView(Letter, db.session, name='Letters'))
     admin.add_view(AdminModelView(DeathVerification, db.session, name='Death Verifications'))
     admin.add_view(AdminModelView(TrustedContact, db.session, name='Trusted Contacts'))

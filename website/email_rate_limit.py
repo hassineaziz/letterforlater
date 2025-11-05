@@ -178,14 +178,9 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
             
             # Check if it's a rate limit error
             if 'rate limit' in error_str or 'unusual sending' in error_str or '550' in error_str or '5.4.6' in error_str:
-                if attempt < max_retries:
-                    wait_time = 60 * (attempt + 1)  # Exponential backoff: 60s, 120s
-                    print(f"[EMAIL RATE LIMIT] SMTP rate limit detected for {email_type}. Waiting {wait_time} seconds before retry {attempt + 1}/{max_retries}...")
-                    time.sleep(wait_time)
-                    continue
-                else:
-                    print(f"[EMAIL RATE LIMIT] Max retries reached for {email_type}. Email not sent.")
-                    return False
+                # Don't retry rate limit errors - fail immediately to avoid worker timeout
+                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected for {email_type}. Email NOT sent (Zoho blocking).")
+                return False  # Fail fast - don't retry or wait
             else:
                 # Other error, don't retry
                 print(f"[EMAIL ERROR] Error sending {email_type} email: {str(e)}")

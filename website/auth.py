@@ -706,12 +706,13 @@ def forgot_password():
                 reset_link=reset_link
             )
             
-            try:
-                mail.send(msg)
+            # Use rate-limited email sending (fails fast - no waiting to avoid timeout)
+            success = safe_send_email(msg, email_type='password_reset', max_retries=0)
+            if success:
                 flash('Password reset instructions have been sent to your email.', 'success')
-            except Exception as e:
-                print(f"Error sending password reset email: {str(e)}")
-                flash('Error sending email. Please try again later.', 'error')
+            else:
+                # Rate limited or failed - show user-friendly message
+                flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
         else:
             # Don't reveal if email exists or not for security
             flash('If an account with that email exists, password reset instructions have been sent.', 'info')

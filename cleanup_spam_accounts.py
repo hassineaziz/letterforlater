@@ -23,12 +23,12 @@ def find_spam_accounts():
     
     with app.app_context():
         # Find IPs with multiple signups
-        one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-        one_day_ago = datetime.now(timezone.utc) - timedelta(days=1)
+        # Check last 7 days to catch all spam
+        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
         
         # Get all recent signups
         recent_users = User.query.filter(
-            User.created_date >= one_day_ago
+            User.created_date >= seven_days_ago
         ).all()
         
         # Group by IP

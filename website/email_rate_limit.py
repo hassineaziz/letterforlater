@@ -131,6 +131,31 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     from . import mail
     
+    # EMERGENCY: Check if recipient email is from spam account
+    if msg.recipients:
+        recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
+        from .models import User
+        user = User.query.filter_by(email=recipient_email).first()
+        if user and user.registration_ip:
+            # Check if this IP is spam
+            from datetime import datetime, timedelta, timezone
+            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+            spam_count = User.query.filter(
+                User.registration_ip == user.registration_ip,
+                User.created_date >= five_minutes_ago
+            ).count()
+            
+            if spam_count >= 3:
+                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip}")
+                return False
+            
+            # Check if IP is blocked
+            from .blocking import is_ip_blocked
+            ip_blocked, _ = is_ip_blocked(user.registration_ip)
+            if ip_blocked:
+                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
+                return False
+    
     # Check rate limit
     can_send, wait_time = check_email_rate_limit()
     

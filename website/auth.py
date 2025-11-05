@@ -15,6 +15,7 @@ import qrcode
 import base64
 import io
 import secrets
+import os
 
 
 auth = Blueprint('auth', __name__)

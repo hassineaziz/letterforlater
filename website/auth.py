@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from . import mail
 from flask_mail import Message
 from markupsafe import Markup
+from .email_rate_limit import safe_send_email
 import pyotp
 import qrcode
 import base64
@@ -45,8 +46,14 @@ def send_confirmation_email(user):
             confirm_link=confirm_link
         )
         
-        mail.send(msg)
-        return True
+        # Use rate-limited email sending
+        success = safe_send_email(msg, email_type='confirmation')
+        if success:
+            return True
+        else:
+            print(f"Error sending confirmation email: Rate limited or failed")
+            db.session.rollback()
+            return False
     except Exception as e:
         print(f"Error sending confirmation email: {str(e)}")
         db.session.rollback()
@@ -79,6 +86,14 @@ def login():
         return redirect(url_for('views.home'))
     next_page = request.args.get('next')
     if request.method == 'POST':
+        # Rate limit login attempts (prevent brute force)
+        from datetime import timedelta
+        five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+        
+        # Count failed login attempts from this IP in last 5 minutes
+        # (We'll track this by checking recent login activity - if user doesn't exist or password wrong)
+        # For now, we'll add rate limiting after checking credentials
+        
         email = request.form.get('email')
         password = request.form.get('password')
         next_page = request.form.get('next') or next_page
@@ -94,6 +109,8 @@ def login():
                 else:
                     flash('Your account has been suspended. Please contact support if you believe this is an error.', 'error')
                 return render_template("login.html", user=current_user, next=next_page)
+            
+            # Check password
             if check_password_hash(user.password, password):
                 # Check if user has 2FA enabled
                 if user.two_factor_enabled:
@@ -149,8 +166,34 @@ def login():
                     flash('Logged in successfully!', category='success')
                     return redirect(next_page or url_for('views.home'))
             else:
-                flash('Incorrect password, try again.', category='error')
+                    # Rate limit failed login attempts from spam IPs
+                    recent_signups = User.query.filter(
+                        User.registration_ip == client_ip,
+                        User.created_date >= five_minutes_ago
+                    ).count()
+                    
+                    if recent_signups >= 3:
+                        print(f"[LOGIN RATE LIMIT] Failed login from IP {client_ip} with {recent_signups} recent signups - potential spam")
+                        from .blocking import block_ip
+                        block_ip(client_ip, reason=f"Failed login with {recent_signups} recent spam signups", blocked_by_user_id=None)
+                        flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                        return render_template("login.html", user=current_user, next=next_page)
+                    
+                    flash('Incorrect password, try again.', category='error')
         else:
+            # User doesn't exist - check for spam pattern
+            recent_signups = User.query.filter(
+                User.registration_ip == client_ip,
+                User.created_date >= five_minutes_ago
+            ).count()
+            
+            if recent_signups >= 3:
+                print(f"[LOGIN RATE LIMIT] Failed login (user not found) from IP {client_ip} with {recent_signups} recent signups - potential spam")
+                from .blocking import block_ip
+                block_ip(client_ip, reason=f"Failed login (user not found) with {recent_signups} recent spam signups", blocked_by_user_id=None)
+                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                return render_template("login.html", user=current_user, next=next_page)
+            
             flash('Email does not exist.', category='error')
     return render_template("login.html", user=current_user, next=next_page)
 
@@ -281,6 +324,59 @@ def sign_up():
         flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
         return render_template("sign_up.html", user=current_user)
     
+    # Check signup rate limit (prevent spam signups) - CHECK BEFORE PROCESSING
+    if request.method == 'POST':
+        from datetime import timedelta
+        from .blocking import block_ip
+        
+        # Check last 5 minutes (rapid spam detection)
+        five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+        rapid_signups = User.query.filter(
+            User.registration_ip == client_ip,
+            User.created_date >= five_minutes_ago
+        ).count()
+        
+        # AUTO-BLOCK if 2+ signups already (catch them at attempt #3, so only 2 get through)
+        # This prevents most spam while still allowing legitimate users
+        if rapid_signups >= 2:
+            print(f"[SPAM ALERT] Auto-blocking IP {client_ip}: {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
+            # Auto-block the IP immediately
+            block_ip(client_ip, reason=f"Spam signups: {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
+            flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        
+        # Also check last 30 seconds for VERY rapid spam (multiple in seconds)
+        thirty_seconds_ago = datetime.now(timezone.utc) - timedelta(seconds=30)
+        very_rapid_signups = User.query.filter(
+            User.registration_ip == client_ip,
+            User.created_date >= thirty_seconds_ago
+        ).count()
+        
+        # AUTO-BLOCK if 2+ signups in 30 seconds (definitely spam!)
+        if very_rapid_signups >= 2:
+            print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip}: {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
+            block_ip(client_ip, reason=f"Critical spam: {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
+            flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        
+        # Check last hour (general rate limit)
+        one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+        recent_signups = User.query.filter(
+            User.registration_ip == client_ip,
+            User.created_date >= one_hour_ago
+        ).count()
+        
+        if recent_signups >= 5:  # Max 5 signups per hour from same IP
+            print(f"[SIGNUP RATE LIMIT] Blocked signup from IP {client_ip}: {recent_signups} signups in last hour")
+            # Auto-block if they hit the limit
+            if recent_signups >= 10:
+                print(f"[SPAM ALERT] Auto-blocking IP {client_ip}: {recent_signups} signups in 1 hour - SPAM DETECTED!")
+                block_ip(client_ip, reason=f"Spam signups: {recent_signups} signups in 1 hour", blocked_by_user_id=None)
+                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+            else:
+                flash('Too many signup attempts from this IP address. Please try again later or contact support.', 'error')
+            return render_template("sign_up.html", user=current_user)
+    
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     
@@ -334,6 +430,48 @@ def sign_up():
             )
             db.session.add(new_user)
             db.session.commit()
+            
+            # Double-check rate limit AFTER creating user (in case of race condition)
+            # Check 30 seconds (very rapid) and 5 minutes (rapid)
+            thirty_seconds_ago = datetime.now(timezone.utc) - timedelta(seconds=30)
+            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+            
+            very_rapid_now = User.query.filter(
+                User.registration_ip == client_ip,
+                User.created_date >= thirty_seconds_ago
+            ).count()
+            
+            rapid_signups_now = User.query.filter(
+                User.registration_ip == client_ip,
+                User.created_date >= five_minutes_ago
+            ).count()
+            
+            # Auto-block if we hit limits (even if they slipped through)
+            should_block = False
+            if very_rapid_now >= 2:
+                print(f"[SPAM ALERT] POST-SIGNUP CRITICAL: Auto-blocking IP {client_ip}: {very_rapid_now} signups in 30 seconds!")
+                should_block = True
+            elif rapid_signups_now >= 2:
+                print(f"[SPAM ALERT] POST-SIGNUP: Auto-blocking IP {client_ip}: {rapid_signups_now} signups in 5 minutes!")
+                should_block = True
+            
+            if should_block:
+                from .blocking import block_ip
+                block_ip(client_ip, reason=f"Spam signups detected: {very_rapid_now} in 30s, {rapid_signups_now} in 5min", blocked_by_user_id=None)
+                # Delete the spam user accounts created (keep only the first one if it was legitimate)
+                spam_users = User.query.filter(
+                    User.registration_ip == client_ip,
+                    User.created_date >= five_minutes_ago
+                ).order_by(User.created_date.desc()).all()  # Newest first
+                
+                # Delete all except the first one (in case first was legitimate)
+                if len(spam_users) > 1:
+                    for spam_user in spam_users[1:]:  # Delete all except first
+                        db.session.delete(spam_user)
+                    db.session.commit()
+                    print(f"[SPAM CLEANUP] Deleted {len(spam_users) - 1} spam user accounts")
+                flash('Signup blocked due to suspicious activity. Your IP has been blocked.', 'error')
+                return render_template("sign_up.html", user=current_user)
 
             # If marketing consent given, add/update newsletter subscriber
             if new_user.marketing_consent:

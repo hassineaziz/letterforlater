@@ -1826,7 +1826,30 @@ def add_trusted_contact():
     if current_contact_count >= MAX_TRUSTED_CONTACTS:
         flash(f'You have reached the maximum limit of {MAX_TRUSTED_CONTACTS} trusted contacts. Please remove an existing contact before adding a new one.', category='error')
         return redirect(url_for('views.trusted_contacts'))
-
+    
+    # Rate limit trusted contact invitations (prevent spam)
+    from datetime import timedelta
+    one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+    recent_invites = TrustedContact.query.filter(
+        TrustedContact.user_id == current_user.id,
+        TrustedContact.created_date >= one_hour_ago
+    ).count()
+    
+    if recent_invites >= 10:  # Max 10 invites per hour
+        flash('Too many trusted contact invitations sent recently. Please wait before inviting more.', category='error')
+        return redirect(url_for('views.trusted_contacts'))
+    
+    # Check rapid invitations (5 in 5 minutes = spam)
+    five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+    rapid_invites = TrustedContact.query.filter(
+        TrustedContact.user_id == current_user.id,
+        TrustedContact.created_date >= five_minutes_ago
+    ).count()
+    
+    if rapid_invites >= 5:
+        flash('Too many invitations sent too quickly. Please wait a few minutes before inviting more.', category='error')
+        return redirect(url_for('views.trusted_contacts'))
+    
     full_name = f"{first_name} {last_name}"
     confirmation_code = str(uuid.uuid4())
     new_contact = TrustedContact(
@@ -2543,6 +2566,29 @@ def invite_trusted_contact():
     current_contact_count = TrustedContact.query.filter_by(user_id=current_user.id).count()
     if current_contact_count >= MAX_TRUSTED_CONTACTS:
         flash(f'You have reached the maximum limit of {MAX_TRUSTED_CONTACTS} trusted contacts. Please remove an existing contact before adding a new one.', category='error')
+        return redirect(url_for('views.trusted_contacts'))
+    
+    # Rate limit trusted contact invitations (prevent spam)
+    from datetime import timedelta
+    one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+    five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+    
+    recent_invites = TrustedContact.query.filter(
+        TrustedContact.user_id == current_user.id,
+        TrustedContact.created_date >= one_hour_ago
+    ).count()
+    
+    rapid_invites = TrustedContact.query.filter(
+        TrustedContact.user_id == current_user.id,
+        TrustedContact.created_date >= five_minutes_ago
+    ).count()
+    
+    if rapid_invites >= 5:  # Max 5 invites in 5 minutes
+        flash('Too many invitations sent too quickly. Please wait a few minutes before inviting more.', category='error')
+        return redirect(url_for('views.trusted_contacts'))
+    
+    if recent_invites >= 10:  # Max 10 invites per hour
+        flash('Too many trusted contact invitations sent recently. Please wait before inviting more.', category='error')
         return redirect(url_for('views.trusted_contacts'))
 
     # Create new invite

@@ -3676,6 +3676,28 @@ def google_callback():
                 flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
                 return redirect(url_for('auth.login'))
             
+            # ADVANCED SPAM DETECTION for Google OAuth
+            from .spam_detection import detect_spam_pattern, check_recent_spam_activity, is_random_email, is_random_name
+            
+            # Check for spam patterns in email/names from Google
+            is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
+            
+            if is_spam:
+                print(f"[SPAM DETECTION] BLOCKED Google OAuth signup: {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
+                from .blocking import block_ip_subnet
+                block_ip_subnet(client_ip, reason=f"Spam pattern detected (Google OAuth): {spam_reason}", blocked_by_user_id=None)
+                flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+                return redirect(url_for('auth.login'))
+            
+            # Check if this IP has recent spam activity
+            is_spam_ip, spam_count, activity_reason = check_recent_spam_activity(client_ip)
+            if is_spam_ip:
+                print(f"[SPAM DETECTION] BLOCKED Google OAuth signup from spam IP: {client_ip} - {activity_reason}")
+                from .blocking import block_ip_subnet
+                block_ip_subnet(client_ip, reason=f"Recent spam activity (Google OAuth): {activity_reason}", blocked_by_user_id=None)
+                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                return redirect(url_for('auth.login'))
+            
             # Check signup rate limit (prevent spam signups via Google OAuth)
             from datetime import timedelta
             from .blocking import block_ip
@@ -3687,7 +3709,7 @@ def google_callback():
                 User.created_date >= five_minutes_ago
             ).count()
             
-            # AUTO-BLOCK if 2+ signups already (catch them at attempt #3)
+            # AUTO-BLOCK if 2+ signups already (catch them at attempt #3, so only 2 get through)
             if rapid_signups >= 2:
                 print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
                 from .blocking import block_ip_subnet

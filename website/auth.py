@@ -375,6 +375,42 @@ def sign_up():
         from datetime import timedelta
         from .blocking import block_ip
         
+        # ADVANCED SPAM DETECTION: Check patterns BEFORE processing
+        email = request.form.get('email', '')
+        first_name = request.form.get('firstName', '')
+        last_name = request.form.get('lastName', '')
+        
+        from .spam_detection import detect_spam_pattern, check_recent_spam_activity, is_random_email, is_random_name
+        
+        # Check for spam patterns in email/names
+        is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
+        
+        if is_spam:
+            print(f"[SPAM DETECTION] BLOCKED signup attempt: {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
+            from .blocking import block_ip_subnet
+            block_ip_subnet(client_ip, reason=f"Spam pattern detected: {spam_reason}", blocked_by_user_id=None)
+            flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        
+        # Check if this IP has recent spam activity
+        is_spam_ip, spam_count, activity_reason = check_recent_spam_activity(client_ip)
+        if is_spam_ip:
+            print(f"[SPAM DETECTION] BLOCKED signup from spam IP: {client_ip} - {activity_reason}")
+            from .blocking import block_ip_subnet
+            block_ip_subnet(client_ip, reason=f"Recent spam activity: {activity_reason}", blocked_by_user_id=None)
+            flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        
+        # Check for random email/name patterns (even if not cross-IP)
+        if is_random_email(email) or is_random_name(first_name) or is_random_name(last_name):
+            # Even if not cross-IP, block if pattern is very suspicious
+            if is_random_email(email) and (is_random_name(first_name) or is_random_name(last_name)):
+                print(f"[SPAM DETECTION] BLOCKED suspicious pattern: Email={email}, Name={first_name} {last_name}, IP={client_ip}")
+                from .blocking import block_ip_subnet
+                block_ip_subnet(client_ip, reason=f"Suspicious random pattern: email and name", blocked_by_user_id=None)
+                flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+                return render_template("sign_up.html", user=current_user)
+        
         # Check last 5 minutes (rapid spam detection)
         five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
         rapid_signups = User.query.filter(
@@ -496,29 +532,43 @@ def sign_up():
             ).count()
             
             # Auto-block if we hit limits (even if they slipped through)
+            # Also check for spam patterns in the newly created account
             should_block = False
+            should_delete = False
+            
+            # Check for spam patterns in this account
+            from .spam_detection import is_random_email, is_random_name
+            if is_random_email(new_user.email) or is_random_name(new_user.first_name) or is_random_name(new_user.last_name):
+                print(f"[SPAM DETECTION] POST-SIGNUP: Detected spam pattern in account {new_user.id}: {new_user.email}")
+                should_delete = True
+                should_block = True
+            
             if very_rapid_now >= 2:
                 print(f"[SPAM ALERT] POST-SIGNUP CRITICAL: Auto-blocking IP {client_ip}: {very_rapid_now} signups in 30 seconds!")
                 should_block = True
+                should_delete = True
             elif rapid_signups_now >= 2:
                 print(f"[SPAM ALERT] POST-SIGNUP: Auto-blocking IP {client_ip}: {rapid_signups_now} signups in 5 minutes!")
                 should_block = True
+                should_delete = True
             
             if should_block:
-                from .blocking import block_ip
-                block_ip(client_ip, reason=f"Spam signups detected: {very_rapid_now} in 30s, {rapid_signups_now} in 5min", blocked_by_user_id=None)
-                # Delete the spam user accounts created (keep only the first one if it was legitimate)
-                spam_users = User.query.filter(
-                    User.registration_ip == client_ip,
-                    User.created_date >= five_minutes_ago
-                ).order_by(User.created_date.desc()).all()  # Newest first
+                from .blocking import block_ip_subnet
+                block_ip_subnet(client_ip, reason=f"Spam signups detected: {very_rapid_now} in 30s, {rapid_signups_now} in 5min", blocked_by_user_id=None)
                 
-                # Delete all except the first one (in case first was legitimate)
-                if len(spam_users) > 1:
-                    for spam_user in spam_users[1:]:  # Delete all except first
+                # Delete ALL spam user accounts (including this one)
+                if should_delete:
+                    spam_users = User.query.filter(
+                        User.registration_ip == client_ip,
+                        User.created_date >= five_minutes_ago
+                    ).all()
+                    
+                    # Delete ALL spam accounts (no exceptions - they're all spam)
+                    for spam_user in spam_users:
+                        print(f"[SPAM CLEANUP] Deleting spam account {spam_user.id}: {spam_user.email}")
                         db.session.delete(spam_user)
                     db.session.commit()
-                    print(f"[SPAM CLEANUP] Deleted {len(spam_users) - 1} spam user accounts")
+                    print(f"[SPAM CLEANUP] Deleted {len(spam_users)} spam user accounts from IP {client_ip}")
                 flash('Signup blocked due to suspicious activity. Your IP has been blocked.', 'error')
                 return render_template("sign_up.html", user=current_user)
 

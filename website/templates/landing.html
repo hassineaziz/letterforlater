@@ -95,7 +95,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-700">Add Photos, Videos & Audio</p>
-                                <p class="text-xs text-gray-500">Premium feature - attach media to make your letter truly personal</p>
+                            <p class="text-xs text-gray-700">Premium feature - attach media to make your letter truly personal</p>
                             </div>
                             <a href="{{ url_for('pricing.pricing_page') }}" class="text-xs text-blue-600 hover:text-blue-700 font-medium">Upgrade →</a>
                         </div>
@@ -166,11 +166,13 @@
                                 data-google-auth-url="{{ url_for('views.google_auth') }}"
                                 class="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md border-2 border-gray-300 text-sm cursor-pointer"
                             >
+                                <label for="hero_use_google_auth" class="sr-only">Use Google to sign up</label>
                                 <input 
                                     type="checkbox" 
                                     id="hero_use_google_auth"
                                     name="use_google_auth"
-                                    class="w-4 h-4 text-indigo-400 border-gray-300 rounded focus:ring-indigo-400 cursor-pointer"
+                                    aria-label="Use Google to sign up"
+                                    class="w-6 h-6 text-indigo-400 border-gray-300 rounded focus:ring-indigo-400 cursor-pointer"
                                 />
                                 <svg class="w-4 h-4" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -207,7 +209,8 @@
 
                         <!-- Date Settings - Always visible for free users -->
                         <div id="hero_date_settings">
-                            <h3 class="text-base font-semibold mb-3 text-gray-900">Scheduled Delivery Date</h3>
+                            <h2 class="text-base font-semibold mb-3 text-gray-900">Scheduled Delivery Date</h2>
+                            <label for="hero_scheduled_date" class="sr-only">Scheduled Delivery Date</label>
                             <input 
                                 type="date" 
                                 id="hero_scheduled_date"
@@ -414,7 +417,7 @@
             
             <!-- Trusted Contact Verification -->
             <div class="group bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
-                <div class="flex items-center mb-6">
+                <div class="flex items-center mb-2">
                     <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -424,6 +427,9 @@
                         <h3 class="text-xl font-bold text-gray-900">Trusted Contact Verification</h3>
                         <p class="text-sm text-gray-600">Let family and friends decide when to deliver your message</p>
                     </div>
+                </div>
+                <div class="mb-6 -mt-1">
+                    <span class="inline-block bg-purple-100 text-purple-800 text-[11px] sm:text-xs font-semibold px-2 py-1 rounded">Premium feature</span>
                 </div>
                 
                 <div class="space-y-3 sm:space-y-4">
@@ -790,7 +796,7 @@
                                 </div>
                                 <div class="flex items-center justify-center gap-2 mb-2">
                                         <span class="text-sm text-gray-600">OR</span>
-                                        <span class="text-sm text-gray-400 line-through">$35.88</span>
+                            <span class="text-sm text-gray-600 line-through">$35.88</span>
                                         <span class="text-lg font-bold text-blue-700">$19.99/year</span>
                                         <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">Save 44%</span>
                                 </div>
@@ -873,7 +879,7 @@
                         </div>
                         <div class="mb-4">
                             <div class="flex items-center justify-center gap-2 mb-1">
-                                <span class="text-sm text-gray-400 line-through">$149.99</span>
+                            <span class="text-sm text-gray-600 line-through">$149.99</span>
                                 <span class="inline-flex items-center bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[11px] font-bold">Save 33%</span>
                             </div>
                             <span class="text-5xl font-black text-gray-900">$99</span>

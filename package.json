@@ -1,0 +1,45 @@
+{
+  "name": "legacy-letter",
+  "version": "1.0.0",
+  "description": "A Flask-based SaaS application for creating and scheduling legacy letters to be delivered after death verification.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hassineaziz/letterforlater.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hassineaziz/letterforlater/issues"
+  },
+  "homepage": "https://github.com/hassineaziz/letterforlater#readme",
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/manrope": "^5.2.8",
+    "@fontsource/merriweather": "^5.2.11",
+    "@tailwindcss/cli": "^4.1.16",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16"
+  },
+  "dependencies": {
+    "baseline-browser-mapping": "^2.8.25",
+    "browserslist": "^4.27.0",
+    "caniuse-lite": "^1.0.30001754",
+    "electron-to-chromium": "^1.5.245",
+    "escalade": "^3.2.0",
+    "fraction.js": "^4.3.7",
+    "nanoid": "^3.3.11",
+    "node-releases": "^2.0.27",
+    "normalize-range": "^0.1.2",
+    "picocolors": "^1.1.1",
+    "postcss-value-parser": "^4.2.0",
+    "source-map-js": "^1.2.1",
+    "update-browserslist-db": "^1.1.4"
+  }
+}

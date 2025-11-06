@@ -30,13 +30,18 @@
     })(window,document,'script','dataLayer','GTM-MX529JLM');</script>
     <!-- End Google Tag Manager -->
     
-    <!-- Microsoft Clarity -->
+    <!-- Microsoft Clarity (lazy-load after first paint) -->
     <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "tu243ks4mw");
+        window.addEventListener('load', function(){
+            var init = function(){
+                (function(c,l,a,r,i,t,y){
+                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "tu243ks4mw");
+            };
+            if ('requestIdleCallback' in window) { requestIdleCallback(init, {timeout: 4000}); } else { setTimeout(init, 3000); }
+        });
     </script>
     
     <meta charset="utf-8" />
@@ -68,9 +73,17 @@
     <meta property="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}" />
 	
 
-<meta name="wot-verification" content="de7d17edfa7e0257077b"/>    
-<!-- Copy and paste this code into your website -->
-<script async src='https://static.mywot.com/website_owners_badges/websiteOwnersBadge.js'></script>
+<meta name="wot-verification" content="de7d17edfa7e0257077b"/>
+<!-- WoT badge (lazy-load to reduce render impact) -->
+<script>
+    window.addEventListener('load', function(){
+        setTimeout(function(){
+            var s=document.createElement('script');
+            s.src='https://static.mywot.com/website_owners_badges/websiteOwnersBadge.js';
+            s.async=true; document.head.appendChild(s);
+        }, 3000);
+    });
+    </script>
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ request.url }}" />
@@ -79,20 +92,23 @@
     <meta name="msvalidate.01" content="B1A3E5DA1DE239A9DC6CF01E1A778CCE" />
     
 <!-- Favicon & App Icons -->
-<!-- Favicon (Google + browsers) -->
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png', _external=True) }}">
-<link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico', _external=True) }}" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo-32.png') }}">
+<link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='logo-64.png') }}">
+<link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico') }}" type="image/x-icon">
 
-<!-- Apple and Windows -->
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png', _external=True) }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo-180.png') }}">
 <meta name="theme-color" content="#3B82F6">
 <meta name="msapplication-TileColor" content="#3B82F6">
-<meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo.png', _external=True) }}">
+<meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo-180.png') }}">
 
-
-    
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
+    <!-- Small perf wins: preconnect to font/Tailwind origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <!-- Google Fonts: non-blocking load with noscript fallback -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap"></noscript>
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}LetterForLater – Legacy Letters & Future Self Messages{% endblock %}</title>
         <script>
@@ -113,8 +129,10 @@
             }
         }
     </script>
-    <!-- Modal System CSS -->
+    <!-- Modal System CSS (preload + stylesheet) -->
+    <link rel="preload" as="style" href="{{ url_for('static', filename='modal-system.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='modal-system.css') }}">
+    <link rel="preload" as="style" href="{{ url_for('static', filename='css/premium-features.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-features.css') }}">
 
     <style>
@@ -145,7 +163,10 @@
                 <!-- Brand -->
                 <div class="flex items-center space-x-4 sm:space-x-6">
                     <a href="/" class="flex items-center space-x-2 sm:space-x-3">
-                        <img src="{{ url_for('static', filename='logo.png') }}" alt="LetterForLater" class="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 rounded-md shadow-sm" loading="lazy">
+                        <picture>
+                            <source type="image/webp" srcset="{{ url_for('static', filename='logo-32.webp') }} 32w, {{ url_for('static', filename='logo-48.webp') }} 48w, {{ url_for('static', filename='logo-64.webp') }} 64w" sizes="(min-width:1024px) 32px, 28px">
+                            <img src="{{ url_for('static', filename='logo-48.png') }}" alt="LetterForLater" class="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 rounded-md shadow-sm" loading="lazy" decoding="async" fetchpriority="low" width="32" height="32">
+                        </picture>
                         <span class="hidden sm:inline text-lg sm:text-xl font-bold text-primary">LetterForLater</span>
                     </a>
                     <a href="{{ url_for('pricing.pricing_page') }}" class="text-sm sm:text-base font-medium text-primary hover:text-primary-light transition-colors">
@@ -155,11 +176,12 @@
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button type="button" class="text-primary hover:text-primary-light focus:outline-none p-1"
-                        onclick="toggleMobileMenu()">
+                        onclick="toggleMobileMenu()" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
                         <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
+                        <span class="sr-only">Open menu</span>
                     </button>
                 </div>
 
@@ -351,12 +373,18 @@
         </div>
     </nav>
     <!-- Main Content Container -->
-    <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 lg:px-10 pb-8 sm:pb-12 lg:pb-16">
+    <main id="main-content" class="max-w-screen-2xl mx-auto px-2 sm:px-4 lg:px-10 pb-8 sm:pb-12 lg:pb-16" role="main">
         <script>
             // Mobile menu toggle
             function toggleMobileMenu() {
                 const mobileMenu = document.getElementById('mobile-menu');
-                mobileMenu.classList.toggle('hidden');
+                const btn = document.querySelector('button[onclick="toggleMobileMenu()"]');
+                if (!mobileMenu) return;
+                const isHidden = mobileMenu.classList.toggle('hidden');
+                if (btn) {
+                    btn.setAttribute('aria-expanded', String(!isHidden));
+                    btn.setAttribute('aria-label', !isHidden ? 'Close menu' : 'Open menu');
+                }
             }
 
             // Notification dropdown toggle
@@ -763,17 +791,23 @@
 
             async function pollNotifications() {
                 try {
-                    const res = await fetch('/api/notifications');
-                    const data = await res.json();
-                    if (data.notifications) {
+                    const res = await fetch('/api/notifications', {
+                        headers: { 'Accept': 'application/json' },
+                        credentials: 'same-origin',
+                        cache: 'no-store'
+                    });
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    if (!text || text.trim().startsWith('<')) return; // HTML (redirect/login) -> ignore
+                    let data; try { data = JSON.parse(text); } catch { return; }
+                    if (data && data.notifications) {
                         renderAllNotifications(data.notifications);
-                        // Check for death confirmation notifications to show popup
                         checkForDeathConfirmations(data.notifications);
-                    } else {
-                        renderNotifications(data.pending_trusted_invitations || []);
                     }
+                    renderNotifications((data && data.pending_trusted_invitations) || []);
                 } catch (error) {
-                    console.error('Error polling notifications:', error);
+                    // Reduce noise in production audits
+                    console.debug('Notifications polling skipped:', error);
                 }
             }
 
@@ -1044,18 +1078,18 @@
 
         <!-- Main Content -->
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-16">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-600">
                     © <span id="currentYear"></span> Letter for Later. All rights reserved. |
-                    <a href="{{ url_for('pricing.pricing_page') }}" class="text-gray-600 hover:text-gray-800">Pricing</a> |
-                    <a href="{{ url_for('views.blog_index') }}" class="text-gray-600 hover:text-gray-800">Blog</a> |
-                    <a href="{{ url_for('views.privacy_policy') }}" class="text-gray-600 hover:text-gray-800">Privacy Policy</a> |
-                    <a href="{{ url_for('views.terms_of_service') }}" class="text-gray-600 hover:text-gray-800">Terms of Service</a>
+                    <a href="{{ url_for('pricing.pricing_page') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Pricing</a> |
+                    <a href="{{ url_for('views.blog_index') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Blog</a> |
+                    <a href="{{ url_for('views.privacy_policy') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Privacy Policy</a> |
+                    <a href="{{ url_for('views.terms_of_service') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Terms of Service</a>
                 </p>
             </div>
         </div>
@@ -1097,11 +1131,11 @@
         });
     </script>
 
-    <!-- Bootstrap JS for modals only -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS for modals only (deferred) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+        crossorigin="anonymous" defer></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" defer></script>
 
     <!-- Global scroll position preservation -->
     <script>
@@ -1135,9 +1169,9 @@
     </script>
 
     {% block javascript %}{% endblock %}
-    <!-- Modal System JavaScript -->
-    <script src="{{ url_for('static', filename='modal-system.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/premium-features.js') }}"></script>
+    <!-- Modal System JavaScript (deferred) -->
+    <script src="{{ url_for('static', filename='modal-system.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/premium-features.js') }}" defer></script>
 </body>
 
 </html>

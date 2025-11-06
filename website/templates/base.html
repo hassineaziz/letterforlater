@@ -101,39 +101,34 @@
 <meta name="msapplication-TileColor" content="#3B82F6">
 <meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo-180.png') }}">
 
-    <!-- Resource Hints: preconnect + dns-prefetch for critical origins -->
+    <!-- Small perf wins: preconnect to font/Tailwind origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
     <!-- Google Fonts: non-blocking load with noscript fallback -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap"></noscript>
-    <script>
-    window.tailwind = {
-        theme: {
-            extend: {
-                fontFamily: {
-                    'sans': ['Inter', 'Manrope', 'Arial', 'sans-serif'],
-                    'heading': ['Manrope', 'Inter', 'Arial', 'sans-serif'],
-                },
-                colors: {
-                    'primary': '#7092BE',
-                    'primary-light': '#C1D3FE',
-                    'secondary': '#A2A8B5',
-                    'background': '#EDF1F7',
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}LetterForLater – Legacy Letters & Future Self Messages{% endblock %}</title>
+        <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'Manrope', 'Arial', 'sans-serif'],
+                        'heading': ['Manrope', 'Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#7092BE',
+                        'primary-light': '#C1D3FE',
+                        'secondary': '#A2A8B5',
+                        'background': '#EDF1F7',
+                    }
                 }
             }
         }
-    };
     </script>
-    <!-- Load Tailwind immediately to avoid FOUC/layout jumps on icons/logos -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>{% block title %}LetterForLater – Legacy Letters & Future Self Messages{% endblock %}</title>
-
     <!-- Modal System CSS (preload + stylesheet) -->
     <link rel="preload" as="style" href="{{ url_for('static', filename='modal-system.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='modal-system.css') }}">

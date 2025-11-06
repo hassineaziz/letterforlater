@@ -2,33 +2,38 @@
 <html lang="en">
 
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17491757620"></script>
+    <!-- Google tag (gtag.js) & GA/GAds (lazy load) -->
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'AW-17491757620');
+      function gtag(){dataLayer.push(arguments);} 
+      window.addEventListener('load', function(){
+        var loadGtag = function(){
+          var s1 = document.createElement('script');
+          s1.async = true; s1.src = 'https://www.googletagmanager.com/gtag/js?id=G-GLM0J3PS3M';
+          var s2 = document.createElement('script');
+          s2.async = true; s2.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17491757620';
+          document.head.appendChild(s1); document.head.appendChild(s2);
+          gtag('js', new Date());
+          gtag('config', 'G-GLM0J3PS3M');
+          gtag('config', 'AW-17491757620');
+        };
+        if ('requestIdleCallback' in window) { requestIdleCallback(loadGtag, {timeout: 4000}); } else { setTimeout(loadGtag, 3000); }
+      });
     </script>
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GLM0J3PS3M"></script>
+    <!-- Google Tag Manager (lazy) -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-GLM0J3PS3M');
+      window.addEventListener('load', function(){
+        var init=function(){
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-MX529JLM');
+        };
+        if ('requestIdleCallback' in window) { requestIdleCallback(init, {timeout: 4000}); } else { setTimeout(init, 3000); }
+      });
     </script>
-    
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MX529JLM');</script>
-    <!-- End Google Tag Manager -->
     
     <!-- Microsoft Clarity (lazy-load after first paint) -->
     <script type="text/javascript">

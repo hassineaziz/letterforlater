@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'add_device_fingerprint'
-down_revision = None  # Update this with the latest migration revision
+down_revision = 'a6970dde85f9'  # Latest merge migration
 branch_labels = None
 depends_on = None
 

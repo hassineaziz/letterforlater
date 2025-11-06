@@ -356,6 +356,14 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    # TEMPORARILY DISABLED: Email signup is disabled, only Google sign-in is allowed
+    # This is to prevent spam signups while we improve detection
+    
+    if request.method == 'POST':
+        # Block all email signup attempts - only allow Google OAuth
+        # Silently redirect to prevent spam (no flash message)
+        return render_template("sign_up.html", user=current_user)
+    
     # Record form start time for spam prevention
     if request.method == 'GET':
         from .spam_prevention import record_form_start
@@ -369,8 +377,9 @@ def sign_up():
         flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
         return render_template("sign_up.html", user=current_user)
     
+    # DISABLED: Email signup processing - commented out to prevent spam
     # Spam prevention checks
-    if request.method == 'POST':
+    if False and request.method == 'POST':  # DISABLED
         from .spam_prevention import validate_form_submission, check_honeypot
         
         # EXPLICIT HONEYPOT CHECK - Silent block (don't show error to bots)
@@ -843,6 +852,13 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         
         if user:
+            # Only send password reset to verified (active) users
+            # Unverified users should verify their email first before resetting password
+            if not user.is_active:
+                # Don't reveal if email exists or not for security
+                flash('If an account with that email exists and is verified, password reset instructions have been sent.', 'info')
+                return redirect(url_for('auth.forgot_password'))
+            
             # Generate reset token
             reset_token = str(uuid.uuid4())
             user.password_reset_token = reset_token
@@ -878,7 +894,7 @@ def forgot_password():
                 flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
         else:
             # Don't reveal if email exists or not for security
-            flash('If an account with that email exists, password reset instructions have been sent.', 'info')
+            flash('If an account with that email exists and is verified, password reset instructions have been sent.', 'info')
         
         return redirect(url_for('auth.forgot_password'))
     

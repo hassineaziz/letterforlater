@@ -1025,12 +1025,12 @@
                 
                 // Hide delivery type dropdown (premium users only)
                 if (deliveryTypeContainer) {
-                    deliveryTypeContainer.style.display = 'none';
+                deliveryTypeContainer.style.display = 'none';
                 }
                 
                 // Auto-select "date" delivery type
                 if (deliveryType) {
-                    deliveryType.value = 'date';
+                deliveryType.value = 'date';
                 }
                 
                 // Show date settings
@@ -1050,12 +1050,12 @@
                 
                 // Show delivery type dropdown (premium users only)
                 if (deliveryTypeContainer) {
-                    deliveryTypeContainer.style.display = 'block';
+                deliveryTypeContainer.style.display = 'block';
                 }
                 
                 // Trigger delivery type change handler to update settings
                 if (deliveryType) {
-                    deliveryType.dispatchEvent(new Event('change'));
+                deliveryType.dispatchEvent(new Event('change'));
                 }
             }
         });
@@ -1139,36 +1139,36 @@
     const deliveryTypeSelect = document.getElementById('delivery_type');
     if (deliveryTypeSelect && deliveryTypeSelect.tagName === 'SELECT') {
         deliveryTypeSelect.addEventListener('change', function () {
-            const dateSettings = document.getElementById('dateSettings');
-            const verificationSettings = document.getElementById('verificationSettings');
-            const noTrustedContactsWarning = document.getElementById('noTrustedContactsWarning');
-            const sendToMyself = document.getElementById('send_to_myself');
+        const dateSettings = document.getElementById('dateSettings');
+        const verificationSettings = document.getElementById('verificationSettings');
+        const noTrustedContactsWarning = document.getElementById('noTrustedContactsWarning');
+        const sendToMyself = document.getElementById('send_to_myself');
 
-            // If "send to myself" is checked, always show date settings
-            if (sendToMyself && sendToMyself.checked) {
-                dateSettings.classList.remove('hidden');
-                verificationSettings.classList.add('hidden');
-                if (noTrustedContactsWarning) {
-                    noTrustedContactsWarning.classList.add('hidden');
-                }
-                return;
-            }
-
-            // Hide all settings first
-            dateSettings.classList.add('hidden');
+        // If "send to myself" is checked, always show date settings
+        if (sendToMyself && sendToMyself.checked) {
+            dateSettings.classList.remove('hidden');
             verificationSettings.classList.add('hidden');
             if (noTrustedContactsWarning) {
                 noTrustedContactsWarning.classList.add('hidden');
             }
+            return;
+        }
 
-            // Show appropriate settings based on selection
-            if (this.value === 'date') {
-                dateSettings.classList.remove('hidden');
-            } else if (this.value === 'death_verification') {
-                // Check if user has confirmed trusted contacts
-                checkTrustedContactsAndShowSettings();
-            }
-        });
+        // Hide all settings first
+        dateSettings.classList.add('hidden');
+        verificationSettings.classList.add('hidden');
+        if (noTrustedContactsWarning) {
+            noTrustedContactsWarning.classList.add('hidden');
+        }
+
+        // Show appropriate settings based on selection
+        if (this.value === 'date') {
+            dateSettings.classList.remove('hidden');
+        } else if (this.value === 'death_verification') {
+            // Check if user has confirmed trusted contacts
+            checkTrustedContactsAndShowSettings();
+        }
+    });
     }
     
     // For free users: Always show date settings and ensure delivery_type is "date"

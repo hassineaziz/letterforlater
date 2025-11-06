@@ -43,8 +43,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{% block meta_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
-    <meta name="keywords" content="{% block meta_keywords %}legacy letters, future self letters, digital letters, family messages, memorial letters, birthday letters, milestone messages, scheduled delivery, trusted contacts, personal legacy{% endblock %}" />
+    <meta name="description" content="{% block meta_description %}Create heartfelt letters for your future self and for loved ones for free. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
+    <meta name="keywords" content="{% block meta_keywords %}legacy letters, future self letters, digital letters, family messages, memorial letters, capsule letters, milestone messages, schedule letters{% endblock %}" />
     <meta name="author" content="LetterForLater" />
     <meta name="robots" content="index, follow" />
     
@@ -79,21 +79,15 @@
     <meta name="msvalidate.01" content="B1A3E5DA1DE239A9DC6CF01E1A778CCE" />
     
 <!-- Favicon & App Icons -->
-<link rel="icon" href="{{ url_for('static', filename='logo.png', _external=True) }}" sizes="32x32" type="image/png" />
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png', _external=True) }}" />
-<meta name="theme-color" content="#3B82F6" />
-<meta name="msapplication-TileColor" content="#3B82F6" />
-<meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo.png', _external=True) }}" />
+<!-- Favicon (Google + browsers) -->
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png', _external=True) }}">
+<link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico', _external=True) }}" type="image/x-icon">
 
-<!-- Organization Schema for Google Search logo -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "url": "https://letterforlater.com/",
-  "logo": "https://letterforlater.com/static/logo.png"
-}
-</script>
+<!-- Apple and Windows -->
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo.png', _external=True) }}">
+<meta name="theme-color" content="#3B82F6">
+<meta name="msapplication-TileColor" content="#3B82F6">
+<meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo.png', _external=True) }}">
 
 
     

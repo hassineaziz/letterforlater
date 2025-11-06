@@ -801,35 +801,77 @@ def forgot_password():
 
 @auth.route('/resend-verification', methods=['GET', 'POST'])
 def resend_verification():
-    """Resend email verification link"""
+    """Resend email verification link - Only sends to existing users"""
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     
     if request.method == 'POST':
-        email = request.form.get('email')
+        # Rate limiting: Prevent abuse
+        client_ip = get_client_ip()
+        from datetime import timedelta
+        five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+        
+        # Count recent resend attempts from this IP
+        # (We'll track this by checking recent activity - for now, just limit to prevent spam)
+        ip_blocked, _ = is_ip_blocked(client_ip)
+        if ip_blocked:
+            print(f"[BLOCK] Resend verification attempt from blocked IP: {client_ip}")
+            # Show generic message to prevent enumeration
+            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+            return redirect(url_for('auth.login'))
+        
+        email = request.form.get('email', '').strip().lower()
+        
+        # Validate email format
+        if not email or '@' not in email:
+            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+            return redirect(url_for('auth.login'))
+        
+        # Check if email is spam pattern (don't send to spam emails)
+        from .spam_detection import is_random_email
+        if is_random_email(email):
+            print(f"[SPAM BLOCK] Resend verification blocked for spam email: {email}")
+            # Show generic message to prevent enumeration
+            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+            return redirect(url_for('auth.login'))
+        
+        # Only send to users who have already created accounts
         user = User.query.filter_by(email=email).first()
         
         if user:
+            # Check if user account has spam patterns (don't send to spam accounts)
+            from .spam_detection import is_random_name
+            if is_random_name(user.first_name) or is_random_name(user.last_name):
+                print(f"[SPAM BLOCK] Resend verification blocked for spam account: {email}")
+                # Show generic message to prevent enumeration
+                flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+                return redirect(url_for('auth.login'))
+            
             # Check if user is already active
             if user.is_active:
-                flash('Your account is already verified. You can log in normally.', 'info')
+                # Show generic message to prevent enumeration (don't reveal account status)
+                flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
                 return redirect(url_for('auth.login'))
             
             # Check if user has a valid confirmation token (pending verification)
             if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
                 # Resend the confirmation email
                 if send_confirmation_email(user):
-                    flash('Verification email sent! Please check your email and click the confirmation link.', 'success')
+                    # Show generic message to prevent enumeration
+                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
                 else:
-                    flash('Error sending verification email. Please try again later or contact support.', 'error')
+                    # Show generic message even on error
+                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
             else:
                 # Token expired or doesn't exist, generate new one
                 if send_confirmation_email(user):
-                    flash('New verification email sent! Please check your email and click the confirmation link.', 'success')
+                    # Show generic message to prevent enumeration
+                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
                 else:
-                    flash('Error sending verification email. Please try again later or contact support.', 'error')
+                    # Show generic message even on error
+                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
         else:
-            # Don't reveal if email exists or not for security
+            # User doesn't exist - show generic message to prevent email enumeration
             flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
         
         return redirect(url_for('auth.login'))

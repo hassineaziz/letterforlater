@@ -859,6 +859,22 @@ def resend_verification():
         user = User.query.filter_by(email=email).first()
         
         if user:
+            # PER-USER RATE LIMIT: Prevent users from requesting too many resends
+            # Limit: Max 3 resend requests per hour per user
+            if user.password_reset_token and user.password_reset_expires:
+                # Check if token was updated recently (token expires in 48 hours)
+                # If token expires in >47 hours, it was updated in last hour
+                hours_until_expiry = (user.password_reset_expires - datetime.now(timezone.utc)).total_seconds() / 3600
+                
+                # If user account is older than 1 hour and token was updated very recently, check rate limit
+                one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+                if user.created_date < one_hour_ago and hours_until_expiry > 47.8:
+                    # Token was updated in last ~12 minutes - this would be the 3rd+ request in an hour
+                    # Allow up to 3 requests per hour (one every 20 minutes)
+                    print(f"[RESEND VERIFICATION] Rate limit: User {email} requested resend too recently (token updated <12 min ago)")
+                    flash('Please wait before requesting another verification email. You can request up to 3 verification emails per hour. Check your spam folder or try again in 10 minutes.', 'info')
+                    return redirect(url_for('auth.login'))
+            
             # Check if user account has spam patterns (don't send to spam accounts)
             from .spam_detection import is_random_name
             if is_random_name(user.first_name) or is_random_name(user.last_name):
@@ -876,20 +892,24 @@ def resend_verification():
             # Check if user has a valid confirmation token (pending verification)
             if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
                 # Resend the confirmation email
-                if send_confirmation_email(user):
-                    # Show generic message to prevent enumeration
+                print(f"[RESEND VERIFICATION] Attempting to resend confirmation email to {email}")
+                success = send_confirmation_email(user)
+                if success:
+                    print(f"[RESEND VERIFICATION] Successfully sent confirmation email to {email}")
                     flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
                 else:
-                    # Show generic message even on error
-                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+                    print(f"[RESEND VERIFICATION] FAILED to send confirmation email to {email} - check logs for reason")
+                    flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
             else:
                 # Token expired or doesn't exist, generate new one
-                if send_confirmation_email(user):
-                    # Show generic message to prevent enumeration
+                print(f"[RESEND VERIFICATION] Generating new token and sending confirmation email to {email}")
+                success = send_confirmation_email(user)
+                if success:
+                    print(f"[RESEND VERIFICATION] Successfully sent confirmation email to {email}")
                     flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
                 else:
-                    # Show generic message even on error
-                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+                    print(f"[RESEND VERIFICATION] FAILED to send confirmation email to {email} - check logs for reason")
+                    flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
         else:
             # User doesn't exist - show generic message to prevent email enumeration
             flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')

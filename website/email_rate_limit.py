@@ -83,13 +83,9 @@ def rate_limited_email_send(mail_func):
         can_send, wait_time = check_email_rate_limit()
         
         if not can_send:
-            print(f"[EMAIL RATE LIMIT] Throttling email send. Waiting {wait_time:.2f} seconds...")
-            time.sleep(wait_time)
-            # Re-check after waiting
-            can_send, wait_time = check_email_rate_limit()
-            if not can_send:
-                print(f"[EMAIL RATE LIMIT] Email rate limit exceeded. Skipping email send.")
-                raise Exception(f"Email rate limit exceeded. Please try again later.")
+            # Rate limit warning but send anyway (no sleep)
+            print(f"[EMAIL RATE LIMIT] Rate limit warning for email send, but sending anyway (no sleep)")
+            # Still try to send, but log the warning
         
         # Send email
         try:
@@ -99,19 +95,11 @@ def rate_limited_email_send(mail_func):
             record_email_sent(email_type)
             return result
         except Exception as e:
-            # If it's a rate limit error from SMTP, wait longer
+            # If it's a rate limit error from SMTP, don't wait - fail fast
             error_str = str(e).lower()
             if 'rate limit' in error_str or 'unusual sending' in error_str or '550' in error_str:
-                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected. Waiting 60 seconds...")
-                time.sleep(60)
-                # Try once more
-                try:
-                    result = mail_func(*args, **kwargs)
-                    record_email_sent(kwargs.get('email_type', 'unknown'))
-                    return result
-                except Exception as e2:
-                    print(f"[EMAIL RATE LIMIT] Retry failed: {str(e2)}")
-                    raise e2
+                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected. Email NOT sent (no sleep/retry).")
+                raise e  # Fail immediately without waiting
             raise
     
     return wrapper
@@ -158,22 +146,15 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
                 return False
     
     # Check rate limit
-    # For password reset emails, be more lenient with rate limits (critical security emails)
+    # For critical security emails (password reset, confirmation), bypass rate limiting
+    # These are essential emails that users need
     can_send, wait_time = check_email_rate_limit()
     
     if not can_send:
-        if email_type == 'password_reset':
-            # For password reset, only wait if we're really at the limit
-            # Allow it through if we're just slightly over (user needs to reset password)
-            print(f"[EMAIL RATE LIMIT] Password reset email - allowing despite rate limit (critical security email)")
-            # Still try to send, but log the rate limit warning
-        else:
-            print(f"[EMAIL RATE LIMIT] Throttling {email_type} email. Waiting {wait_time:.2f} seconds...")
-            time.sleep(wait_time)
-            can_send, wait_time = check_email_rate_limit()
-            if not can_send:
-                print(f"[EMAIL RATE LIMIT] Rate limit exceeded for {email_type}. Email will be queued/skipped.")
-                return False
+        # All emails bypass rate limiting sleep - send immediately
+        # Rate limiting is still checked but we don't block/delay emails with time.sleep()
+        print(f"[EMAIL RATE LIMIT] {email_type} email - rate limit warning but sending anyway (no sleep)")
+        # Still try to send, but log the rate limit warning
     
     # Try to send with retries
     for attempt in range(max_retries + 1):

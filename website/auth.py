@@ -34,29 +34,9 @@ def send_confirmation_email(user):
             db.session.commit()
             return False  # Don't send email
         
-        # EMERGENCY: Check if this IP is known spam (skip email to prevent rate limits)
+        # Only block if IP is explicitly blocked (not based on recent activity)
         if user.registration_ip:
             from .blocking import is_ip_blocked
-            from .models import User as UserModel
-            from datetime import timedelta
-            
-            # Check if IP has many signups (spam pattern)
-            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-            spam_count = UserModel.query.filter(
-                UserModel.registration_ip == user.registration_ip,
-                UserModel.created_date >= five_minutes_ago
-            ).count()
-            
-            if spam_count >= 3:  # Spam IP detected
-                print(f"[EMAIL BLOCK] Skipping confirmation email for spam IP {user.registration_ip} ({spam_count} signups)")
-                # Still generate token but don't send email
-                confirm_token = str(uuid.uuid4())
-                user.password_reset_token = confirm_token
-                user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
-                db.session.commit()
-                return False  # Don't send email
-            
-            # Check if IP is blocked
             ip_blocked, _ = is_ip_blocked(user.registration_ip)
             if ip_blocked:
                 print(f"[EMAIL BLOCK] Skipping confirmation email for blocked IP {user.registration_ip}")

@@ -132,83 +132,30 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     from . import mail
     
-    # SPAM DETECTION: Check if recipient email is spam before sending
+    # SPAM DETECTION: Only block obvious spam, allow legitimate users through
     if msg.recipients:
         recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
         
-        # For password reset and account verification emails, be VERY lenient
-        # These are critical security emails - only block obvious spam
-        is_sensitive_email = email_type in ['password_reset', 'confirmation', 'resend_verification']
+        # For ALL emails, be VERY lenient - only block if IP is explicitly blocked
+        # Don't block based on email patterns or name patterns (too aggressive)
+        from .models import User
+        user = User.query.filter_by(email=recipient_email).first()
         
-        if is_sensitive_email:
-            # For sensitive emails (password reset, confirmation), ONLY block if:
-            # 1. Email address itself is clearly spam (random pattern) - BUT only for confirmation emails
-            # 2. IP is explicitly blocked (not just recent spam activity)
-            
-            # For password reset emails, be VERY lenient - don't block based on email pattern
-            # (user might have a legitimate but unusual email)
-            if email_type == 'password_reset':
-                # Password reset: Only block if IP is explicitly blocked
-                from .models import User
-                user = User.query.filter_by(email=recipient_email).first()
-                if user and user.registration_ip:
-                    from .blocking import is_ip_blocked
-                    ip_blocked, _ = is_ip_blocked(user.registration_ip)
-                    if ip_blocked:
-                        print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
-                        return False
-                # Allow password reset emails through (don't block based on email pattern)
-            else:
-                # For confirmation emails, block spam email patterns
-                from .spam_detection import is_random_email
-                if is_random_email(recipient_email):
-                    print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - spam email pattern")
-                    return False
-                
-                # Check if IP is explicitly blocked
-                from .models import User
-                user = User.query.filter_by(email=recipient_email).first()
-                if user and user.registration_ip:
-                    from .blocking import is_ip_blocked
-                    ip_blocked, _ = is_ip_blocked(user.registration_ip)
-                    if ip_blocked:
-                        print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
-                        return False
-        else:
-            # For non-sensitive emails (newsletters, reminders, etc.), apply spam checks
+        if user and user.registration_ip:
+            # Only block if IP is explicitly blocked (not based on recent activity or patterns)
+            from .blocking import is_ip_blocked
+            ip_blocked, _ = is_ip_blocked(user.registration_ip)
+            if ip_blocked:
+                print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
+                return False
+        
+        # For confirmation emails only, also check if email is clearly spam
+        # (password reset and other emails should go through regardless)
+        if email_type == 'confirmation':
             from .spam_detection import is_random_email
             if is_random_email(recipient_email):
-                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam email pattern detected")
+                print(f"[EMAIL BLOCK] Skipping confirmation email to {recipient_email} - spam email pattern")
                 return False
-            
-            from .models import User
-            user = User.query.filter_by(email=recipient_email).first()
-            if user:
-                # Check if user has spam patterns in name
-                from .spam_detection import is_random_name
-                if is_random_name(user.first_name) or is_random_name(user.last_name):
-                    print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam name pattern detected")
-                    return False
-                
-                if user.registration_ip:
-                    # Always check if IP is explicitly blocked
-                    from .blocking import is_ip_blocked
-                    ip_blocked, _ = is_ip_blocked(user.registration_ip)
-                    if ip_blocked:
-                        print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
-                        return False
-                    
-                    # For other emails, check if this IP had recent spam activity
-                    from datetime import datetime, timedelta, timezone
-                    five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-                    spam_count = User.query.filter(
-                        User.registration_ip == user.registration_ip,
-                        User.created_date >= five_minutes_ago
-                    ).count()
-                    
-                    if spam_count >= 3:  # Only block if 3+ signups in 5 min
-                        print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip} ({spam_count} signups)")
-                        return False
     
     # Check rate limit
     # For password reset emails, be more lenient with rate limits (critical security emails)

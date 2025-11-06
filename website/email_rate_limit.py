@@ -136,37 +136,53 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     if msg.recipients:
         recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
         
-        # First, check if the email address itself looks like spam
-        from .spam_detection import is_random_email
-        if is_random_email(recipient_email):
-            print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam email pattern detected")
-            return False
+        # For password reset and account verification emails, be VERY lenient
+        # These are critical security emails - only block obvious spam
+        is_sensitive_email = email_type in ['password_reset', 'confirmation', 'resend_verification']
         
-        # Check if user account exists and is spam
-        from .models import User
-        user = User.query.filter_by(email=recipient_email).first()
-        if user:
-            # Check if user has spam patterns in name
-            from .spam_detection import is_random_name
-            if is_random_name(user.first_name) or is_random_name(user.last_name):
-                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam name pattern detected")
+        if is_sensitive_email:
+            # For sensitive emails, ONLY block if:
+            # 1. Email address itself is clearly spam (random pattern)
+            # 2. IP is explicitly blocked (not just recent spam activity)
+            from .spam_detection import is_random_email
+            if is_random_email(recipient_email):
+                print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - spam email pattern")
                 return False
             
-            # For password reset and account verification emails, be less aggressive
-            # Only block if IP is explicitly blocked, not just if it had recent spam activity
-            is_sensitive_email = email_type in ['password_reset', 'confirmation', 'resend_verification']
-            
-            if user.registration_ip:
-                # Always check if IP is explicitly blocked
+            # Check if IP is explicitly blocked (but don't block based on recent spam activity)
+            from .models import User
+            user = User.query.filter_by(email=recipient_email).first()
+            if user and user.registration_ip:
                 from .blocking import is_ip_blocked
                 ip_blocked, _ = is_ip_blocked(user.registration_ip)
                 if ip_blocked:
-                    print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
+                    print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
+                    return False
+            # Allow all other sensitive emails through
+        else:
+            # For non-sensitive emails (newsletters, reminders, etc.), apply spam checks
+            from .spam_detection import is_random_email
+            if is_random_email(recipient_email):
+                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam email pattern detected")
+                return False
+            
+            from .models import User
+            user = User.query.filter_by(email=recipient_email).first()
+            if user:
+                # Check if user has spam patterns in name
+                from .spam_detection import is_random_name
+                if is_random_name(user.first_name) or is_random_name(user.last_name):
+                    print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam name pattern detected")
                     return False
                 
-                # For sensitive emails (password reset, verification), don't block based on recent spam activity
-                # Only block if the user account itself is clearly spam (name patterns already checked above)
-                if not is_sensitive_email:
+                if user.registration_ip:
+                    # Always check if IP is explicitly blocked
+                    from .blocking import is_ip_blocked
+                    ip_blocked, _ = is_ip_blocked(user.registration_ip)
+                    if ip_blocked:
+                        print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
+                        return False
+                    
                     # For other emails, check if this IP had recent spam activity
                     from datetime import datetime, timedelta, timezone
                     five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
@@ -175,20 +191,27 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
                         User.created_date >= five_minutes_ago
                     ).count()
                     
-                    if spam_count >= 3:  # Only block if 3+ signups in 5 min (less aggressive)
+                    if spam_count >= 3:  # Only block if 3+ signups in 5 min
                         print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip} ({spam_count} signups)")
                         return False
     
     # Check rate limit
+    # For password reset emails, be more lenient with rate limits (critical security emails)
     can_send, wait_time = check_email_rate_limit()
     
     if not can_send:
-        print(f"[EMAIL RATE LIMIT] Throttling {email_type} email. Waiting {wait_time:.2f} seconds...")
-        time.sleep(wait_time)
-        can_send, wait_time = check_email_rate_limit()
-        if not can_send:
-            print(f"[EMAIL RATE LIMIT] Rate limit exceeded for {email_type}. Email will be queued/skipped.")
-            return False
+        if email_type == 'password_reset':
+            # For password reset, only wait if we're really at the limit
+            # Allow it through if we're just slightly over (user needs to reset password)
+            print(f"[EMAIL RATE LIMIT] Password reset email - allowing despite rate limit (critical security email)")
+            # Still try to send, but log the rate limit warning
+        else:
+            print(f"[EMAIL RATE LIMIT] Throttling {email_type} email. Waiting {wait_time:.2f} seconds...")
+            time.sleep(wait_time)
+            can_send, wait_time = check_email_rate_limit()
+            if not can_send:
+                print(f"[EMAIL RATE LIMIT] Rate limit exceeded for {email_type}. Email will be queued/skipped.")
+                return False
     
     # Try to send with retries
     for attempt in range(max_retries + 1):

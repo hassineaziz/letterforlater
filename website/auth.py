@@ -758,6 +758,15 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         
         if user:
+            # Check if user is confirmed/verified (is_active = True)
+            if not user.is_active:
+                # User exists but is not confirmed - don't send password reset email
+                print(f"[PASSWORD RESET] BLOCKED - User exists but is not confirmed: {email}")
+                # Don't reveal if email exists or not for security
+                flash('If an account with that email exists, password reset instructions have been sent.', 'info')
+                return redirect(url_for('auth.forgot_password'))
+            
+            # User exists and is confirmed - send password reset email
             # Generate reset token
             reset_token = str(uuid.uuid4())
             user.password_reset_token = reset_token
@@ -785,14 +794,18 @@ def forgot_password():
             )
             
             # Use rate-limited email sending (fails fast - no waiting to avoid timeout)
+            print(f"[PASSWORD RESET] Attempting to send password reset email to confirmed user: {email}")
+            print(f"[PASSWORD RESET] User: {user.first_name} {user.last_name}, Created: {user.created_date}, Active: {user.is_active}, Last Login IP: {user.last_login_ip}")
             success = safe_send_email(msg, email_type='password_reset', max_retries=0)
             if success:
+                print(f"[PASSWORD RESET] Successfully sent password reset email to {email}")
                 flash('Password reset instructions have been sent to your email.', 'success')
             else:
                 # Rate limited or failed - show user-friendly message
+                print(f"[PASSWORD RESET] FAILED to send password reset email to {email} - check logs above for reason")
                 flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
         else:
-            # Don't reveal if email exists or not for security
+            # User doesn't exist - don't reveal if email exists or not for security
             flash('If an account with that email exists, password reset instructions have been sent.', 'info')
         
         return redirect(url_for('auth.forgot_password'))

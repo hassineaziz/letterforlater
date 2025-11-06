@@ -25,6 +25,10 @@ RANDOM_EMAIL_PATTERNS = [
     r'\.@',  # Dot immediately before @ (like kel4z5iqdkke.@outlook.com)
     r'^[a-z0-9]{10,}@',  # 10+ random alphanumeric chars before @
     r'^[a-z]{3,}\d{3,}[a-z]{3,}@',  # Pattern like "ecrx7dr8mg" (letters-digits-letters)
+    r'^\d+\.',  # Starts with digit followed by dot (like 6.gxt8@proton.me)
+    r'^[a-z]{1,2}\.',  # 1-2 letters followed by dot (like sp.kt0n904f7@outlook.com)
+    r'_\d+[a-z]+\d+@',  # Underscore followed by random pattern (like t6ida_eb4l@yahoo.com)
+    r'^\d+[a-z]+\d+_',  # Starts with digits, letters, digits, underscore (like 97d9vuob_xtz5@hotmail.com)
 ]
 
 

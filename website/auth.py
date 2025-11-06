@@ -396,11 +396,18 @@ def sign_up():
         # Check for spam patterns in email/names
         is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
         
-        if is_spam:
+        # Only block if confidence is very high (>= 70%) to avoid blocking legitimate users with typos
+        # Lower confidence spam will be caught by other checks (rate limiting, etc.)
+        if is_spam and confidence >= 95:
             print(f"[SPAM DETECTION] BLOCKED signup attempt: {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
             from .blocking import block_ip_subnet
             block_ip_subnet(client_ip, reason=f"Spam pattern detected: {spam_reason}", blocked_by_user_id=None)
             flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        elif is_spam and confidence < 95:
+            # Lower confidence spam - just reject without blocking IP (might be a typo)
+            print(f"[SPAM DETECTION] REJECTED (low confidence): {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
+            flash('Your signup attempt was flagged. Please use a valid email address and name.', 'error')
             return render_template("sign_up.html", user=current_user)
         
         # Check if this IP has recent spam activity
@@ -413,14 +420,23 @@ def sign_up():
             return render_template("sign_up.html", user=current_user)
         
         # Check for random email/name patterns (even if not cross-IP)
-        if is_random_email(email) or is_random_name(first_name) or is_random_name(last_name):
-            # Even if not cross-IP, block if pattern is very suspicious
-            if is_random_email(email) and (is_random_name(first_name) or is_random_name(last_name)):
-                print(f"[SPAM DETECTION] BLOCKED suspicious pattern: Email={email}, Name={first_name} {last_name}, IP={client_ip}")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Suspicious random pattern: email and name", blocked_by_user_id=None)
-                flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-                return render_template("sign_up.html", user=current_user)
+        # Only block if BOTH email AND name are spam (very suspicious)
+        # This prevents blocking legitimate users who might have unusual emails or names
+        email_is_spam = is_random_email(email)
+        name_is_spam = is_random_name(first_name) or is_random_name(last_name)
+        
+        if email_is_spam and name_is_spam:
+            # Both email and name are spam - definitely block
+            print(f"[SPAM DETECTION] BLOCKED suspicious pattern: Email={email}, Name={first_name} {last_name}, IP={client_ip}")
+            from .blocking import block_ip_subnet
+            block_ip_subnet(client_ip, reason=f"Suspicious random pattern: email and name", blocked_by_user_id=None)
+            flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        elif email_is_spam or name_is_spam:
+            # Only one is spam - reject but don't block IP (might be a typo or unusual but legitimate)
+            print(f"[SPAM DETECTION] REJECTED (single spam indicator): Email spam={email_is_spam}, Name spam={name_is_spam}, Email={email}, IP={client_ip}")
+            flash('Your signup attempt was flagged. Please use a valid email address and name.', 'error')
+            return render_template("sign_up.html", user=current_user)
         
         # Check last 5 minutes (rapid spam detection)
         five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)

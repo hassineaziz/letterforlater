@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from website import create_app, db, mail
 from website.models import User, Letter
+from website.email_rate_limit import safe_send_email
 from flask_mail import Message
 from flask import render_template, url_for
 
@@ -66,7 +67,7 @@ def send_pricing_reminder(user):
             letter_count=letter_count
         )
         
-        mail.send(msg)
+        safe_send_email(msg, email_type='pricing_reminder')
         user.last_pricing_reminder_sent_at = datetime.now(timezone.utc)
         db.session.commit()
         print(f"✓ Sent pricing reminder to {user.email} ({letter_count} letters)")
@@ -114,7 +115,7 @@ def send_first_draft_reminder(user, letter):
             days_since_draft=days_since_draft
         )
         
-        mail.send(msg)
+        safe_send_email(msg, email_type='draft_reminder')
         letter.last_draft_reminder_sent_at = datetime.now(timezone.utc)
         db.session.commit()
         print(f"✓ Sent first draft reminder to {user.email} for letter {letter.id}")
@@ -162,7 +163,7 @@ def send_weekly_draft_reminder(user, letter):
             days_since_draft=days_since_draft
         )
         
-        mail.send(msg)
+        safe_send_email(msg, email_type='draft_reminder')
         letter.last_draft_reminder_sent_at = datetime.now(timezone.utc)
         db.session.commit()
         print(f"✓ Sent weekly draft reminder to {user.email} for letter {letter.id}")
@@ -199,7 +200,7 @@ def send_first_reminder(user):
             dashboard_url=dashboard_url
         )
         
-        mail.send(msg)
+        safe_send_email(msg, email_type='no_letter_reminder')
         user.last_no_letter_reminder_sent_at = datetime.now(timezone.utc)
         db.session.commit()
         print(f"✓ Sent first reminder to {user.email}")
@@ -241,7 +242,7 @@ def send_weekly_reminder(user):
             days_since_signup=days_since_signup
         )
         
-        mail.send(msg)
+        safe_send_email(msg, email_type='no_letter_reminder')
         user.last_no_letter_reminder_sent_at = datetime.now(timezone.utc)
         db.session.commit()
         print(f"✓ Sent weekly reminder to {user.email}")

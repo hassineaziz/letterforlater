@@ -120,6 +120,7 @@ def rate_limited_email_send(mail_func):
 def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     Safely send an email with rate limiting and retry logic.
+    Includes spam detection to prevent sending emails to spam accounts.
     
     Args:
         msg: Flask-Mail Message object
@@ -131,30 +132,45 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     from . import mail
     
-    # EMERGENCY: Check if recipient email is from spam account
+    # SPAM DETECTION: Check if recipient email is spam before sending
     if msg.recipients:
         recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
+        
+        # First, check if the email address itself looks like spam
+        from .spam_detection import is_random_email
+        if is_random_email(recipient_email):
+            print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam email pattern detected")
+            return False
+        
+        # Check if user account exists and is spam
         from .models import User
         user = User.query.filter_by(email=recipient_email).first()
-        if user and user.registration_ip:
-            # Check if this IP is spam
-            from datetime import datetime, timedelta, timezone
-            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-            spam_count = User.query.filter(
-                User.registration_ip == user.registration_ip,
-                User.created_date >= five_minutes_ago
-            ).count()
-            
-            if spam_count >= 3:
-                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip}")
+        if user:
+            # Check if user has spam patterns in name
+            from .spam_detection import is_random_name
+            if is_random_name(user.first_name) or is_random_name(user.last_name):
+                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam name pattern detected")
                 return False
             
-            # Check if IP is blocked
-            from .blocking import is_ip_blocked
-            ip_blocked, _ = is_ip_blocked(user.registration_ip)
-            if ip_blocked:
-                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
-                return False
+            if user.registration_ip:
+                # Check if this IP is spam
+                from datetime import datetime, timedelta, timezone
+                five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+                spam_count = User.query.filter(
+                    User.registration_ip == user.registration_ip,
+                    User.created_date >= five_minutes_ago
+                ).count()
+                
+                if spam_count >= 2:  # Lowered threshold - 2 signups in 5 min is suspicious
+                    print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip} ({spam_count} signups)")
+                    return False
+                
+                # Check if IP is blocked
+                from .blocking import is_ip_blocked
+                ip_blocked, _ = is_ip_blocked(user.registration_ip)
+                if ip_blocked:
+                    print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
+                    return False
     
     # Check rate limit
     can_send, wait_time = check_email_rate_limit()

@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from website import create_app
 from website.models import Letter, DeathVerification, RecipientInvite
 from website.views import send_letter_invite
+from website.email_rate_limit import safe_send_email
 from flask_mail import Message
 from flask import render_template
 import os
@@ -71,8 +72,8 @@ def send_weekly_reminders():
                 invite_url=invite_url
             )
             
-            # Send the reminder
-            mail.send(msg)
+            # Send the reminder with spam checking
+            safe_send_email(msg, email_type='letter_reminder')
             
             # Update the reminder timestamp
             invite.last_reminder_sent_at = datetime.now(timezone.utc)

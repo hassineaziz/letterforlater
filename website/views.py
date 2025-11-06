@@ -393,14 +393,20 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
             invite_url=invite_url
         )
         
-        mail.send(msg)
+        # Send email using safe_send_email for rate limiting and error handling
+        from .email_rate_limit import safe_send_email
+        success = safe_send_email(msg, email_type='letter_invite')
         
-        # Update invite record
-        invite.sent_at = datetime.now(timezone.utc)
-        db.session.commit()
-        
-        print(f"Invite email sent to {recipient_email} for letter {letter.id}")
-        return True
+        if success:
+            # Update invite record
+            invite.sent_at = datetime.now(timezone.utc)
+            db.session.commit()
+            print(f"Invite email sent to {recipient_email} for letter {letter.id}")
+            return True
+        else:
+            print(f"Failed to send invite email to {recipient_email} for letter {letter.id} (rate limited or error)")
+            db.session.rollback()
+            return False
         
     except Exception as e:
         print(f"Error sending letter invite: {str(e)}")

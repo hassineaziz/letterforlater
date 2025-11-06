@@ -2,12 +2,11 @@ from flask_mail import Message
 from flask import render_template, url_for
 from datetime import datetime, timezone
 import os
+from .email_rate_limit import safe_send_email
 
 def send_welcome_email(user):
     """Send welcome email to new user"""
     try:
-        from website import mail
-        
         # Create email message
         msg = Message(
             subject="🎉 Welcome to LetterForLater - Your Legacy Awaits!",
@@ -29,21 +28,25 @@ def send_welcome_email(user):
             dashboard_url="https://letterforlater.com"
         )
         
-        # Send email
-        mail.send(msg)
+        # Send email using safe_send_email for rate limiting and error handling
+        success = safe_send_email(msg, email_type='welcome')
         
-        print(f"✅ Welcome email sent to {user.email}")
-        return True
+        if success:
+            print(f"✅ Welcome email sent to {user.email}")
+            return True
+        else:
+            print(f"❌ Failed to send welcome email to {user.email} (rate limited or error)")
+            return False
         
     except Exception as e:
         print(f"❌ Error sending welcome email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def send_payment_success_email(user, session_data):
     """Send payment success email to user"""
     try:
-        from website import mail
-        
         # Extract data from Stripe session
         plan = session_data.get('metadata', {}).get('plan', 'premium')
         cycle = session_data.get('metadata', {}).get('cycle', 'month')
@@ -65,7 +68,6 @@ def send_payment_success_email(user, session_data):
         next_payment_date = "N/A"
         if session_data.get('subscription'):
             # Get subscription details
-            import stripe
             from website.stripe_config import stripe
             try:
                 subscription = stripe.Subscription.retrieve(session_data['subscription'])
@@ -104,21 +106,25 @@ def send_payment_success_email(user, session_data):
             dashboard_url="https://letterforlater.com"  # Use absolute URL instead of url_for
         )
         
-        # Send email
-        mail.send(msg)
+        # Send email using safe_send_email for rate limiting and error handling
+        success = safe_send_email(msg, email_type='payment_success')
         
-        print(f"✅ Payment success email sent to {user.email}")
-        return True
+        if success:
+            print(f"✅ Payment success email sent to {user.email}")
+            return True
+        else:
+            print(f"❌ Failed to send payment success email to {user.email} (rate limited or error)")
+            return False
         
     except Exception as e:
         print(f"❌ Error sending payment success email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def send_payment_failed_email(user, subscription_data):
     """Send payment failed email to user"""
     try:
-        from website import mail
-        
         # Create email message
         msg = Message(
             subject="⚠️ Payment Failed - LetterForLater Subscription",
@@ -140,21 +146,25 @@ def send_payment_failed_email(user, subscription_data):
             dashboard_url="https://letterforlater.com"
         )
         
-        # Send email
-        mail.send(msg)
+        # Send email using safe_send_email for rate limiting and error handling
+        success = safe_send_email(msg, email_type='payment_failed')
         
-        print(f"✅ Payment failed email sent to {user.email}")
-        return True
+        if success:
+            print(f"✅ Payment failed email sent to {user.email}")
+            return True
+        else:
+            print(f"❌ Failed to send payment failed email to {user.email} (rate limited or error)")
+            return False
         
     except Exception as e:
         print(f"❌ Error sending payment failed email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def send_subscription_cancelled_email(user):
     """Send subscription cancelled email to user"""
     try:
-        from website import mail
-        
         # Create email message
         msg = Message(
             subject="Subscription Cancelled - LetterForLater",
@@ -176,22 +186,25 @@ def send_subscription_cancelled_email(user):
             dashboard_url="https://letterforlater.com"
         )
         
-        # Send email
-        mail.send(msg)
+        # Send email using safe_send_email for rate limiting and error handling
+        success = safe_send_email(msg, email_type='subscription_cancelled')
         
-        print(f"✅ Subscription cancelled email sent to {user.email}")
-        return True
+        if success:
+            print(f"✅ Subscription cancelled email sent to {user.email}")
+            return True
+        else:
+            print(f"❌ Failed to send subscription cancelled email to {user.email} (rate limited or error)")
+            return False
         
     except Exception as e:
         print(f"❌ Error sending subscription cancelled email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def send_newsletter_welcome_email(email):
     """Send welcome email with link to download page to newsletter subscribers"""
     try:
-        from website import mail
-        from flask import url_for
-        
         # Create email message
         msg = Message(
             subject="🎉 Welcome to Our Newsletter + Free Legacy Template!",
@@ -209,12 +222,18 @@ def send_newsletter_welcome_email(email):
             unsubscribe_url=url_for('views.newsletter_unsubscribe', email=email, _external=True)
         )
         
-        # Send email
-        mail.send(msg)
+        # Send email using safe_send_email for rate limiting and error handling
+        success = safe_send_email(msg, email_type='newsletter_welcome')
         
-        print(f"✅ Newsletter welcome email sent to {email}")
-        return True
+        if success:
+            print(f"✅ Newsletter welcome email sent to {email}")
+            return True
+        else:
+            print(f"❌ Failed to send newsletter welcome email to {email} (rate limited or error)")
+            return False
         
     except Exception as e:
         print(f"❌ Error sending newsletter welcome email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False

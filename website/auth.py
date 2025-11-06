@@ -63,7 +63,11 @@ def send_confirmation_email(user):
 
         # Send confirmation email
         confirm_link = url_for('auth.confirm_email', token=confirm_token, _external=True)
-        msg = Message('Confirm your LetterForLater account', recipients=[user.email])
+        msg = Message(
+            'Confirm your LetterForLater account',
+            recipients=[user.email],
+            sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
+        )
         
         # Render HTML template
         msg.html = render_template('emails/email_confirmation.html',
@@ -82,13 +86,16 @@ def send_confirmation_email(user):
         # Use rate-limited email sending
         success = safe_send_email(msg, email_type='confirmation')
         if success:
+            print(f"✅ Confirmation email sent successfully to {user.email}")
             return True
         else:
-            print(f"Error sending confirmation email: Rate limited or failed")
+            print(f"❌ Failed to send confirmation email to {user.email} - check logs above for details (rate limited, SMTP error, or blocked)")
             db.session.rollback()
             return False
     except Exception as e:
-        print(f"Error sending confirmation email: {str(e)}")
+        print(f"❌ Exception in send_confirmation_email for {user.email}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         db.session.rollback()
         return False
 

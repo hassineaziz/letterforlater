@@ -372,9 +372,10 @@ def sign_up():
         # AUTO-BLOCK if 2+ signups already (catch them at attempt #3, so only 2 get through)
         # This prevents most spam while still allowing legitimate users
         if rapid_signups >= 2:
-            print(f"[SPAM ALERT] Auto-blocking IP {client_ip}: {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
-            # Auto-block the IP immediately
-            block_ip(client_ip, reason=f"Spam signups: {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
+            print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet: {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
+            # Auto-block the IP and entire subnet (prevents IP rotation)
+            from .blocking import block_ip_subnet
+            block_ip_subnet(client_ip, reason=f"Spam signups: {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
             flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
             return render_template("sign_up.html", user=current_user)
         
@@ -387,8 +388,9 @@ def sign_up():
         
         # AUTO-BLOCK if 2+ signups in 30 seconds (definitely spam!)
         if very_rapid_signups >= 2:
-            print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip}: {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
-            block_ip(client_ip, reason=f"Critical spam: {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
+            print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip} and entire subnet: {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
+            from .blocking import block_ip_subnet
+            block_ip_subnet(client_ip, reason=f"Critical spam: {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
             flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
             return render_template("sign_up.html", user=current_user)
         
@@ -403,8 +405,9 @@ def sign_up():
             print(f"[SIGNUP RATE LIMIT] Blocked signup from IP {client_ip}: {recent_signups} signups in last hour")
             # Auto-block if they hit the limit
             if recent_signups >= 10:
-                print(f"[SPAM ALERT] Auto-blocking IP {client_ip}: {recent_signups} signups in 1 hour - SPAM DETECTED!")
-                block_ip(client_ip, reason=f"Spam signups: {recent_signups} signups in 1 hour", blocked_by_user_id=None)
+                print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet: {recent_signups} signups in 1 hour - SPAM DETECTED!")
+                from .blocking import block_ip_subnet
+                block_ip_subnet(client_ip, reason=f"Spam signups: {recent_signups} signups in 1 hour", blocked_by_user_id=None)
                 flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
             else:
                 flash('Too many signup attempts from this IP address. Please try again later or contact support.', 'error')

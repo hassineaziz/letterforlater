@@ -86,6 +86,44 @@ def create_app():
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+    
+    # GLOBAL IP BLOCKING - Block ALL requests from blocked IPs
+    @app.before_request
+    def block_ip_globally():
+        """Block ALL requests from blocked IPs before any route handler runs"""
+        from flask import request, abort
+        from .blocking import get_client_ip, is_ip_blocked
+        
+        # Skip blocking for static files (CSS, JS, images) to avoid breaking the page
+        # But still block API endpoints and page routes
+        if request.endpoint and 'static' in request.endpoint:
+            return  # Allow static files to load
+        
+        client_ip = get_client_ip()
+        ip_blocked, block_record = is_ip_blocked(client_ip)
+        
+        if ip_blocked:
+            reason = block_record.reason if block_record else 'No reason provided'
+            print(f"[BLOCK] BLOCKED IP {client_ip} attempted to access {request.path} (reason: {reason})")
+            # Return 403 Forbidden - they can't access ANYTHING
+            abort(403)
+    
+    # Custom 403 error handler for blocked IPs
+    @app.errorhandler(403)
+    def forbidden(error):
+        """Show a proper error page for blocked IPs"""
+        from flask import render_template
+        from .blocking import get_client_ip, is_ip_blocked
+        
+        client_ip = get_client_ip()
+        ip_blocked, block_record = is_ip_blocked(client_ip)
+        
+        if ip_blocked:
+            reason = block_record.reason if block_record else 'Your IP address has been blocked'
+            return render_template('blocked.html', reason=reason, ip=client_ip), 403
+        
+        # Generic 403 for other cases
+        return render_template('403.html'), 403
 
     @login_manager.user_loader
     def load_user(id):

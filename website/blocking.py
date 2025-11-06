@@ -28,9 +28,34 @@ def get_client_ip():
     return request.remote_addr or '0.0.0.0'
 
 
+def get_ip_subnet(ip_address):
+    """
+    Get the subnet (first 3 octets) of an IP address for range blocking.
+    Example: 89.33.8.58 -> 89.33.8.*
+    
+    Args:
+        ip_address: IP address (e.g., "89.33.8.58")
+        
+    Returns:
+        str: Subnet pattern (e.g., "89.33.8") or None if invalid
+    """
+    if not ip_address:
+        return None
+    
+    try:
+        parts = ip_address.split('.')
+        if len(parts) == 4:
+            # Return first 3 octets for subnet matching
+            return '.'.join(parts[:3])
+    except:
+        pass
+    
+    return None
+
+
 def is_ip_blocked(ip_address):
     """
-    Check if an IP address is blocked.
+    Check if an IP address is blocked (exact match or subnet match).
     
     Args:
         ip_address: IP address to check
@@ -41,12 +66,30 @@ def is_ip_blocked(ip_address):
     if not ip_address:
         return False, None
     
+    # Check exact IP match
     blocked = BlockedIP.query.filter_by(
         ip_address=ip_address,
         is_active=True
     ).first()
     
-    return (blocked is not None, blocked)
+    if blocked:
+        return (True, blocked)
+    
+    # Check if IP is in a blocked subnet (same first 3 octets)
+    ip_subnet = get_ip_subnet(ip_address)
+    if ip_subnet:
+        # Get all blocked IPs
+        all_blocked = BlockedIP.query.filter_by(is_active=True).all()
+        
+        # Check if any blocked IP is in the same subnet
+        for blocked_ip in all_blocked:
+            blocked_subnet = get_ip_subnet(blocked_ip.ip_address)
+            if blocked_subnet == ip_subnet:
+                # IP is in same subnet as a blocked IP - block it!
+                print(f"[BLOCK] IP {ip_address} blocked (same subnet as blocked IP {blocked_ip.ip_address}: {blocked_subnet}.*)")
+                return (True, blocked_ip)
+    
+    return (False, None)
 
 
 def is_user_blocked(user_id):
@@ -91,6 +134,33 @@ def check_blocked(func):
         return func(*args, **kwargs)
     
     return decorated_function
+
+
+def block_ip_subnet(ip_address, reason=None, blocked_by_user_id=None):
+    """
+    Block an entire IP subnet (all IPs with same first 3 octets).
+    Example: Blocking 89.33.8.55 will also block 89.33.8.*
+    
+    Args:
+        ip_address: IP address to block (entire subnet will be blocked)
+        reason: Reason for blocking (optional)
+        blocked_by_user_id: ID of admin user who is blocking (optional)
+        
+    Returns:
+        tuple: (success: bool, message: str, block_record: BlockedIP or None)
+    """
+    subnet = get_ip_subnet(ip_address)
+    if not subnet:
+        return False, f"Invalid IP address: {ip_address}", None
+    
+    # Block the specific IP first (this enables subnet matching)
+    success, message, block_record = block_ip(ip_address, reason, blocked_by_user_id)
+    
+    if success:
+        print(f"[BLOCK] Entire subnet {subnet}.* is now blocked (blocked via {ip_address})")
+        return True, f"IP {ip_address} and subnet {subnet}.* blocked successfully", block_record
+    
+    return success, message, block_record
 
 
 def block_ip(ip_address, reason=None, blocked_by_user_id=None):

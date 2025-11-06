@@ -152,25 +152,32 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
                 print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam name pattern detected")
                 return False
             
+            # For password reset and account verification emails, be less aggressive
+            # Only block if IP is explicitly blocked, not just if it had recent spam activity
+            is_sensitive_email = email_type in ['password_reset', 'confirmation', 'resend_verification']
+            
             if user.registration_ip:
-                # Check if this IP is spam
-                from datetime import datetime, timedelta, timezone
-                five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-                spam_count = User.query.filter(
-                    User.registration_ip == user.registration_ip,
-                    User.created_date >= five_minutes_ago
-                ).count()
-                
-                if spam_count >= 2:  # Lowered threshold - 2 signups in 5 min is suspicious
-                    print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip} ({spam_count} signups)")
-                    return False
-                
-                # Check if IP is blocked
+                # Always check if IP is explicitly blocked
                 from .blocking import is_ip_blocked
                 ip_blocked, _ = is_ip_blocked(user.registration_ip)
                 if ip_blocked:
                     print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
                     return False
+                
+                # For sensitive emails (password reset, verification), don't block based on recent spam activity
+                # Only block if the user account itself is clearly spam (name patterns already checked above)
+                if not is_sensitive_email:
+                    # For other emails, check if this IP had recent spam activity
+                    from datetime import datetime, timedelta, timezone
+                    five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+                    spam_count = User.query.filter(
+                        User.registration_ip == user.registration_ip,
+                        User.created_date >= five_minutes_ago
+                    ).count()
+                    
+                    if spam_count >= 3:  # Only block if 3+ signups in 5 min (less aggressive)
+                        print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip} ({spam_count} signups)")
+                        return False
     
     # Check rate limit
     can_send, wait_time = check_email_rate_limit()

@@ -3,7 +3,6 @@ from flask_login import login_required, current_user, login_user
 from functools import wraps
 from .models import Letter, TrustedContact, User, DeathVerification, DeathVerificationConfirmation, MediaAttachment, BlogPost
 from . import db, mail
-from .email_rate_limit import safe_send_email
 from .s3_config import s3_config
 import json
 from datetime import datetime, timedelta, timezone
@@ -394,7 +393,7 @@ def send_letter_invite(letter, recipient_email, recipient_name, author_name):
             invite_url=invite_url
         )
         
-        safe_send_email(msg, email_type='letter_invite')
+        mail.send(msg)
         
         # Update invite record
         invite.sent_at = datetime.now(timezone.utc)
@@ -1527,7 +1526,7 @@ def verify_death():
                                 confirmations_count=verification.confirmations_count
                             )
                             
-                            safe_send_email(msg, email_type='death_confirmation_complete')
+                            mail.send(msg)
                         except Exception as e:
                             print(f"Error sending death confirmation email: {str(e)}")
                 else:
@@ -1560,7 +1559,7 @@ def verify_death():
                                 confirmations_count=verification.confirmations_count
                             )
                             
-                            safe_send_email(msg, email_type='death_confirmation_alert')
+                            mail.send(msg)
                         except Exception as e:
                             print(f"Error sending death confirmation email: {str(e)}")
                 
@@ -2031,11 +2030,8 @@ def add_trusted_contact():
     )
     
     try:
-        success = safe_send_email(msg, email_type='trusted_contact_confirmation')
-        if success:
-            flash('Trusted contact added successfully! Confirmation email sent.', category='success')
-        else:
-            flash('Trusted contact added successfully! Confirmation email will be sent shortly.', category='success')
+        mail.send(msg)
+        flash('Trusted contact added successfully! Confirmation email sent.', category='success')
     except Exception as e:
         print(f"Error sending email: {str(e)}")
         flash('Trusted contact added successfully! Confirmation email will be sent shortly.', category='success')
@@ -2126,11 +2122,8 @@ def resend_confirmation(contact_id):
         )
         
         try:
-            success = safe_send_email(msg, email_type='trusted_contact_confirmation')
-            if success:
-                flash('Confirmation email resent successfully!', category='success')
-            else:
-                flash('Confirmation email will be sent shortly.', category='success')
+            mail.send(msg)
+            flash('Confirmation email resent successfully!', category='success')
         except Exception as e:
             print(f"Error sending email: {str(e)}")
             flash('Confirmation email will be sent shortly.', category='success')
@@ -2721,11 +2714,8 @@ def invite_trusted_contact():
         )
         
         try:
-            success = safe_send_email(msg, email_type='trusted_contact_confirmation')
-            if success:
-                flash('Confirmation email resent successfully!', category='success')
-            else:
-                flash('Confirmation email will be sent shortly.', category='success')
+            mail.send(msg)
+            flash('Confirmation email resent successfully!', category='success')
         except Exception as e:
             print(f"Error sending email: {str(e)}")
             flash('Confirmation email will be sent shortly.', category='success')
@@ -2795,11 +2785,8 @@ def invite_trusted_contact():
     )
     
     try:
-        success = safe_send_email(msg, email_type='trusted_contact_confirmation')
-        if success:
-            flash('Trusted contact invited successfully! Confirmation email sent.', category='success')
-        else:
-            flash('Trusted contact invited successfully! Confirmation email will be sent shortly.', category='success')
+        mail.send(msg)
+        flash('Trusted contact invited successfully! Confirmation email sent.', category='success')
     except Exception as e:
         print(f"Error sending email: {str(e)}")
         flash('Trusted contact invited successfully! Confirmation email will be sent shortly.', category='success')
@@ -3033,7 +3020,7 @@ Please verify the person's status before submitting another death confirmation.
 Best regards,
 LetterForLater Team
 """
-            safe_send_email(msg, email_type='death_confirmation_rejection')
+            mail.send(msg)
         except Exception as e:
             print(f"Error sending rejection email: {str(e)}")
         

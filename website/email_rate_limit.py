@@ -50,15 +50,12 @@ def check_email_rate_limit():
         wait_time = 3600 - (now - _email_send_times[0][0]).total_seconds()
         return False, max(0, wait_time)
     
-    # Check delay between emails - but don't block, just warn
-    # (We removed time.sleep so we don't actually delay, but we still track for monitoring)
+    # Check delay between emails
     if _last_email_time:
         time_since_last = (now - _last_email_time).total_seconds()
         if time_since_last < EMAIL_RATE_LIMIT['delay_between_emails']:
             wait_time = EMAIL_RATE_LIMIT['delay_between_emails'] - time_since_last
-            # Don't block, just return True (we removed sleep delays)
-            print(f"[EMAIL RATE LIMIT] Warning: Email sent {time_since_last:.2f}s after last (min {EMAIL_RATE_LIMIT['delay_between_emails']}s), but sending anyway")
-            return True, 0  # Allow through despite delay
+            return False, wait_time
     
     return True, 0
 
@@ -86,9 +83,13 @@ def rate_limited_email_send(mail_func):
         can_send, wait_time = check_email_rate_limit()
         
         if not can_send:
-            # Rate limit warning but send anyway (no sleep)
-            print(f"[EMAIL RATE LIMIT] Rate limit warning for email send, but sending anyway (no sleep)")
-            # Still try to send, but log the warning
+            print(f"[EMAIL RATE LIMIT] Throttling email send. Waiting {wait_time:.2f} seconds...")
+            time.sleep(wait_time)
+            # Re-check after waiting
+            can_send, wait_time = check_email_rate_limit()
+            if not can_send:
+                print(f"[EMAIL RATE LIMIT] Email rate limit exceeded. Skipping email send.")
+                raise Exception(f"Email rate limit exceeded. Please try again later.")
         
         # Send email
         try:
@@ -98,11 +99,19 @@ def rate_limited_email_send(mail_func):
             record_email_sent(email_type)
             return result
         except Exception as e:
-            # If it's a rate limit error from SMTP, don't wait - fail fast
+            # If it's a rate limit error from SMTP, wait longer
             error_str = str(e).lower()
             if 'rate limit' in error_str or 'unusual sending' in error_str or '550' in error_str:
-                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected. Email NOT sent (no sleep/retry).")
-                raise e  # Fail immediately without waiting
+                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected. Waiting 60 seconds...")
+                time.sleep(60)
+                # Try once more
+                try:
+                    result = mail_func(*args, **kwargs)
+                    record_email_sent(kwargs.get('email_type', 'unknown'))
+                    return result
+                except Exception as e2:
+                    print(f"[EMAIL RATE LIMIT] Retry failed: {str(e2)}")
+                    raise e2
             raise
     
     return wrapper
@@ -111,7 +120,6 @@ def rate_limited_email_send(mail_func):
 def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     Safely send an email with rate limiting and retry logic.
-    Includes spam detection to prevent sending emails to spam accounts.
     
     Args:
         msg: Flask-Mail Message object
@@ -123,72 +131,60 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     from . import mail
     
-    # SPAM DETECTION: Only block obvious spam, allow legitimate users through
+    # EMERGENCY: Check if recipient email is from spam account
     if msg.recipients:
         recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
-        
-        # For ALL emails, be VERY lenient - only block if IP is explicitly blocked
-        # Don't block based on email patterns or name patterns (too aggressive)
         from .models import User
         user = User.query.filter_by(email=recipient_email).first()
-        
         if user and user.registration_ip:
-            # Only block if IP is explicitly blocked (not based on recent activity or patterns)
+            # Check if this IP is spam
+            from datetime import datetime, timedelta, timezone
+            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+            spam_count = User.query.filter(
+                User.registration_ip == user.registration_ip,
+                User.created_date >= five_minutes_ago
+            ).count()
+            
+            if spam_count >= 3:
+                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip}")
+                return False
+            
+            # Check if IP is blocked
             from .blocking import is_ip_blocked
             ip_blocked, _ = is_ip_blocked(user.registration_ip)
             if ip_blocked:
-                print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
-                return False
-        
-        # For confirmation emails only, also check if email is clearly spam
-        # (password reset and other emails should go through regardless)
-        if email_type == 'confirmation':
-            from .spam_detection import is_random_email
-            if is_random_email(recipient_email):
-                print(f"[EMAIL BLOCK] Skipping confirmation email to {recipient_email} - spam email pattern")
+                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
                 return False
     
     # Check rate limit
-    # For critical security emails (password reset, confirmation), bypass rate limiting
-    # These are essential emails that users need
     can_send, wait_time = check_email_rate_limit()
     
     if not can_send:
-        # All emails bypass rate limiting sleep - send immediately
-        # Rate limiting is still checked but we don't block/delay emails with time.sleep()
-        print(f"[EMAIL RATE LIMIT] {email_type} email - rate limit warning but sending anyway (no sleep)")
-        # Still try to send, but log the rate limit warning
+        print(f"[EMAIL RATE LIMIT] Throttling {email_type} email. Waiting {wait_time:.2f} seconds...")
+        time.sleep(wait_time)
+        can_send, wait_time = check_email_rate_limit()
+        if not can_send:
+            print(f"[EMAIL RATE LIMIT] Rate limit exceeded for {email_type}. Email will be queued/skipped.")
+            return False
     
     # Try to send with retries
-    recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients if msg.recipients else "unknown"
-    
     for attempt in range(max_retries + 1):
         try:
-            print(f"[EMAIL SEND] Attempt {attempt + 1}/{max_retries + 1}: Sending {email_type} email to {recipient_email}")
             mail.send(msg)
             record_email_sent(email_type)
-            print(f"[EMAIL SEND] ✅ Successfully sent {email_type} email to {recipient_email}")
             return True
         except Exception as e:
             error_str = str(e).lower()
-            error_type = type(e).__name__
-            
-            print(f"[EMAIL ERROR] Attempt {attempt + 1} failed for {email_type} to {recipient_email}: {error_type} - {str(e)}")
             
             # Check if it's a rate limit error
             if 'rate limit' in error_str or 'unusual sending' in error_str or '550' in error_str or '5.4.6' in error_str:
                 # Don't retry rate limit errors - fail immediately to avoid worker timeout
-                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected for {email_type} to {recipient_email}. Email NOT sent (Zoho blocking).")
+                print(f"[EMAIL RATE LIMIT] SMTP rate limit detected for {email_type}. Email NOT sent (Zoho blocking).")
                 return False  # Fail fast - don't retry or wait
-            elif attempt < max_retries:
-                # Retry for other errors (connection issues, etc.)
-                print(f"[EMAIL ERROR] Retrying {email_type} email to {recipient_email} (attempt {attempt + 2}/{max_retries + 1})")
-                continue
             else:
-                # Final attempt failed
-                print(f"[EMAIL ERROR] ❌ Failed to send {email_type} email to {recipient_email} after {max_retries + 1} attempts: {error_type} - {str(e)}")
+                # Other error, don't retry
+                print(f"[EMAIL ERROR] Error sending {email_type} email: {str(e)}")
                 return False
     
-    print(f"[EMAIL ERROR] ❌ Failed to send {email_type} email to {recipient_email} - all retries exhausted")
     return False
 

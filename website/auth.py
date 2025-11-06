@@ -23,20 +23,29 @@ auth = Blueprint('auth', __name__)
 def send_confirmation_email(user):
     """Helper function to send email confirmation email to a user"""
     try:
-        # BLOCK SPAM EMAILS: Don't send confirmation emails to spam email addresses
-        from .spam_detection import is_random_email
-        if is_random_email(user.email):
-            print(f"[EMAIL BLOCK] Skipping confirmation email for spam email: {user.email}")
-            # Still generate token but don't send email
-            confirm_token = str(uuid.uuid4())
-            user.password_reset_token = confirm_token
-            user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
-            db.session.commit()
-            return False  # Don't send email
-        
-        # Only block if IP is explicitly blocked (not based on recent activity)
+        # EMERGENCY: Check if this IP is known spam (skip email to prevent rate limits)
         if user.registration_ip:
             from .blocking import is_ip_blocked
+            from .models import User as UserModel
+            from datetime import timedelta
+            
+            # Check if IP has many signups (spam pattern)
+            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+            spam_count = UserModel.query.filter(
+                UserModel.registration_ip == user.registration_ip,
+                UserModel.created_date >= five_minutes_ago
+            ).count()
+            
+            if spam_count >= 3:  # Spam IP detected
+                print(f"[EMAIL BLOCK] Skipping confirmation email for spam IP {user.registration_ip} ({spam_count} signups)")
+                # Still generate token but don't send email
+                confirm_token = str(uuid.uuid4())
+                user.password_reset_token = confirm_token
+                user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+                db.session.commit()
+                return False  # Don't send email
+            
+            # Check if IP is blocked
             ip_blocked, _ = is_ip_blocked(user.registration_ip)
             if ip_blocked:
                 print(f"[EMAIL BLOCK] Skipping confirmation email for blocked IP {user.registration_ip}")
@@ -376,18 +385,11 @@ def sign_up():
         # Check for spam patterns in email/names
         is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
         
-        # Only block if confidence is very high (>= 70%) to avoid blocking legitimate users with typos
-        # Lower confidence spam will be caught by other checks (rate limiting, etc.)
-        if is_spam and confidence >= 95:
+        if is_spam:
             print(f"[SPAM DETECTION] BLOCKED signup attempt: {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
             from .blocking import block_ip_subnet
             block_ip_subnet(client_ip, reason=f"Spam pattern detected: {spam_reason}", blocked_by_user_id=None)
             flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-            return render_template("sign_up.html", user=current_user)
-        elif is_spam and confidence < 95:
-            # Lower confidence spam - just reject without blocking IP (might be a typo)
-            print(f"[SPAM DETECTION] REJECTED (low confidence): {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
-            flash('Your signup attempt was flagged. Please use a valid email address and name.', 'error')
             return render_template("sign_up.html", user=current_user)
         
         # Check if this IP has recent spam activity
@@ -400,23 +402,14 @@ def sign_up():
             return render_template("sign_up.html", user=current_user)
         
         # Check for random email/name patterns (even if not cross-IP)
-        # Only block if BOTH email AND name are spam (very suspicious)
-        # This prevents blocking legitimate users who might have unusual emails or names
-        email_is_spam = is_random_email(email)
-        name_is_spam = is_random_name(first_name) or is_random_name(last_name)
-        
-        if email_is_spam and name_is_spam:
-            # Both email and name are spam - definitely block
-            print(f"[SPAM DETECTION] BLOCKED suspicious pattern: Email={email}, Name={first_name} {last_name}, IP={client_ip}")
-            from .blocking import block_ip_subnet
-            block_ip_subnet(client_ip, reason=f"Suspicious random pattern: email and name", blocked_by_user_id=None)
-            flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-            return render_template("sign_up.html", user=current_user)
-        elif email_is_spam or name_is_spam:
-            # Only one is spam - reject but don't block IP (might be a typo or unusual but legitimate)
-            print(f"[SPAM DETECTION] REJECTED (single spam indicator): Email spam={email_is_spam}, Name spam={name_is_spam}, Email={email}, IP={client_ip}")
-            flash('Your signup attempt was flagged. Please use a valid email address and name.', 'error')
-            return render_template("sign_up.html", user=current_user)
+        if is_random_email(email) or is_random_name(first_name) or is_random_name(last_name):
+            # Even if not cross-IP, block if pattern is very suspicious
+            if is_random_email(email) and (is_random_name(first_name) or is_random_name(last_name)):
+                print(f"[SPAM DETECTION] BLOCKED suspicious pattern: Email={email}, Name={first_name} {last_name}, IP={client_ip}")
+                from .blocking import block_ip_subnet
+                block_ip_subnet(client_ip, reason=f"Suspicious random pattern: email and name", blocked_by_user_id=None)
+                flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+                return render_template("sign_up.html", user=current_user)
         
         # Check last 5 minutes (rapid spam detection)
         five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
@@ -765,15 +758,6 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         
         if user:
-            # Check if user is confirmed/verified (is_active = True)
-            if not user.is_active:
-                # User exists but is not confirmed - don't send password reset email
-                print(f"[PASSWORD RESET] BLOCKED - User exists but is not confirmed: {email}")
-                # Don't reveal if email exists or not for security
-                flash('If an account with that email exists, password reset instructions have been sent.', 'info')
-                return redirect(url_for('auth.forgot_password'))
-            
-            # User exists and is confirmed - send password reset email
             # Generate reset token
             reset_token = str(uuid.uuid4())
             user.password_reset_token = reset_token
@@ -801,18 +785,14 @@ def forgot_password():
             )
             
             # Use rate-limited email sending (fails fast - no waiting to avoid timeout)
-            print(f"[PASSWORD RESET] Attempting to send password reset email to confirmed user: {email}")
-            print(f"[PASSWORD RESET] User: {user.first_name} {user.last_name}, Created: {user.created_date}, Active: {user.is_active}, Last Login IP: {user.last_login_ip}")
             success = safe_send_email(msg, email_type='password_reset', max_retries=0)
             if success:
-                print(f"[PASSWORD RESET] Successfully sent password reset email to {email}")
                 flash('Password reset instructions have been sent to your email.', 'success')
             else:
                 # Rate limited or failed - show user-friendly message
-                print(f"[PASSWORD RESET] FAILED to send password reset email to {email} - check logs above for reason")
                 flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
         else:
-            # User doesn't exist - don't reveal if email exists or not for security
+            # Don't reveal if email exists or not for security
             flash('If an account with that email exists, password reset instructions have been sent.', 'info')
         
         return redirect(url_for('auth.forgot_password'))
@@ -821,97 +801,35 @@ def forgot_password():
 
 @auth.route('/resend-verification', methods=['GET', 'POST'])
 def resend_verification():
-    """Resend email verification link - Only sends to existing users"""
+    """Resend email verification link"""
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     
     if request.method == 'POST':
-        # Rate limiting: Prevent abuse
-        client_ip = get_client_ip()
-        from datetime import timedelta
-        five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-        
-        # Count recent resend attempts from this IP
-        # (We'll track this by checking recent activity - for now, just limit to prevent spam)
-        ip_blocked, _ = is_ip_blocked(client_ip)
-        if ip_blocked:
-            print(f"[BLOCK] Resend verification attempt from blocked IP: {client_ip}")
-            # Show generic message to prevent enumeration
-            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
-            return redirect(url_for('auth.login'))
-        
-        email = request.form.get('email', '').strip().lower()
-        
-        # Validate email format
-        if not email or '@' not in email:
-            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
-            return redirect(url_for('auth.login'))
-        
-        # Check if email is spam pattern (don't send to spam emails)
-        from .spam_detection import is_random_email
-        if is_random_email(email):
-            print(f"[SPAM BLOCK] Resend verification blocked for spam email: {email}")
-            # Show generic message to prevent enumeration
-            flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
-            return redirect(url_for('auth.login'))
-        
-        # Only send to users who have already created accounts
+        email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
         
         if user:
-            # PER-USER RATE LIMIT: Prevent users from requesting too many resends
-            # Limit: Max 3 resend requests per hour per user
-            if user.password_reset_token and user.password_reset_expires:
-                # Check if token was updated recently (token expires in 48 hours)
-                # If token expires in >47 hours, it was updated in last hour
-                hours_until_expiry = (user.password_reset_expires - datetime.now(timezone.utc)).total_seconds() / 3600
-                
-                # If user account is older than 1 hour and token was updated very recently, check rate limit
-                one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-                if user.created_date < one_hour_ago and hours_until_expiry > 47.8:
-                    # Token was updated in last ~12 minutes - this would be the 3rd+ request in an hour
-                    # Allow up to 3 requests per hour (one every 20 minutes)
-                    print(f"[RESEND VERIFICATION] Rate limit: User {email} requested resend too recently (token updated <12 min ago)")
-                    flash('Please wait before requesting another verification email. You can request up to 3 verification emails per hour. Check your spam folder or try again in 10 minutes.', 'info')
-                    return redirect(url_for('auth.login'))
-            
-            # Check if user account has spam patterns (don't send to spam accounts)
-            from .spam_detection import is_random_name
-            if is_random_name(user.first_name) or is_random_name(user.last_name):
-                print(f"[SPAM BLOCK] Resend verification blocked for spam account: {email}")
-                # Show generic message to prevent enumeration
-                flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
-                return redirect(url_for('auth.login'))
-            
             # Check if user is already active
             if user.is_active:
-                # Show generic message to prevent enumeration (don't reveal account status)
-                flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+                flash('Your account is already verified. You can log in normally.', 'info')
                 return redirect(url_for('auth.login'))
             
             # Check if user has a valid confirmation token (pending verification)
             if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
                 # Resend the confirmation email
-                print(f"[RESEND VERIFICATION] Attempting to resend confirmation email to {email}")
-                success = send_confirmation_email(user)
-                if success:
-                    print(f"[RESEND VERIFICATION] Successfully sent confirmation email to {email}")
-                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+                if send_confirmation_email(user):
+                    flash('Verification email sent! Please check your email and click the confirmation link.', 'success')
                 else:
-                    print(f"[RESEND VERIFICATION] FAILED to send confirmation email to {email} - check logs for reason")
-                    flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
+                    flash('Error sending verification email. Please try again later or contact support.', 'error')
             else:
                 # Token expired or doesn't exist, generate new one
-                print(f"[RESEND VERIFICATION] Generating new token and sending confirmation email to {email}")
-                success = send_confirmation_email(user)
-                if success:
-                    print(f"[RESEND VERIFICATION] Successfully sent confirmation email to {email}")
-                    flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
+                if send_confirmation_email(user):
+                    flash('New verification email sent! Please check your email and click the confirmation link.', 'success')
                 else:
-                    print(f"[RESEND VERIFICATION] FAILED to send confirmation email to {email} - check logs for reason")
-                    flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
+                    flash('Error sending verification email. Please try again later or contact support.', 'error')
         else:
-            # User doesn't exist - show generic message to prevent email enumeration
+            # Don't reveal if email exists or not for security
             flash('If an account with that email exists and is unverified, a verification email has been sent.', 'info')
         
         return redirect(url_for('auth.login'))

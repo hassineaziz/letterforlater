@@ -29,11 +29,16 @@ def check_honeypot(form_data):
     Returns (is_spam, error_message)
     """
     honeypot_fields = [
-        'website',  # Common honeypot name
-        'url',      # Another common one
-        'phone',    # Some bots fill this
-        'company',  # Business spam
-        'homepage', # Common bot field
+        'website',      # Common honeypot name
+        'url',          # Another common one
+        'phone',        # Some bots fill this
+        'company',      # Business spam
+        'homepage',     # Common bot field
+        'website_url',  # Variant
+        'home_page',    # Variant
+        'business_url', # Business spam
+        'site_url',     # Variant
+        'contact_url',  # Contact form spam
     ]
     
     for field in honeypot_fields:
@@ -190,13 +195,20 @@ def add_honeypot_fields_to_template():
     """
     Returns HTML for honeypot fields to add to forms
     These should be hidden with CSS but present in the HTML
+    Bots will fill these fields, real users won't see or fill them
     """
     return """
     <!-- Honeypot fields - hidden from users but visible to bots -->
-    <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
-        <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
-        <input type="text" name="url" tabindex="-1" autocomplete="off" value="">
-        <input type="text" name="company" tabindex="-1" autocomplete="off" value="">
+    <!-- These fields are positioned off-screen and made invisible -->
+    <!-- Real users never see or fill these, but bots often auto-fill all inputs -->
+    <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <input type="text" name="website" id="website" tabindex="-1" autocomplete="off" value="" style="display: none;">
+        <input type="text" name="url" id="url" tabindex="-1" autocomplete="off" value="" style="display: none;">
+        <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" value="" style="display: none;">
+        <input type="text" name="homepage" id="homepage" tabindex="-1" autocomplete="off" value="" style="display: none;">
+        <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off" value="" style="display: none;">
+        <!-- Additional honeypot: email field that looks like it should be filled -->
+        <input type="email" name="email_confirm" id="email_confirm" tabindex="-1" autocomplete="off" value="" style="display: none;" placeholder="Leave this field empty">
     </div>
     """
 

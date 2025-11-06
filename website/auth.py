@@ -372,6 +372,16 @@ def sign_up():
     # Spam prevention checks
     if request.method == 'POST':
         from .spam_prevention import validate_form_submission, check_honeypot
+        
+        # EXPLICIT HONEYPOT CHECK - Silent block (don't show error to bots)
+        is_honeypot_spam, honeypot_error = check_honeypot(request.form)
+        if is_honeypot_spam:
+            print(f"[HONEYPOT] BLOCKED bot signup attempt - honeypot field filled. IP: {client_ip}")
+            # Silently fail - don't show error, just return success page (confuses bots)
+            # This makes bots think they succeeded while we block them
+            flash('Thank you for signing up! Please check your email to confirm your account.', 'success')
+            return render_template("sign_up.html", user=current_user)
+        
         is_valid, error = validate_form_submission('signup', 'signup', check_honeypot_fields=True, check_timing=True)
         if not is_valid:
             flash(error, 'error')
@@ -387,9 +397,9 @@ def sign_up():
         first_name = request.form.get('firstName', '')
         last_name = request.form.get('lastName', '')
         
-        from .spam_detection import detect_spam_pattern, check_recent_spam_activity, is_random_email, is_random_name
+        from .spam_detection import detect_spam_pattern, check_recent_spam_activity, is_random_email, is_random_name, check_timing_pattern
         
-        # Check for spam patterns in email/names
+        # Check for spam patterns in email/names (includes timing pattern detection)
         is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
         
         if is_spam:
@@ -397,6 +407,16 @@ def sign_up():
             from .blocking import block_ip_subnet
             block_ip_subnet(client_ip, reason=f"Spam pattern detected: {spam_reason}", blocked_by_user_id=None)
             flash('Access denied. Your signup attempt was flagged as spam.', 'error')
+            return render_template("sign_up.html", user=current_user)
+        
+        # Additional check: Timing pattern detection (catches 5-minute interval bots)
+        # This is a separate check to catch timing patterns even if other patterns don't match
+        timing_suspicious, timing_reason, timing_confidence = check_timing_pattern(client_ip, email, first_name, last_name)
+        if timing_suspicious and timing_confidence >= 50:
+            print(f"[SPAM DETECTION] BLOCKED signup - timing pattern: {timing_reason} (confidence: {timing_confidence}%) - Email: {email}, IP: {client_ip}")
+            from .blocking import block_ip_subnet
+            block_ip_subnet(client_ip, reason=f"Automated timing pattern detected: {timing_reason}", blocked_by_user_id=None)
+            flash('Access denied. Your signup attempt was flagged as automated activity.', 'error')
             return render_template("sign_up.html", user=current_user)
         
         # Check if this IP has recent spam activity
@@ -711,6 +731,16 @@ def sign_up_with_invite(token):
         return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
+        # EXPLICIT HONEYPOT CHECK - Silent block (don't show error to bots)
+        from .spam_prevention import check_honeypot
+        client_ip = get_client_ip()
+        is_honeypot_spam, honeypot_error = check_honeypot(request.form)
+        if is_honeypot_spam:
+            print(f"[HONEYPOT] BLOCKED bot signup attempt (invite) - honeypot field filled. IP: {client_ip}")
+            # Silently fail - don't show error, just return success message (confuses bots)
+            flash('Thank you for signing up! Please check your email to confirm your account.', 'success')
+            return render_template("sign_up_with_invite.html", invite=invite, token=token)
+        
         email = request.form.get('email')
         first_name = request.form.get('firstName')
         last_name = request.form.get('lastName')

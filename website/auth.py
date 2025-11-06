@@ -23,6 +23,17 @@ auth = Blueprint('auth', __name__)
 def send_confirmation_email(user):
     """Helper function to send email confirmation email to a user"""
     try:
+        # BLOCK SPAM EMAILS: Don't send confirmation emails to spam email addresses
+        from .spam_detection import is_random_email
+        if is_random_email(user.email):
+            print(f"[EMAIL BLOCK] Skipping confirmation email for spam email: {user.email}")
+            # Still generate token but don't send email
+            confirm_token = str(uuid.uuid4())
+            user.password_reset_token = confirm_token
+            user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+            db.session.commit()
+            return False  # Don't send email
+        
         # EMERGENCY: Check if this IP is known spam (skip email to prevent rate limits)
         if user.registration_ip:
             from .blocking import is_ip_blocked

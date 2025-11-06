@@ -141,24 +141,39 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
         is_sensitive_email = email_type in ['password_reset', 'confirmation', 'resend_verification']
         
         if is_sensitive_email:
-            # For sensitive emails, ONLY block if:
-            # 1. Email address itself is clearly spam (random pattern)
+            # For sensitive emails (password reset, confirmation), ONLY block if:
+            # 1. Email address itself is clearly spam (random pattern) - BUT only for confirmation emails
             # 2. IP is explicitly blocked (not just recent spam activity)
-            from .spam_detection import is_random_email
-            if is_random_email(recipient_email):
-                print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - spam email pattern")
-                return False
             
-            # Check if IP is explicitly blocked (but don't block based on recent spam activity)
-            from .models import User
-            user = User.query.filter_by(email=recipient_email).first()
-            if user and user.registration_ip:
-                from .blocking import is_ip_blocked
-                ip_blocked, _ = is_ip_blocked(user.registration_ip)
-                if ip_blocked:
-                    print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
+            # For password reset emails, be VERY lenient - don't block based on email pattern
+            # (user might have a legitimate but unusual email)
+            if email_type == 'password_reset':
+                # Password reset: Only block if IP is explicitly blocked
+                from .models import User
+                user = User.query.filter_by(email=recipient_email).first()
+                if user and user.registration_ip:
+                    from .blocking import is_ip_blocked
+                    ip_blocked, _ = is_ip_blocked(user.registration_ip)
+                    if ip_blocked:
+                        print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
+                        return False
+                # Allow password reset emails through (don't block based on email pattern)
+            else:
+                # For confirmation emails, block spam email patterns
+                from .spam_detection import is_random_email
+                if is_random_email(recipient_email):
+                    print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - spam email pattern")
                     return False
-            # Allow all other sensitive emails through
+                
+                # Check if IP is explicitly blocked
+                from .models import User
+                user = User.query.filter_by(email=recipient_email).first()
+                if user and user.registration_ip:
+                    from .blocking import is_ip_blocked
+                    ip_blocked, _ = is_ip_blocked(user.registration_ip)
+                    if ip_blocked:
+                        print(f"[EMAIL BLOCK] Skipping {email_type} email to {recipient_email} - explicitly blocked IP")
+                        return False
         else:
             # For non-sensitive emails (newsletters, reminders, etc.), apply spam checks
             from .spam_detection import is_random_email

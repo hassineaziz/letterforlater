@@ -504,8 +504,31 @@ def sign_up():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
+            # Validate email: check disposable domains and MX records
+            from .email_validation import validate_email
+            email_valid, email_error = validate_email(email, check_mx=True)
+            if not email_valid:
+                print(f"[EMAIL VALIDATION] Rejected email {email}: {email_error}")
+                flash(email_error or 'Invalid email address. Please use a valid email address.', category='error')
+                return render_template("sign_up.html", user=current_user)
+            
+            # Continue with signup
             # Get IP address for registration
             client_ip = get_client_ip()
+            
+            # Get device fingerprint
+            device_fingerprint = request.form.get('device_fingerprint', '').strip()
+            if device_fingerprint and len(device_fingerprint) > 64:
+                device_fingerprint = device_fingerprint[:64]  # Limit to 64 chars
+            
+            # Validate fingerprint and IP velocity
+            from .fingerprint_detection import validate_fingerprint_and_ip
+            fp_valid, fp_error, fp_details = validate_fingerprint_and_ip(device_fingerprint, client_ip)
+            if not fp_valid:
+                print(f"[FINGERPRINT DETECTION] Rejected signup: {fp_error}")
+                print(f"[FINGERPRINT DETECTION] Details: {fp_details}")
+                flash('Signup blocked due to suspicious activity. Please contact support if you believe this is an error.', category='error')
+                return render_template("sign_up.html", user=current_user)
             
             new_user = User(
                 email=email,
@@ -518,7 +541,8 @@ def sign_up():
                 delivery_preferences={'delivery_method': 'email'},
                 is_active=False,
                 marketing_consent=(request.form.get('marketing_consent') == 'yes'),
-                registration_ip=client_ip
+                registration_ip=client_ip,
+                device_fingerprint=device_fingerprint if device_fingerprint else None
             )
             db.session.add(new_user)
             db.session.commit()
@@ -713,8 +737,31 @@ def sign_up_with_invite(token):
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', 'error')
         else:
+            # Validate email: check disposable domains and MX records
+            from .email_validation import validate_email
+            email_valid, email_error = validate_email(email, check_mx=True)
+            if not email_valid:
+                print(f"[EMAIL VALIDATION] Rejected email {email} (invite signup): {email_error}")
+                flash(email_error or 'Invalid email address. Please use a valid email address.', 'error')
+                return render_template("sign_up_with_invite.html", invite=invite, token=token)
+            
+            # Continue with signup
             # Get IP address for registration
             client_ip = get_client_ip()
+            
+            # Get device fingerprint
+            device_fingerprint = request.form.get('device_fingerprint', '').strip()
+            if device_fingerprint and len(device_fingerprint) > 64:
+                device_fingerprint = device_fingerprint[:64]  # Limit to 64 chars
+            
+            # Validate fingerprint and IP velocity
+            from .fingerprint_detection import validate_fingerprint_and_ip
+            fp_valid, fp_error, fp_details = validate_fingerprint_and_ip(device_fingerprint, client_ip)
+            if not fp_valid:
+                print(f"[FINGERPRINT DETECTION] Rejected invite signup: {fp_error}")
+                print(f"[FINGERPRINT DETECTION] Details: {fp_details}")
+                flash('Signup blocked due to suspicious activity. Please contact support if you believe this is an error.', 'error')
+                return render_template("sign_up_with_invite.html", invite=invite, token=token)
             
             new_user = User(
                 email=email,
@@ -724,7 +771,8 @@ def sign_up_with_invite(token):
                 notification_preferences={'email_notifications': True},
                 delivery_preferences={'delivery_method': 'email'},
                 is_active=True,  # Auto-activate for invite signups
-                registration_ip=client_ip
+                registration_ip=client_ip,
+                device_fingerprint=device_fingerprint if device_fingerprint else None
             )
             db.session.add(new_user)
             db.session.flush()

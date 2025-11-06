@@ -19,6 +19,9 @@
     </div>
     
     <form class="mt-8 space-y-6" method="POST">
+      <!-- Device fingerprint (will be populated by JavaScript) -->
+      <input type="hidden" name="device_fingerprint" id="device_fingerprint" value="" />
+      
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
           <label for="email" class="sr-only">Email address</label>
@@ -89,4 +92,81 @@
   </div>
 </div>
 
+<!-- Device Fingerprinting Script -->
+<script>
+// Simple device fingerprinting (no external library required)
+// Collects browser/device characteristics to create a unique fingerprint
+(function() {
+    function generateFingerprint() {
+        const components = [];
+        
+        // Screen properties
+        components.push('screen:' + (screen.width || '') + 'x' + (screen.height || ''));
+        components.push('color:' + (screen.colorDepth || ''));
+        components.push('avail:' + (screen.availWidth || '') + 'x' + (screen.availHeight || ''));
+        
+        // Browser properties
+        components.push('ua:' + (navigator.userAgent || ''));
+        components.push('lang:' + (navigator.language || ''));
+        components.push('platform:' + (navigator.platform || ''));
+        components.push('cookie:' + (navigator.cookieEnabled ? '1' : '0'));
+        components.push('doNotTrack:' + (navigator.doNotTrack || ''));
+        
+        // Timezone
+        try {
+            components.push('tz:' + Intl.DateTimeFormat().resolvedOptions().timeZone);
+        } catch(e) {}
+        
+        // Canvas fingerprint (simple version)
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Fingerprint', 2, 2);
+            components.push('canvas:' + canvas.toDataURL().substring(0, 50));
+        } catch(e) {}
+        
+        // WebGL fingerprint (simple version)
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    components.push('webgl:' + gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).substring(0, 20));
+                }
+            }
+        } catch(e) {}
+        
+        // Hash the components
+        const fingerprintString = components.join('|');
+        
+        // Simple hash function (djb2)
+        let hash = 5381;
+        for (let i = 0; i < fingerprintString.length; i++) {
+            hash = ((hash << 5) + hash) + fingerprintString.charCodeAt(i);
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        
+        // Convert to hex string (64 chars max)
+        return Math.abs(hash).toString(16).substring(0, 64);
+    }
+    
+    // Generate and set fingerprint when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const fingerprintInput = document.getElementById('device_fingerprint');
+        if (fingerprintInput) {
+            try {
+                const fingerprint = generateFingerprint();
+                fingerprintInput.value = fingerprint;
+            } catch(e) {
+                console.error('Error generating fingerprint:', e);
+                // Set a fallback value if fingerprinting fails
+                fingerprintInput.value = 'error';
+            }
+        }
+    });
+})();
+</script>
 {% endblock %}

@@ -282,6 +282,9 @@ class User(db.Model, UserMixin):
     last_login_ip = db.Column(db.String(45), nullable=True)  # Last IP address used for login
     registration_ip = db.Column(db.String(45), nullable=True)  # IP address when account was created
     
+    # Device fingerprinting for spam detection
+    device_fingerprint = db.Column(db.String(64), nullable=True, index=True)  # Device fingerprint hash
+    
     # Relationships
     letters = db.relationship('Letter', backref='author', lazy='dynamic', cascade='all, delete-orphan')
     trusted_contacts = db.relationship(

@@ -349,6 +349,11 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    # Record form start time for spam prevention
+    if request.method == 'GET':
+        from .spam_prevention import record_form_start
+        record_form_start('signup')
+    
     # Check IP blocking before allowing signup
     client_ip = get_client_ip()
     ip_blocked, block_record = is_ip_blocked(client_ip)
@@ -356,6 +361,14 @@ def sign_up():
         print(f"[BLOCK] Signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
         flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
         return render_template("sign_up.html", user=current_user)
+    
+    # Spam prevention checks
+    if request.method == 'POST':
+        from .spam_prevention import validate_form_submission, check_honeypot
+        is_valid, error = validate_form_submission('signup', 'signup', check_honeypot_fields=True, check_timing=True)
+        if not is_valid:
+            flash(error, 'error')
+            return render_template("sign_up.html", user=current_user)
     
     # Check signup rate limit (prevent spam signups) - CHECK BEFORE PROCESSING
     if request.method == 'POST':

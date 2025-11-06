@@ -46,6 +46,9 @@
           <input type="hidden" name="next" value="{{ next }}" />
         {% endif %}
         
+        <!-- Honeypot fields for spam prevention -->
+        {{ add_honeypot_fields()|safe }}
+        
         <!-- Hidden fields for plan information -->
         <input type="hidden" name="intended_plan" value="{{ selected_plan }}" />
         <input type="hidden" name="intended_cycle" value="{{ cycle }}" />

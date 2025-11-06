@@ -37,12 +37,12 @@ def can_use_scheduled_delivery():
     return is_premium_user()
 
 def can_use_death_verification():
-    """Check if user can use death verification delivery (available to all users)"""
-    return True  # Available to all users
+    """Check if user can use death verification delivery (premium only)"""
+    return is_premium_user()  # Premium feature only
 
 def can_add_unlimited_contacts():
-    """Check if user can add unlimited trusted contacts - ALL USERS CAN"""
-    return True  # No restrictions on trusted contacts
+    """Check if user can add trusted contacts (premium only)"""
+    return is_premium_user()  # Premium feature only
 
 def get_max_letters():
     """Get maximum letters allowed for user's plan"""

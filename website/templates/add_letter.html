@@ -34,6 +34,9 @@
         </div>
 
         <form id="letterForm" method="POST" class="space-y-4">
+            <!-- Honeypot fields for spam prevention -->
+            {{ add_honeypot_fields()|safe }}
+            
             {% if letter_to_edit %}
             <input type="hidden" name="letter_id" value="{{ letter_to_edit.id }}">
             {% endif %}
@@ -302,7 +305,20 @@
                     </div>
                 </div>
                 
-                <!-- Checkbox for sending to myself -->
+                {% if not is_premium %}
+                <!-- Free users: Always send to myself, show info banner -->
+                <input type="hidden" id="send_to_myself" name="send_to_myself" value="on">
+                <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-800 font-semibold">Sending to yourself for the future</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Free users can write letters to their future self. <a href="/pricing" class="text-blue-600 hover:underline font-semibold">Upgrade to Premium</a> to send letters to others.</p>
+                </div>
+                {% else %}
+                <!-- Premium users: Can choose to send to themselves or others -->
                 <div class="mb-4 p-4 md:p-5 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-200">
                     <label class="flex items-start sm:items-center cursor-pointer group">
                         <input type="checkbox" id="send_to_myself" name="send_to_myself" class="mt-1 sm:mt-0 w-5 h-5 sm:w-6 sm:h-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer transition-all duration-200 flex-shrink-0">
@@ -316,8 +332,9 @@
                         </div>
                     </label>
                 </div>
+                {% endif %}
                 
-                <div id="recipientFields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="recipientFields" class="grid grid-cols-1 md:grid-cols-2 gap-4" {% if not is_premium %}style="display: none;"{% endif %}>
                     <div id="recipientNameField">
                         <label for="recipient_name" class="block text-lg font-semibold text-gray-900 mb-3">Recipient Name</label>
                         <input type="text"
@@ -355,6 +372,7 @@
                 </div>
 
                 <!-- Delivery Type Selection -->
+                {% if is_premium %}
                 <div id="deliveryTypeContainer" class="mb-4">
                     <label for="delivery_type" class="block text-lg font-semibold text-gray-900 mb-3">Delivery Type</label>
                     <select
@@ -367,9 +385,21 @@
                             Trusted Contacts</option>
                     </select>
                 </div>
+                {% else %}
+                <!-- Free users: Force delivery type to "date" (hidden) -->
+                <input type="hidden" id="delivery_type" name="delivery_type" value="date">
+                <div class="mb-4 bg-blue-50 rounded-xl p-4 border border-blue-200">
+                    <p class="text-sm text-gray-700">
+                        <strong>Delivery Type:</strong> Scheduled Delivery (Free users can schedule letters for future dates)
+                    </p>
+                    <p class="text-xs text-gray-600 mt-1">
+                        <a href="/pricing" class="text-blue-600 hover:underline font-semibold">Upgrade to Premium</a> to use death verification delivery.
+                    </p>
+                </div>
+                {% endif %}
 
-                <!-- Date Settings (stays in place) -->
-                <div id="dateSettings" class="hidden">
+                <!-- Date Settings -->
+                <div id="dateSettings" {% if not is_premium %}class=""{% else %}class="hidden"{% endif %}>
                     <div class="glass-card-ui rounded-xl p-6 shadow-lg">
                         <div class="flex items-center mb-4">
                             <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center mr-4">
@@ -390,7 +420,9 @@
                             <input type="date"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg"
                                 id="scheduled_date" name="scheduled_date"
-                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}">
+                                min=""
+                                value="{% if letter_to_edit and letter_to_edit.delivery_date %}{{ letter_to_edit.delivery_date.strftime('%Y-%m-%d') }}{% endif %}"
+                                required>
                             <p class="text-xs text-gray-600 mt-3 flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -991,26 +1023,40 @@
                 recipientName.removeAttribute('required');
                 recipientEmail.removeAttribute('required');
                 
-                // Hide delivery type dropdown
-                deliveryTypeContainer.style.display = 'none';
+                // Hide delivery type dropdown (premium users only)
+                if (deliveryTypeContainer) {
+                    deliveryTypeContainer.style.display = 'none';
+                }
                 
                 // Auto-select "date" delivery type
-                deliveryType.value = 'date';
+                if (deliveryType) {
+                    deliveryType.value = 'date';
+                }
                 
                 // Show date settings
                 dateSettings.classList.remove('hidden');
                 verificationSettings.classList.add('hidden');
             } else {
-                // Show recipient fields with smooth transition
+                // Free users: Always keep "send to myself" checked
+                {% if not is_premium %}
+                this.checked = true;
+                return;
+                {% endif %}
+                
+                // Premium users: Show recipient fields with smooth transition
                 recipientFields.style.display = 'grid';
                 recipientName.setAttribute('required', 'required');
                 recipientEmail.setAttribute('required', 'required');
                 
-                // Show delivery type dropdown
-                deliveryTypeContainer.style.display = 'block';
+                // Show delivery type dropdown (premium users only)
+                if (deliveryTypeContainer) {
+                    deliveryTypeContainer.style.display = 'block';
+                }
                 
                 // Trigger delivery type change handler to update settings
-                deliveryType.dispatchEvent(new Event('change'));
+                if (deliveryType) {
+                    deliveryType.dispatchEvent(new Event('change'));
+                }
             }
         });
     }
@@ -1089,38 +1135,91 @@
         setupSendToMyselfInfoModal();
     }
 
-    // Delivery type change handler
-    document.getElementById('delivery_type').addEventListener('change', function () {
-        const dateSettings = document.getElementById('dateSettings');
-        const verificationSettings = document.getElementById('verificationSettings');
-        const noTrustedContactsWarning = document.getElementById('noTrustedContactsWarning');
-        const sendToMyself = document.getElementById('send_to_myself');
+    // Delivery type change handler (only for premium users who have the dropdown)
+    const deliveryTypeSelect = document.getElementById('delivery_type');
+    if (deliveryTypeSelect && deliveryTypeSelect.tagName === 'SELECT') {
+        deliveryTypeSelect.addEventListener('change', function () {
+            const dateSettings = document.getElementById('dateSettings');
+            const verificationSettings = document.getElementById('verificationSettings');
+            const noTrustedContactsWarning = document.getElementById('noTrustedContactsWarning');
+            const sendToMyself = document.getElementById('send_to_myself');
 
-        // If "send to myself" is checked, always show date settings
-        if (sendToMyself && sendToMyself.checked) {
-            dateSettings.classList.remove('hidden');
+            // If "send to myself" is checked, always show date settings
+            if (sendToMyself && sendToMyself.checked) {
+                dateSettings.classList.remove('hidden');
+                verificationSettings.classList.add('hidden');
+                if (noTrustedContactsWarning) {
+                    noTrustedContactsWarning.classList.add('hidden');
+                }
+                return;
+            }
+
+            // Hide all settings first
+            dateSettings.classList.add('hidden');
             verificationSettings.classList.add('hidden');
             if (noTrustedContactsWarning) {
                 noTrustedContactsWarning.classList.add('hidden');
             }
-            return;
-        }
 
-        // Hide all settings first
-        dateSettings.classList.add('hidden');
-        verificationSettings.classList.add('hidden');
-        if (noTrustedContactsWarning) {
-            noTrustedContactsWarning.classList.add('hidden');
-        }
-
-        // Show appropriate settings based on selection
-        if (this.value === 'date') {
+            // Show appropriate settings based on selection
+            if (this.value === 'date') {
+                dateSettings.classList.remove('hidden');
+            } else if (this.value === 'death_verification') {
+                // Check if user has confirmed trusted contacts
+                checkTrustedContactsAndShowSettings();
+            }
+        });
+    }
+    
+    // For free users: Always show date settings and ensure delivery_type is "date"
+    {% if not is_premium %}
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateSettings = document.getElementById('dateSettings');
+        const scheduledDate = document.getElementById('scheduled_date');
+        const deliveryTypeInput = document.getElementById('delivery_type');
+        
+        // Always show date settings for free users
+        if (dateSettings) {
             dateSettings.classList.remove('hidden');
-        } else if (this.value === 'death_verification') {
-            // Check if user has confirmed trusted contacts
-            checkTrustedContactsAndShowSettings();
+        }
+        
+        // Ensure delivery type is set to "date"
+        if (deliveryTypeInput) {
+            deliveryTypeInput.value = 'date';
+        }
+        
+        // Set minimum date to today to prevent past dates
+        if (scheduledDate) {
+            const today = new Date().toISOString().split('T')[0];
+            scheduledDate.setAttribute('min', today);
+            
+            // Validate on change
+            scheduledDate.addEventListener('change', function() {
+                if (this.value && this.value < today) {
+                    alert('Please select a future date. Past dates are not allowed.');
+                    this.value = '';
+                }
+            });
         }
     });
+    {% else %}
+    // Premium users: Set minimum date to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const scheduledDate = document.getElementById('scheduled_date');
+        if (scheduledDate) {
+            const today = new Date().toISOString().split('T')[0];
+            scheduledDate.setAttribute('min', today);
+            
+            // Validate on change
+            scheduledDate.addEventListener('change', function() {
+                if (this.value && this.value < today) {
+                    alert('Please select a future date. Past dates are not allowed.');
+                    this.value = '';
+                }
+            });
+        }
+    });
+    {% endif %}
 
     // Check if user has confirmed trusted contacts
     function checkTrustedContactsAndShowSettings() {
@@ -1172,6 +1271,7 @@
                     They’ll help confirm when it’s the right time for your message to be delivered.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
+                    {% if is_premium %}
                     <a href="/trusted-contacts" 
                        class="bg-primary hover:bg-primary-light text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 inline-flex items-center justify-center shadow-sm hover:shadow-md">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1179,6 +1279,15 @@
                         </svg>
                         Add Trusted Contacts
                     </a>
+                    {% else %}
+                    <a href="/pricing" 
+                       class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 inline-flex items-center justify-center shadow-sm hover:shadow-md">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                        Upgrade to Premium
+                    </a>
+                    {% endif %}
                     <button type="button" 
                             onclick="switchToDateDelivery()" 
                             class="bg-secondary hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow-md">

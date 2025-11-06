@@ -182,6 +182,7 @@
                             <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                                 Add or manage your trusted contacts.
                             </p>
+                            {% if is_premium_user %}
                             <a href="{{ url_for('views.trusted_contacts') }}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit">
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
@@ -189,6 +190,15 @@
                                 <span class="hidden sm:inline">Manage Contacts</span>
                                 <span class="sm:hidden">Contacts</span>
                             </a>
+                            {% else %}
+                            <a href="{{ url_for('pricing.pricing_page') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                                <span class="hidden sm:inline">Upgrade to Premium</span>
+                                <span class="sm:hidden">Upgrade</span>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -267,6 +277,7 @@
         </div>
 
         <!-- Trusted Contacts Overview -->
+        {% if is_premium_user %}
         <div class="mb-6 sm:mb-8">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 space-y-3 sm:space-y-0">
                 <div class="flex items-center">
@@ -283,12 +294,21 @@
                         <p class="text-xs sm:text-sm text-gray-600">People who can verify your letters</p>
                     </div>
                 </div>
+                {% if is_premium_user %}
                 <a href="{{ url_for('views.trusted_contacts') }}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit sm:w-auto">
                     Manage All
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
+                {% else %}
+                <a href="{{ url_for('pricing.pricing_page') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center w-fit sm:w-auto">
+                    Upgrade to Premium
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </a>
+                {% endif %}
             </div>
     
             {% if user.trusted_contacts_list.count() > 0 %}
@@ -344,6 +364,7 @@
             </div>
             {% endif %}
         </div>
+        {% endif %}
     </div>
 </div>
 

@@ -220,9 +220,13 @@
                             <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="contacts-dropdown-menu" class="absolute left-0 top-full mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-[9999] hidden">
+                            {% if is_premium_user %}
                             <a href="{{ url_for('views.trusted_contacts') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Trusted Contacts</a>
                             {% if check_trusted_contact_status(user) %}
                             <a href="{{ url_for('views.verify_death') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Verify Death</a>
+                            {% endif %}
+                            {% else %}
+                            <a href="{{ url_for('pricing.pricing_page') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-blue-600 hover:bg-blue-50 font-semibold">Trusted Contacts (Premium)</a>
                             {% endif %}
                         </div>
                     </div>
@@ -319,9 +323,13 @@
                             <svg class="chev w-3 h-3 sm:w-4 sm:h-4 text-primary transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </summary>
                         <div class="ml-3 sm:ml-4 mt-1 space-y-1">
+                            {% if is_premium_user %}
                             <a href="{{ url_for('views.trusted_contacts') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Trusted Contacts</a>
                             {% if check_trusted_contact_status(user) %}
                             <a href="{{ url_for('views.verify_death') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Verify Death</a>
+                            {% endif %}
+                            {% else %}
+                            <a href="{{ url_for('pricing.pricing_page') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-blue-600 hover:bg-blue-50 font-semibold">Trusted Contacts (Premium)</a>
                             {% endif %}
                         </div>
                     </details>

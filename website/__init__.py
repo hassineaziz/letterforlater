@@ -279,6 +279,7 @@ def create_app():
             get_storage_limit, get_plan_features, get_upgrade_message,
             get_plan_comparison, check_feature_access, get_upgrade_cta_text
         )
+        from website.spam_prevention import add_honeypot_fields_to_template
         return dict(
             get_user_plan=get_user_plan,
             is_premium_user=is_premium_user,
@@ -296,7 +297,8 @@ def create_app():
             get_upgrade_message=get_upgrade_message,
             get_plan_comparison=get_plan_comparison,
             check_feature_access=check_feature_access,
-            get_upgrade_cta_text=get_upgrade_cta_text
+            get_upgrade_cta_text=get_upgrade_cta_text,
+            add_honeypot_fields=add_honeypot_fields_to_template
         )
 
     return app

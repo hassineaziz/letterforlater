@@ -869,10 +869,22 @@ def blog_feed_preview():
 @login_required
 def add_letter():
     """Add new letter page - also supports editing when letter_id is provided"""
+    # Record form start time for spam prevention
+    if request.method == 'GET':
+        from .spam_prevention import record_form_start
+        record_form_start('add_letter')
+    
     # Check if this is an AJAX request
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
     if request.method == 'POST':
+        # Spam prevention checks (skip for AJAX to avoid breaking the UI)
+        if not is_ajax:
+            from .spam_prevention import validate_form_submission
+            is_valid, error = validate_form_submission('add_letter', 'letter_creation', check_honeypot_fields=True, check_timing=True)
+            if not is_valid:
+                flash(error, 'error')
+                return redirect(url_for('views.add_letter'))
         # If editing an existing letter
         letter_id = request.form.get('letter_id')
         if letter_id:
@@ -903,8 +915,33 @@ def add_letter():
                 # Encryption failed - log error but continue (non-blocking)
                 print(f"WARNING: Failed to encrypt letter {letter.id} - saving unencrypted")
             
-            # Handle "send to myself" checkbox
+            # FREE USERS: Force "send to myself" - premium users can send to others
+            from .plan_utils import is_premium_user
+            is_premium = is_premium_user()
+            
             send_to_myself = request.form.get('send_to_myself') == 'on'
+            
+            # Free users can ONLY send to themselves and ONLY use "date" delivery
+            if not is_premium:
+                send_to_myself = True
+                delivery_type = 'date'  # Force to "date" for free users
+                # Block any attempt to send to others
+                if request.form.get('recipient_email') and request.form.get('recipient_email') != current_user.email:
+                    error_msg = 'Free users can only send letters to themselves. Upgrade to Premium to send letters to others.'
+                    if is_ajax:
+                        db.session.rollback()
+                        return jsonify({'success': False, 'error': error_msg}), 403
+                    flash(error_msg, 'error')
+                    return redirect(url_for('views.add_letter', letter_id=letter.id))
+                # Block death verification for free users
+                if request.form.get('delivery_type') == 'death_verification':
+                    error_msg = 'Death verification delivery is a premium feature. Please upgrade to use this feature.'
+                    if is_ajax:
+                        db.session.rollback()
+                        return jsonify({'success': False, 'error': error_msg}), 403
+                    flash(error_msg, 'error')
+                    return redirect(url_for('views.add_letter', letter_id=letter.id))
+            
             if send_to_myself:
                 # Set recipient to current user
                 letter.recipient_name = f"{current_user.first_name} {current_user.last_name}"
@@ -915,6 +952,15 @@ def add_letter():
                 # Clear any death verification delay settings
                 letter.delay_after_verification = None
             else:
+                # Premium users can send to others
+                if not is_premium:
+                    error_msg = 'Sending letters to others is a premium feature. Please upgrade to send letters to recipients.'
+                    if is_ajax:
+                        db.session.rollback()
+                        return jsonify({'success': False, 'error': error_msg}), 403
+                    flash(error_msg, 'error')
+                    return redirect(url_for('views.add_letter', letter_id=letter.id))
+                
                 # Use provided recipient info
                 letter.recipient_name = request.form.get('recipient_name')
                 letter.recipient_email = request.form.get('recipient_email')
@@ -928,7 +974,17 @@ def add_letter():
             if delivery_type == 'date':
                 scheduled_date = request.form.get('scheduled_date')
                 if scheduled_date:
-                    letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
+                    # Validate: Cannot schedule letters in the past
+                    scheduled_datetime = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
+                    if scheduled_datetime < datetime.now(timezone.utc):
+                        error_msg = 'Cannot schedule letters in the past. Please select a future date.'
+                        if is_ajax:
+                            db.session.rollback()
+                            return jsonify({'success': False, 'error': error_msg}), 400
+                        flash(error_msg, 'error')
+                        return redirect(url_for('views.add_letter', letter_id=letter.id if letter_id else None))
+                    
+                    letter.delivery_date = scheduled_datetime
                     letter.delivery_status = 'pending'
                     letter.status = 'scheduled'
                 else:
@@ -1045,15 +1101,48 @@ def add_letter():
         # Otherwise, create a new letter
         title = request.form.get('title')
         content = request.form.get('content')
-        delivery_type = request.form.get('delivery_type')
+        delivery_type = request.form.get('delivery_type', 'date')  # Default to 'date' if not provided
         
-        # Handle "send to myself" checkbox
+        # FREE USERS: Force "send to myself" and force delivery type to "date"
+        from .plan_utils import is_premium_user
+        is_premium = is_premium_user()
+        
         send_to_myself = request.form.get('send_to_myself') == 'on'
+        
+        # Free users can ONLY send to themselves and ONLY use "date" delivery
+        if not is_premium:
+            send_to_myself = True
+            delivery_type = 'date'  # Force to "date" for free users
+            # Block any attempt to send to others
+            if request.form.get('recipient_email') and request.form.get('recipient_email') != current_user.email:
+                error_msg = 'Free users can only send letters to themselves. Upgrade to Premium to send letters to others.'
+                if is_ajax:
+                    return jsonify({'success': False, 'error': error_msg}), 403
+                flash(error_msg, 'error')
+                return redirect(url_for('views.add_letter'))
+            # Block death verification for free users
+            if delivery_type == 'death_verification':
+                error_msg = 'Death verification delivery is a premium feature. Please upgrade to use this feature.'
+                if is_ajax:
+                    return jsonify({'success': False, 'error': error_msg}), 403
+                flash(error_msg, 'error')
+                return redirect(url_for('views.add_letter'))
+        
         if send_to_myself:
             # Set recipient to current user
             recipient_name = f"{current_user.first_name} {current_user.last_name}"
             recipient_email = current_user.email
+            # Force delivery type to 'date' for send-to-myself letters
+            delivery_type = 'date'
         else:
+            # Premium users can send to others
+            if not is_premium:
+                error_msg = 'Sending letters to others is a premium feature. Please upgrade to send letters to recipients.'
+                if is_ajax:
+                    return jsonify({'success': False, 'error': error_msg}), 403
+                flash(error_msg, 'error')
+                return redirect(url_for('views.add_letter'))
+            
             # Use provided recipient info
             recipient_name = request.form.get('recipient_name')
             recipient_email = request.form.get('recipient_email')
@@ -1101,11 +1190,33 @@ def add_letter():
                 flash(error_msg, 'error')
                 db.session.rollback()
                 return redirect(url_for('views.add_letter'))
+            
+            # Validate: Cannot schedule letters in the past
+            scheduled_datetime = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
+            if scheduled_datetime < datetime.now(timezone.utc):
+                error_msg = 'Cannot schedule letters in the past. Please select a future date.'
+                if is_ajax:
+                    db.session.rollback()
+                    return jsonify({'success': False, 'error': error_msg}), 400
+                flash(error_msg, 'error')
+                db.session.rollback()
+                return redirect(url_for('views.add_letter'))
+            
             # Set delivery time to 8 PM (20:00) UTC
-            new_letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
+            new_letter.delivery_date = scheduled_datetime
             new_letter.delivery_status = 'pending'
             new_letter.status = 'scheduled'
         elif delivery_type == 'death_verification':
+            # Death verification is premium-only (requires trusted contacts)
+            if not is_premium:
+                error_msg = 'Death verification delivery is a premium feature. Please upgrade to use this feature.'
+                if is_ajax:
+                    db.session.rollback()
+                    return jsonify({'success': False, 'error': error_msg}), 403
+                flash(error_msg, 'error')
+                db.session.rollback()
+                return redirect(url_for('views.add_letter'))
+            
             # Check if user has confirmed trusted contacts
             confirmed_contacts = TrustedContact.query.filter_by(
                 user_id=current_user.id, 
@@ -1234,13 +1345,18 @@ def add_letter():
         db.session.rollback()
         print(f"Error loading trusted contacts: {e}")
         confirmed_contacts = []  # Default to empty list on error
+    # Pass premium status to template
+    from .plan_utils import is_premium_user
+    is_premium = is_premium_user()
+    
     return render_template(
         "add_letter.html",
         user=current_user,
         now=datetime.now(timezone.utc),
         confirmed_contacts=confirmed_contacts,
         letter_to_edit=letter_to_edit,
-        media_attachments=media_attachments
+        media_attachments=media_attachments,
+        is_premium=is_premium
     )
 
 @views.route('/verify-death', methods=['GET', 'POST'])
@@ -1766,8 +1882,14 @@ def update_letter_status():
             if delivery_type == 'date':
                 scheduled_date = request.form.get('scheduled_date')
                 if scheduled_date:
+                    # Validate: Cannot schedule letters in the past
+                    scheduled_datetime = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
+                    if scheduled_datetime < datetime.now(timezone.utc):
+                        flash('Cannot schedule letters in the past. Please select a future date.', 'error')
+                        return redirect(url_for('views.view_letters', user_id=current_user.id))
+                    
                     # Set delivery time to 8 PM (20:00) UTC
-                    letter.delivery_date = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
+                    letter.delivery_date = scheduled_datetime
                     letter.delivery_status = 'pending'
                     letter.status = 'scheduled'
                 else:
@@ -1785,6 +1907,15 @@ def update_letter_status():
 @views.route('/trusted-contacts', methods=['GET'])
 @login_required
 def trusted_contacts():
+    # Record form start time for spam prevention
+    from .spam_prevention import record_form_start
+    record_form_start('add_trusted_contact')
+    
+    # Premium feature only
+    from .plan_utils import is_premium_user
+    if not is_premium_user():
+        flash('Trusted contacts are a premium feature. Please upgrade to access this feature.', 'error')
+        return redirect(url_for('views.home'))
     contacts = TrustedContact.query.filter_by(user_id=current_user.id).all()
     
     # Convert TrustedContact objects to dictionaries for JSON serialization
@@ -1805,6 +1936,19 @@ def trusted_contacts():
 @views.route('/add-trusted-contact', methods=['POST'])
 @login_required
 def add_trusted_contact():
+    # Premium feature only
+    from .plan_utils import is_premium_user
+    if not is_premium_user():
+        flash('Trusted contacts are a premium feature. Please upgrade to access this feature.', 'error')
+        return redirect(url_for('views.home'))
+    
+    # Spam prevention checks
+    from .spam_prevention import validate_form_submission
+    is_valid, error = validate_form_submission('add_trusted_contact', 'trusted_contact', check_honeypot_fields=True, check_timing=False)
+    if not is_valid:
+        flash(error, 'error')
+        return redirect(url_for('views.trusted_contacts'))
+    
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
     email = request.form.get('email')
@@ -1990,6 +2134,11 @@ def resend_confirmation(contact_id):
 @views.route('/delete-trusted-contact', methods=['POST'])
 @login_required
 def delete_trusted_contact():
+    # Premium feature only
+    from .plan_utils import is_premium_user
+    if not is_premium_user():
+        flash('Trusted contacts are a premium feature. Please upgrade to access this feature.', 'error')
+        return redirect(url_for('views.home'))
     contact_id = request.form.get('contact_id')
     contact = TrustedContact.query.get(contact_id)
     if contact and contact.user_id == current_user.id:
@@ -2003,6 +2152,11 @@ def delete_trusted_contact():
 @views.route('/edit-trusted-contact', methods=['POST'])
 @login_required
 def edit_trusted_contact():
+    # Premium feature only
+    from .plan_utils import is_premium_user
+    if not is_premium_user():
+        flash('Trusted contacts are a premium feature. Please upgrade to access this feature.', 'error')
+        return redirect(url_for('views.home'))
     contact_id = request.form.get('contact_id')
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
@@ -2510,6 +2664,12 @@ def delete_draft():
 @views.route('/invite-trusted-contact', methods=['POST'])
 @login_required
 def invite_trusted_contact():
+    # Premium feature only
+    from .plan_utils import is_premium_user
+    if not is_premium_user():
+        flash('Trusted contacts are a premium feature. Please upgrade to access this feature.', 'error')
+        return redirect(url_for('views.home'))
+    
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
     email = request.form.get('email')
@@ -3612,14 +3772,51 @@ def google_callback():
                     return redirect(url_for('views.add_letter'))
                 
                 letter_data = pending_letter_data
+                
+                # FREE USERS: Force "send to myself" - premium users can send to others
+                from .plan_utils import is_premium_user
+                is_premium = is_premium_user()
+                
+                send_to_myself = letter_data.get('send_to_myself') == 'on'
+                
+                # Free users can ONLY send to themselves
+                if not is_premium:
+                    send_to_myself = True
+                    # Block any attempt to send to others
+                    if letter_data.get('recipient_email') and letter_data.get('recipient_email') != user.email:
+                        session.pop('pending_hero_letter_data', None)
+                        flash('Free users can only send letters to themselves. Upgrade to Premium to send letters to others.', 'error')
+                        return redirect(url_for('views.add_letter'))
+                
+                # Force recipient to user if sending to self
+                if send_to_myself:
+                    recipient_name = f"{user.first_name} {user.last_name}"
+                    recipient_email = user.email
+                    delivery_type = 'date'  # Force date delivery for send-to-myself
+                else:
+                    # Premium users can send to others
+                    if not is_premium:
+                        session.pop('pending_hero_letter_data', None)
+                        flash('Sending letters to others is a premium feature. Please upgrade to send letters to recipients.', 'error')
+                        return redirect(url_for('views.add_letter'))
+                    recipient_name = letter_data.get('recipient_name', '')
+                    recipient_email = letter_data.get('recipient_email', '')
+                    delivery_type = letter_data.get('delivery_type', 'date')
+                
+                # Block death verification for free users
+                if delivery_type == 'death_verification' and not is_premium:
+                    session.pop('pending_hero_letter_data', None)
+                    flash('Death verification delivery is a premium feature. Please upgrade to use this feature.', 'error')
+                    return redirect(url_for('views.add_letter'))
+                
                 new_letter = Letter(
                     title=letter_data.get('title', 'Untitled Letter'),
                     content=letter_data.get('content', ''),
-                    recipient_name=letter_data.get('recipient_name', ''),
-                    recipient_email=letter_data.get('recipient_email', ''),
-                    delivery_type=letter_data.get('delivery_type', 'date'),
+                    recipient_name=recipient_name,
+                    recipient_email=recipient_email,
+                    delivery_type=delivery_type,
                     user_id=user.id,
-                    is_send_to_myself=letter_data.get('send_to_myself') == 'on',
+                    is_send_to_myself=send_to_myself,
                     status='draft'  # Create as draft so user can review before finalizing
                 )
                 

@@ -10,15 +10,24 @@ from functools import wraps
 
 
 # Rate limit configuration
+# Global limits removed - only per-user limits for password_reset and confirmation
 EMAIL_RATE_LIMIT = {
-    'max_emails_per_minute': 10,  # Max 10 emails per minute
-    'max_emails_per_hour': 100,   # Max 100 emails per hour
-    'delay_between_emails': 0.5  # Minimum 0.5 seconds between emails
+    'max_emails_per_minute': 1000,  # Very high limit (effectively no limit)
+    'max_emails_per_hour': 10000,   # Very high limit (effectively no limit)
 }
 
-# Track email sending times
+# Per-user email limits (for password_reset and confirmation only)
+PER_USER_EMAIL_LIMIT = {
+    'password_reset': 3,  # Max 3 password reset emails per user per hour
+    'confirmation': 3,    # Max 3 confirmation emails per user per hour
+}
+
+# Track email sending times (global - for monitoring only)
 _last_email_time = None
 _email_send_times = []  # List of (timestamp, email_type) tuples
+
+# Track per-user email sending (for password_reset and confirmation)
+_user_email_times = {}  # Dict: {email: [(timestamp, email_type), ...]}
 
 
 def check_email_rate_limit():
@@ -50,24 +59,65 @@ def check_email_rate_limit():
         wait_time = 3600 - (now - _email_send_times[0][0]).total_seconds()
         return False, max(0, wait_time)
     
-    # Check delay between emails
-    if _last_email_time:
-        time_since_last = (now - _last_email_time).total_seconds()
-        if time_since_last < EMAIL_RATE_LIMIT['delay_between_emails']:
-            wait_time = EMAIL_RATE_LIMIT['delay_between_emails'] - time_since_last
-            return False, wait_time
-    
     return True, 0
 
 
-def record_email_sent(email_type='unknown'):
+def check_per_user_email_limit(email, email_type):
+    """
+    Check if user has exceeded per-user email limits.
+    Only applies to password_reset and confirmation emails.
+    Returns (can_send: bool, count: int)
+    """
+    global _user_email_times
+    
+    # Only check limits for password_reset and confirmation
+    if email_type not in PER_USER_EMAIL_LIMIT:
+        return True, 0  # No limit for other email types
+    
+    now = datetime.now(timezone.utc)
+    one_hour_ago = now - timedelta(hours=1)
+    
+    # Initialize if needed
+    if email not in _user_email_times:
+        _user_email_times[email] = []
+    
+    # Clean old entries for this user
+    _user_email_times[email] = [
+        (ts, et) for ts, et in _user_email_times[email] 
+        if ts > one_hour_ago and et == email_type
+    ]
+    
+    # Count emails of this type in last hour
+    count = len(_user_email_times[email])
+    max_allowed = PER_USER_EMAIL_LIMIT[email_type]
+    
+    if count >= max_allowed:
+        return False, count
+    
+    return True, count
+
+
+def record_email_sent(email_type='unknown', recipient_email=None):
     """Record that an email was sent"""
-    global _last_email_time, _email_send_times
+    global _last_email_time, _email_send_times, _user_email_times
     now = datetime.now(timezone.utc)
     _last_email_time = now
     _email_send_times.append((now, email_type))
     
-    # Keep only last hour of records
+    # Track per-user for password_reset and confirmation
+    if recipient_email and email_type in PER_USER_EMAIL_LIMIT:
+        if recipient_email not in _user_email_times:
+            _user_email_times[recipient_email] = []
+        _user_email_times[recipient_email].append((now, email_type))
+        
+        # Clean old entries for this user
+        one_hour_ago = now - timedelta(hours=1)
+        _user_email_times[recipient_email] = [
+            (ts, et) for ts, et in _user_email_times[recipient_email] 
+            if ts > one_hour_ago
+        ]
+    
+    # Keep only last hour of global records
     one_hour_ago = now - timedelta(hours=1)
     _email_send_times = [(ts, et) for ts, et in _email_send_times if ts > one_hour_ago]
 
@@ -131,9 +181,13 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     """
     from . import mail
     
-    # EMERGENCY: Check if recipient email is from spam account
+    # Get recipient email
+    recipient_email = None
     if msg.recipients:
         recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
+    
+    # EMERGENCY: Check if recipient email is from spam account
+    if recipient_email:
         from .models import User
         user = User.query.filter_by(email=recipient_email).first()
         if user and user.registration_ip:
@@ -156,22 +210,30 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
                 print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
                 return False
     
-    # Check rate limit
+    # Check per-user email limit (only for password_reset and confirmation)
+    if recipient_email and email_type in PER_USER_EMAIL_LIMIT:
+        can_send, count = check_per_user_email_limit(recipient_email, email_type)
+        if not can_send:
+            max_allowed = PER_USER_EMAIL_LIMIT[email_type]
+            print(f"[EMAIL RATE LIMIT] Per-user limit exceeded for {email_type}: {count}/{max_allowed} emails sent to {recipient_email} in last hour")
+            return False
+    
+    # Check global rate limit (very high limits - effectively no limit for most emails)
     can_send, wait_time = check_email_rate_limit()
     
     if not can_send:
-        print(f"[EMAIL RATE LIMIT] Throttling {email_type} email. Waiting {wait_time:.2f} seconds...")
+        print(f"[EMAIL RATE LIMIT] Global limit reached. Waiting {wait_time:.2f} seconds...")
         time.sleep(wait_time)
         can_send, wait_time = check_email_rate_limit()
         if not can_send:
-            print(f"[EMAIL RATE LIMIT] Rate limit exceeded for {email_type}. Email will be queued/skipped.")
+            print(f"[EMAIL RATE LIMIT] Global rate limit exceeded for {email_type}. Email will be queued/skipped.")
             return False
     
     # Try to send with retries
     for attempt in range(max_retries + 1):
         try:
             mail.send(msg)
-            record_email_sent(email_type)
+            record_email_sent(email_type, recipient_email)
             return True
         except Exception as e:
             error_str = str(e).lower()

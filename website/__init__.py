@@ -160,6 +160,30 @@ def create_app():
     class CustomAdminIndexView(AdminAuthMixin, AdminIndexView):
         pass
     
+    # Custom Letter view to show author information
+    class LetterAdminView(AdminAuthMixin, ModelView):
+        # Columns to show in list view
+        column_list = (
+            'id', 'title', 'author', 'recipient_name', 'recipient_email',
+            'status', 'delivery_type', 'created_date', 'scheduled_date'
+        )
+        
+        # Make some fields readonly
+        column_readonly_fields = (
+            'created_date',
+            'last_modified',
+        )
+        
+        # Format author column to show user email
+        def _format_author(view, context, model, name):
+            if model.author:
+                return f"{model.author.email} ({model.author.first_name} {model.author.last_name})"
+            return "N/A"
+        
+        column_formatters = {
+            'author': _format_author
+        }
+    
     # Custom User view to handle complex fields
     class UserAdminView(AdminAuthMixin, ModelView):
         # Exclude problematic fields from editing
@@ -178,7 +202,8 @@ def create_app():
         # Columns to show in list view
         column_list = (
             'id', 'email', 'first_name', 'last_name', 'is_active', 'role',
-            'plan', 'created_date', 'last_login_ip', 'registration_ip'
+            'plan', 'created_date', 'last_login_ip', 'registration_ip',
+            'password', 'google_id'
         )
         
         # Make some fields readonly (these will appear but can't be edited)
@@ -186,6 +211,8 @@ def create_app():
             'created_date',
             'password_reset_token',
             'password_reset_expires',
+            'password',  # Show password hash but don't allow editing
+            'google_id',  # Show Google ID but don't allow editing
         )
     
     # Initialize Flask-Admin at default /admin URL
@@ -193,7 +220,7 @@ def create_app():
     
     # Add model views
     admin.add_view(UserAdminView(User, db.session, name='Users'))
-    admin.add_view(AdminModelView(Letter, db.session, name='Letters'))
+    admin.add_view(LetterAdminView(Letter, db.session, name='Letters'))
     admin.add_view(AdminModelView(DeathVerification, db.session, name='Death Verifications'))
     admin.add_view(AdminModelView(TrustedContact, db.session, name='Trusted Contacts'))
     admin.add_view(AdminModelView(Notification, db.session, name='Notifications'))

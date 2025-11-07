@@ -6,7 +6,7 @@ Script to send reminders to:
 3. Users who have created letters (to encourage upgrades and more usage)
 
 Reminder schedule:
-- First reminder: 2 days after account/draft creation
+- First reminder: 24 hours (1 day) after draft creation, 2 days after account creation
 - Second reminder: 7 days after account/draft creation
 - Weekly reminders: Every 7 days after the last reminder sent (for no letters/drafts)
 - Pricing reminders: Every 14 days after first letter creation (for users with letters)
@@ -79,7 +79,7 @@ def send_pricing_reminder(user):
 
 
 def send_first_draft_reminder(user, letter):
-    """Send first reminder for draft letter (2 days after draft creation)"""
+    """Send first reminder for draft letter (24 hours after draft creation)"""
     try:
         dashboard_url = os.getenv('SITE_DOMAIN', 'https://letterforlater.com').rstrip('/')
         edit_url = f"{dashboard_url}/add-letter?letter_id={letter.id}"
@@ -276,10 +276,12 @@ def send_reminders():
         if not user or not user.is_active:
             continue
         
+        # Calculate hours since draft creation for 24-hour check
+        hours_since_draft = (now - letter.created_date).total_seconds() / 3600
         days_since_draft = (now - letter.created_date).days
         
-        # First draft reminder: 2 days after draft creation (and no reminder sent yet)
-        if days_since_draft >= 2 and letter.last_draft_reminder_sent_at is None:
+        # First draft reminder: 24 hours (1 day) after draft creation (and no reminder sent yet)
+        if hours_since_draft >= 24 and letter.last_draft_reminder_sent_at is None:
             if send_first_draft_reminder(user, letter):
                 first_draft_reminder_count += 1
             continue
@@ -287,7 +289,7 @@ def send_reminders():
         # Weekly draft reminders: 7 days after draft creation, then every 7 days after last reminder
         if days_since_draft >= 7:
             if letter.last_draft_reminder_sent_at is None:
-                # Should have sent first reminder but didn't - send first reminder now
+                # Should have sent first reminder (24 hours) but didn't - send first reminder now
                 if send_first_draft_reminder(user, letter):
                     first_draft_reminder_count += 1
                     continue

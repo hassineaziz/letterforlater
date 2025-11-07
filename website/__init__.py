@@ -166,7 +166,7 @@ def create_app():
         # Columns to show in list view - include both user_id and author for debugging
         column_list = (
             'id', 'title', 'user_id', 'author', 'recipient_name', 'recipient_email',
-            'status', 'delivery_type', 'created_date', 'scheduled_date'
+            'status', 'delivery_type', 'created_date', 'delivery_date'
         )
         
         # Make some fields readonly
@@ -195,8 +195,25 @@ def create_app():
             except Exception as e:
                 return f"Error: {str(e)}"
         
+        # Format delivery_date to show scheduled date properly
+        def _format_delivery_date(self, context, model, name):
+            try:
+                # Use the effective_scheduled_date property which handles the logic
+                scheduled = model.effective_scheduled_date
+                if scheduled:
+                    return scheduled.strftime('%Y-%m-%d %H:%M:%S UTC')
+                return "Not scheduled"
+            except Exception as e:
+                return f"Error: {str(e)}"
+        
         column_formatters = {
-            'author': _format_author
+            'author': _format_author,
+            'delivery_date': _format_delivery_date
+        }
+        
+        # Label delivery_date as "Scheduled Date" for clarity
+        column_labels = {
+            'delivery_date': 'Scheduled Date'
         }
         
         # Ensure author relationship is loaded efficiently

@@ -201,6 +201,17 @@ class Letter(db.Model):
             # If decryption fails, it might be plain text - return as-is
             return self.content  # Fallback to original
     
+    @property
+    def effective_scheduled_date(self):
+        """Get the effective scheduled date - returns delivery_date for date-based delivery, or scheduled_date as fallback"""
+        if self.delivery_type == 'date' and self.delivery_date:
+            return self.delivery_date
+        elif self.scheduled_date:
+            return self.scheduled_date
+        elif self.delivery_date:
+            return self.delivery_date
+        return None
+    
     # REMOVED: delivery_schedule = db.relationship('DeliverySchedule', backref='letter', uselist=False, cascade='all, delete-orphan')
 
     __table_args__ = (

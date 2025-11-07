@@ -280,6 +280,7 @@ class User(db.Model, UserMixin):
     
     # IP address tracking
     last_login_ip = db.Column(db.String(45), nullable=True)  # Last IP address used for login
+    last_login_date = db.Column(db.DateTime(timezone=True), nullable=True)  # Last login timestamp
     registration_ip = db.Column(db.String(45), nullable=True)  # IP address when account was created
     
     # Device fingerprinting for spam detection

@@ -3778,8 +3778,9 @@ def google_callback():
             except Exception as e:
                 print(f"Error sending welcome email to Google user: {str(e)}")
         
-        # Log IP address and log the user in
+        # Log IP address and login date
         user.last_login_ip = client_ip
+        user.last_login_date = datetime.now(timezone.utc)
         db.session.commit()
         
         login_user(user, remember=True)

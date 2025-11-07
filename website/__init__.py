@@ -7,6 +7,7 @@ from flask_login import LoginManager
 import os
 import warnings
 from sqlalchemy import create_engine
+from sqlalchemy.orm import joinedload
 from sqlalchemy_utils import database_exists, create_database
 from flask_login import current_user
 from flask_admin import Admin, AdminIndexView
@@ -162,9 +163,9 @@ def create_app():
     
     # Custom Letter view to show author information
     class LetterAdminView(AdminAuthMixin, ModelView):
-        # Columns to show in list view
+        # Columns to show in list view - include both user_id and author for debugging
         column_list = (
-            'id', 'title', 'author', 'recipient_name', 'recipient_email',
+            'id', 'title', 'user_id', 'author', 'recipient_name', 'recipient_email',
             'status', 'delivery_type', 'created_date', 'scheduled_date'
         )
         
@@ -172,17 +173,36 @@ def create_app():
         column_readonly_fields = (
             'created_date',
             'last_modified',
+            'user_id',
         )
         
         # Format author column to show user email
-        def _format_author(view, context, model, name):
-            if model.author:
-                return f"{model.author.email} ({model.author.first_name} {model.author.last_name})"
-            return "N/A"
+        def _format_author(self, context, model, name):
+            try:
+                # Try to access the author relationship
+                author = getattr(model, 'author', None)
+                if author:
+                    return f"{author.email} ({author.first_name} {author.last_name})"
+                # Fallback to user_id
+                if hasattr(model, 'user_id') and model.user_id:
+                    return f"User ID: {model.user_id} (relationship not loaded)"
+                return "N/A"
+            except AttributeError:
+                # Relationship might not exist
+                if hasattr(model, 'user_id') and model.user_id:
+                    return f"User ID: {model.user_id}"
+                return "N/A"
+            except Exception as e:
+                return f"Error: {str(e)}"
         
         column_formatters = {
             'author': _format_author
         }
+        
+        # Ensure author relationship is loaded efficiently
+        def get_query(self):
+            from .models import Letter
+            return super().get_query().options(joinedload(Letter.author))
     
     # Custom User view to handle complex fields
     class UserAdminView(AdminAuthMixin, ModelView):
@@ -202,7 +222,7 @@ def create_app():
         # Columns to show in list view
         column_list = (
             'id', 'email', 'first_name', 'last_name', 'is_active', 'role',
-            'plan', 'created_date', 'last_login_ip', 'registration_ip',
+            'plan', 'created_date', 'last_login_ip', 'last_login_date', 'registration_ip',
             'password', 'google_id'
         )
         
@@ -213,6 +233,7 @@ def create_app():
             'password_reset_expires',
             'password',  # Show password hash but don't allow editing
             'google_id',  # Show Google ID but don't allow editing
+            'last_login_date',  # Show last login date but don't allow editing
         )
     
     # Initialize Flask-Admin at default /admin URL

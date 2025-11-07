@@ -155,16 +155,19 @@ def login():
                 # Check if user has 2FA enabled
                 if user.two_factor_enabled:
                     # Store login info in session for 2FA verification
+                    client_ip = get_client_ip()
                     session['pending_2fa_user_id'] = user.id
                     session['pending_2fa_next'] = next_page
                     session['pending_2fa_remember'] = True
                     session['pending_2fa_time'] = datetime.now(timezone.utc).timestamp()
+                    session['pending_2fa_ip'] = client_ip  # Store IP for later use
                     return redirect(url_for('auth.login_2fa'))
                 else:
                     # No 2FA, proceed with normal login
-                    # Log IP address
+                    # Log IP address and login date
                     client_ip = get_client_ip()
                     user.last_login_ip = client_ip
+                    user.last_login_date = datetime.now(timezone.utc)
                     db.session.commit()
                     
                     login_user(user, remember=True)
@@ -274,6 +277,11 @@ def login_2fa():
             if user.backup_codes and backup_code in user.backup_codes:
                 # Remove used backup code
                 user.backup_codes.remove(backup_code)
+                
+                # Log IP address and login date
+                client_ip = session.get('pending_2fa_ip') or get_client_ip()
+                user.last_login_ip = client_ip
+                user.last_login_date = datetime.now(timezone.utc)
                 db.session.commit()
                 
                 # Complete login
@@ -310,6 +318,12 @@ def login_2fa():
             if user.two_factor_secret:
                 totp = pyotp.TOTP(user.two_factor_secret)
                 if totp.verify(code):
+                    # Log IP address and login date
+                    client_ip = session.get('pending_2fa_ip') or get_client_ip()
+                    user.last_login_ip = client_ip
+                    user.last_login_date = datetime.now(timezone.utc)
+                    db.session.commit()
+                    
                     # Complete login
                     login_user(user, remember=session.get('pending_2fa_remember', True))
                     

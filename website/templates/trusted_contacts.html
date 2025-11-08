@@ -42,6 +42,8 @@
             </div>
     
     <form id="addContactForm" method="POST" action="{{ url_for('views.add_trusted_contact') }}{% if request.args.get('from_letter') == '1' %}?from_letter=1{% endif %}" novalidate>
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <!-- Honeypot fields for spam prevention -->
         {{ add_honeypot_fields()|safe }}
         

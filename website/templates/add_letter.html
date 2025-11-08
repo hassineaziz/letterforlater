@@ -34,6 +34,8 @@
         </div>
 
         <form id="letterForm" method="POST" class="space-y-4">
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <!-- Honeypot fields for spam prevention -->
             {{ add_honeypot_fields()|safe }}
             

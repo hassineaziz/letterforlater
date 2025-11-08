@@ -12,6 +12,7 @@ from sqlalchemy_utils import database_exists, create_database
 from flask_login import current_user
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+from flask_wtf.csrf import CSRFProtect
 
 # Suppress flask_admin pkg_resources deprecation warnings
 warnings.filterwarnings('ignore', message='.*pkg_resources is deprecated.*', category=UserWarning)
@@ -19,6 +20,7 @@ warnings.filterwarnings('ignore', message='.*pkg_resources is deprecated.*', cat
 db = SQLAlchemy()
 migrate = Migrate(db)
 mail = Mail()
+csrf = CSRFProtect()
 
 def reset_database(app):
     with app.app_context():
@@ -60,6 +62,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    csrf.init_app(app)
     
     # Initialize SEO routes (custom sitemap)
     from .sitemap_config import seo_bp
@@ -76,6 +79,10 @@ def create_app():
     app.register_blueprint(pricing_bp, url_prefix='/')
     app.register_blueprint(stripe_bp, url_prefix='/')
     app.register_blueprint(webhook_bp, url_prefix='/')
+    
+    # Exclude webhook endpoints from CSRF protection (they use Stripe signatures)
+    csrf.exempt('webhook.stripe_webhook')
+    csrf.exempt('webhook.test_webhook')
 
     from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment, BlockedIP
     
@@ -294,6 +301,12 @@ def create_app():
             return dict(user=current_user if current_user.is_authenticated else None)
         except:
             return dict(user=None)
+    
+    # Add CSRF token to all templates
+    @app.context_processor
+    def inject_csrf_token():
+        from flask_wtf.csrf import generate_csrf
+        return dict(csrf_token=generate_csrf)
 
     # Add custom Jinja filter for status color
     def status_color(status):

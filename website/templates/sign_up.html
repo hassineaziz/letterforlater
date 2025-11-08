@@ -67,8 +67,7 @@
           Sign up with Google
         </a>
         
-        <!-- EMAIL SIGNUP TEMPORARILY DISABLED - Only Google sign-in is available -->
-        <!-- Divider - DISABLED
+        <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-300"></div>
@@ -77,10 +76,8 @@
             <span class="px-2 bg-background text-gray-500">Or continue with</span>
           </div>
         </div>
-        -->
         
-        <!-- Email signup form - TEMPORARILY DISABLED to prevent spam -->
-        <!--
+        <!-- Email signup form -->
         <div class="space-y-5">
           <div>
             <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
@@ -204,7 +201,17 @@
             </p>
           </div>
 
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+          <!-- Cloudflare Turnstile Widget -->
+          {% if turnstile_site_key %}
+          <div class="flex justify-center">
+            <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileError"></div>
+          </div>
+          <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response" value="">
+          {% else %}
+          <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response" value="not-configured">
+          {% endif %}
+
+          <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
             <span class="flex items-center justify-center">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
@@ -214,7 +221,6 @@
           </button>
           
         </div>
-        -->
       </form>
       
       <!-- Additional Info - Below signup form -->
@@ -234,6 +240,11 @@
     </div>
   </div>
 </div>
+
+<!-- Cloudflare Turnstile Script (only load if site key is configured) -->
+{% if turnstile_site_key %}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{% endif %}
 
 <!-- Device Fingerprinting Script -->
 <script>
@@ -311,5 +322,51 @@
         }
     });
 })();
+
+// Cloudflare Turnstile Callbacks
+let turnstileToken = '';
+
+function onTurnstileSuccess(token) {
+    turnstileToken = token;
+    document.getElementById('cf-turnstile-response').value = token;
+    document.getElementById('submit-btn').disabled = false;
+}
+
+function onTurnstileExpired() {
+    turnstileToken = '';
+    document.getElementById('cf-turnstile-response').value = '';
+    document.getElementById('submit-btn').disabled = true;
+    // Turnstile will automatically refresh, so we don't need to do anything
+}
+
+function onTurnstileError(error) {
+    console.error('Turnstile error:', error);
+    turnstileToken = '';
+    document.getElementById('cf-turnstile-response').value = '';
+    document.getElementById('submit-btn').disabled = true;
+}
+
+// Disable submit button until Turnstile is completed (only if Turnstile is configured)
+document.addEventListener('DOMContentLoaded', function() {
+    const turnstileWidget = document.querySelector('.cf-turnstile');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Only disable submit button if Turnstile is configured
+    if (turnstileWidget && submitBtn) {
+        submitBtn.disabled = true;
+        
+        // Prevent form submission if Turnstile token is missing
+        const signUpForm = document.querySelector('form[method="POST"]');
+        if (signUpForm) {
+            signUpForm.addEventListener('submit', function(e) {
+                if (!turnstileToken || turnstileToken === '') {
+                    e.preventDefault();
+                    alert('Please complete the security verification.');
+                    return false;
+                }
+            });
+        }
+    }
+});
 </script>
 {% endblock %}

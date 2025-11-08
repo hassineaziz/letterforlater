@@ -16,9 +16,70 @@ import base64
 import io
 import secrets
 import os
+import requests
 
 
 auth = Blueprint('auth', __name__)
+
+def verify_turnstile_token(token, client_ip=None):
+    """
+    Verify Cloudflare Turnstile token with Cloudflare's API
+    
+    Args:
+        token: The Turnstile token from the client
+        client_ip: Optional client IP address for verification
+    
+    Returns:
+        tuple: (is_valid: bool, error_message: str)
+    """
+    if not token or token == 'not-configured':
+        # If Turnstile is not configured, skip verification (for development)
+        turnstile_secret = os.getenv('TURNSTILE_SECRET_KEY')
+        if not turnstile_secret:
+            print("[TURNSTILE] Warning: TURNSTILE_SECRET_KEY not set, skipping verification")
+            return True, None
+        else:
+            # Turnstile is configured but token is missing - fail verification
+            return False, "Turnstile token is missing"
+    
+    turnstile_secret = os.getenv('TURNSTILE_SECRET_KEY')
+    if not turnstile_secret:
+        # If Turnstile is not configured, skip verification (for development)
+        print("[TURNSTILE] Warning: TURNSTILE_SECRET_KEY not set, skipping verification")
+        return True, None
+    
+    try:
+        # Cloudflare Turnstile verification endpoint
+        verify_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+        
+        data = {
+            'secret': turnstile_secret,
+            'response': token
+        }
+        
+        # Include client IP if provided (recommended by Cloudflare)
+        if client_ip:
+            data['remoteip'] = client_ip
+        
+        response = requests.post(verify_url, data=data, timeout=10)
+        result = response.json()
+        
+        if result.get('success'):
+            return True, None
+        else:
+            error_codes = result.get('error-codes', [])
+            error_msg = f"Turnstile verification failed: {', '.join(error_codes)}"
+            print(f"[TURNSTILE] Verification failed: {error_msg}")
+            return False, error_msg
+            
+    except requests.exceptions.RequestException as e:
+        print(f"[TURNSTILE] Error verifying token: {str(e)}")
+        # On network error, we could either fail open or fail closed
+        # For security, we'll fail closed (require verification)
+        return False, f"Error verifying Turnstile token: {str(e)}"
+    except Exception as e:
+        print(f"[TURNSTILE] Unexpected error: {str(e)}")
+        return False, f"Unexpected error during verification: {str(e)}"
 
 def send_confirmation_email(user):
     """Helper function to send email confirmation email to a user"""
@@ -370,14 +431,6 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-    # TEMPORARILY DISABLED: Email signup is disabled, only Google sign-in is allowed
-    # This is to prevent spam signups while we improve detection
-    
-    if request.method == 'POST':
-        # Block all email signup attempts - only allow Google OAuth
-        # Silently redirect to prevent spam (no flash message)
-        return render_template("sign_up.html", user=current_user)
-    
     # Record form start time for spam prevention
     if request.method == 'GET':
         from .spam_prevention import record_form_start
@@ -389,12 +442,23 @@ def sign_up():
     if ip_blocked:
         print(f"[BLOCK] Signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
         flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
-        return render_template("sign_up.html", user=current_user)
+        turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY', '')
+        return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
     
-    # DISABLED: Email signup processing - commented out to prevent spam
+    # Get Turnstile site key for template
+    turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY', '')
+    
     # Spam prevention checks
-    if False and request.method == 'POST':  # DISABLED
+    if request.method == 'POST':
         from .spam_prevention import validate_form_submission, check_honeypot
+        
+        # Verify Cloudflare Turnstile token
+        turnstile_token = request.form.get('cf-turnstile-response', '')
+        is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
+        if not is_turnstile_valid:
+            print(f"[TURNSTILE] BLOCKED signup attempt - Turnstile verification failed. IP: {client_ip}, Error: {turnstile_error}")
+            flash('Security verification failed. Please try again.', 'error')
+            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
         
         # EXPLICIT HONEYPOT CHECK - Silent block (don't show error to bots)
         is_honeypot_spam, honeypot_error = check_honeypot(request.form)
@@ -403,12 +467,12 @@ def sign_up():
             # Silently fail - don't show error, just return success page (confuses bots)
             # This makes bots think they succeeded while we block them
             flash('Thank you for signing up! Please check your email to confirm your account.', 'success')
-            return render_template("sign_up.html", user=current_user)
+            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
         
         is_valid, error = validate_form_submission('signup', 'signup', check_honeypot_fields=True, check_timing=True)
         if not is_valid:
             flash(error, 'error')
-            return render_template("sign_up.html", user=current_user)
+            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
     
     # Check signup rate limit (prevent spam signups) - CHECK BEFORE PROCESSING
     if request.method == 'POST':
@@ -430,7 +494,7 @@ def sign_up():
             from .blocking import block_ip_subnet
             block_ip_subnet(client_ip, reason=f"Spam pattern detected: {spam_reason}", blocked_by_user_id=None)
             flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-            return render_template("sign_up.html", user=current_user)
+            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
         
         # Additional check: Timing pattern detection (catches 5-minute interval bots)
         # This is a separate check to catch timing patterns even if other patterns don't match
@@ -725,7 +789,7 @@ def sign_up():
         if contact:
             email = contact.email
 
-    return render_template("sign_up.html", user=current_user, email=email, next=next_page, selected_plan=selected_plan, cycle=cycle)
+    return render_template("sign_up.html", user=current_user, email=email, next=next_page, selected_plan=selected_plan, cycle=cycle, turnstile_site_key=turnstile_site_key)
 
 @auth.route('/sign-up-with-invite/<token>', methods=['GET', 'POST'])
 def sign_up_with_invite(token):
@@ -861,7 +925,19 @@ def forgot_password():
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     
+    # Get Turnstile site key for template
+    turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY', '')
+    
     if request.method == 'POST':
+        # Verify Cloudflare Turnstile token
+        turnstile_token = request.form.get('cf-turnstile-response', '')
+        client_ip = get_client_ip()
+        is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
+        if not is_turnstile_valid:
+            print(f"[TURNSTILE] BLOCKED forgot password attempt - Turnstile verification failed. IP: {client_ip}, Error: {turnstile_error}")
+            flash('Security verification failed. Please try again.', 'error')
+            return render_template('forgot_password.html', turnstile_site_key=turnstile_site_key)
+        
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
         
@@ -912,7 +988,7 @@ def forgot_password():
         
         return redirect(url_for('auth.forgot_password'))
     
-    return render_template('forgot_password.html')
+    return render_template('forgot_password.html', turnstile_site_key=turnstile_site_key)
 
 @auth.route('/resend-verification', methods=['GET', 'POST'])
 def resend_verification():
@@ -920,7 +996,19 @@ def resend_verification():
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     
+    # Get Turnstile site key for template
+    turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY', '')
+    
     if request.method == 'POST':
+        # Verify Cloudflare Turnstile token
+        turnstile_token = request.form.get('cf-turnstile-response', '')
+        client_ip = get_client_ip()
+        is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
+        if not is_turnstile_valid:
+            print(f"[TURNSTILE] BLOCKED resend verification attempt - Turnstile verification failed. IP: {client_ip}, Error: {turnstile_error}")
+            flash('Security verification failed. Please try again.', 'error')
+            return render_template('resend_verification.html', turnstile_site_key=turnstile_site_key)
+        
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
         
@@ -950,7 +1038,7 @@ def resend_verification():
         return redirect(url_for('auth.login'))
     
     # GET request - show form
-    return render_template('resend_verification.html')
+    return render_template('resend_verification.html', turnstile_site_key=turnstile_site_key)
 
 @auth.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):

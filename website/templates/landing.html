@@ -143,22 +143,45 @@
                         </div>
 
                         <!-- Sign Up Section -->
-                        <div class="space-y-3">
+                        <div class="space-y-2">
                             <p class="text-xs font-semibold text-gray-700 text-center mb-2">Make sure you get your letter</p>
                             
-                            <!-- Simple Google Sign Up Button -->
-                            <a 
-                                href="{{ url_for('views.google_auth') }}"
-                                class="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg border-2 border-gray-300 text-sm"
+                            <!-- Email Input -->
+                            <form method="GET" action="{{ url_for('auth.sign_up') }}" class="w-full" id="heroEmailSignUpForm">
+                                <input 
+                                    type="email" 
+                                    name="email"
+                                    id="hero_email_signup_input"
+                                    placeholder="your@email.com" 
+                                    class="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+                                />
+                            </form>
+                            
+                            <p class="text-xs text-gray-600 text-center mt-2">Or continue with Google</p>
+
+                            <!-- Google Sign Up Checkbox Button -->
+                            <button 
+                                type="button"
+                                id="hero_google_signup_checkbox"
+                                data-google-auth-url="{{ url_for('views.google_auth') }}"
+                                class="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md border-2 border-gray-300 text-sm cursor-pointer"
                             >
+                                <label for="hero_use_google_auth" class="sr-only">Use Google to sign up</label>
+                                <input 
+                                    type="checkbox" 
+                                    id="hero_use_google_auth"
+                                    name="use_google_auth"
+                                    aria-label="Use Google to sign up"
+                                    class="w-6 h-6 text-indigo-400 border-gray-300 rounded focus:ring-indigo-400 cursor-pointer"
+                                />
                                 <svg class="w-4 h-4" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                                 </svg>
-                                <span>Sign up with Google</span>
-                            </a>
+                                <span>Continue with Google</span>
+                            </button>
                         </div>
 
                         <!-- Delivery Type - Hidden for free users (always "date") -->
@@ -302,7 +325,7 @@
 
         <!-- CTA Buttons Below Preview -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-            <a href="{{ url_for('views.google_auth') }}" 
+            <a href="{{ url_for('auth.sign_up') }}" 
                class="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-3xl hover:-translate-y-1">
                 Start Writing Letters
             </a>
@@ -455,14 +478,11 @@
         
         <div class="text-center mt-8 sm:mt-12">
             <p class="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-4">Both methods ensure your letters are delivered securely and at the right time</p>
-            <a href="{{ url_for('views.google_auth') }}" class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            <a href="{{ url_for('auth.sign_up') }}" class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                 </svg>
-                Sign up with Google
+                Start Writing Your First Letter
             </a>
         </div>
     </div>
@@ -749,7 +769,7 @@
                     </ul>
                     
                     <div class="mt-auto">
-                        <a href="{{ url_for('views.google_auth') }}" class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Start Writing Free</a>
+                        <a href="{{ url_for('auth.sign_up') }}?plan=free" class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Start Writing Free</a>
                     </div>
                 </div>
             </div>
@@ -838,7 +858,7 @@
                     </ul>
                     
                     <div class="mt-auto">
-                        <a href="{{ url_for('views.google_auth') }}" class="block w-full text-center bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-800">Get Premium Now</a>
+                        <a href="{{ url_for('auth.sign_up') }}?plan=premium" class="block w-full text-center bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-800">Get Premium Now</a>
                     </div>
                 </div>
             </div>
@@ -903,7 +923,7 @@
                     </ul>
                     
                     <div class="mt-auto">
-                        <a href="{{ url_for('views.google_auth') }}" class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">Get Lifetime Access</a>
+                        <a href="{{ url_for('auth.sign_up') }}?plan=lifetime" class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">Get Lifetime Access</a>
                     </div>
                 </div>
             </div>
@@ -1114,15 +1134,12 @@
         </p>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <a href="{{ url_for('views.google_auth') }}" 
+            <a href="{{ url_for('auth.sign_up') }}" 
                class="group bg-white hover:bg-gray-100 text-blue-600 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 transform">
-                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                 </svg>
-                Sign up with Google
+                Start Writing Your Legacy
             </a>
             
             <a href="{{ url_for('views.google_auth') }}" 
@@ -1210,15 +1227,12 @@
         <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
             <h3 class="text-xl font-bold text-gray-900 mb-3">Start Your First Letter Today</h3>
             <p class="text-sm text-gray-600 mb-4 max-w-xl mx-auto">It takes just 5 minutes to create your first letter and start sending messages for the future.</p>
-            <a href="{{ url_for('views.google_auth') }}" 
+            <a href="{{ url_for('auth.sign_up') }}" 
                class="group inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
-                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                 </svg>
-                Sign up with Google
+                Create Your First Letter
             </a>
         </div>
     </div>
@@ -1312,19 +1326,108 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle form submission - simplified since email signup is disabled
+    // Handle Google checkbox button click
+    const googleCheckboxBtn = document.getElementById('hero_google_signup_checkbox');
+    const googleCheckbox = document.getElementById('hero_use_google_auth');
+    const emailInput = document.getElementById('hero_email_signup_input');
+    
+    if (googleCheckboxBtn && googleCheckbox) {
+        googleCheckboxBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // If unchecking, just toggle
+            if (googleCheckbox.checked) {
+                googleCheckbox.checked = false;
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+            } else {
+                // If checking, clear email input first
+                if (emailInput) {
+                    emailInput.value = '';
+                    emailInput.removeAttribute('required');
+                    emailInput.setAttribute('data-google-selected', 'true');
+                }
+                googleCheckbox.checked = true;
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, true);
+            }
+        });
+        
+        // Prevent checkbox from being toggled when clicking the button
+        googleCheckbox.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // Clear email if checking Google
+            if (this.checked && emailInput) {
+                emailInput.value = '';
+                emailInput.removeAttribute('required');
+                emailInput.setAttribute('data-google-selected', 'true');
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, true);
+            } else if (!this.checked && emailInput) {
+                emailInput.removeAttribute('data-google-selected');
+                emailInput.setAttribute('required', 'required');
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+            }
+        });
+    }
+    
+    // Function to update Google button appearance
+    function updateGoogleButtonAppearance(button, checkbox, isChecked) {
+        if (isChecked) {
+            button.classList.add('bg-blue-200', 'border-blue-400');
+            button.classList.remove('bg-gray-100', 'border-gray-300');
+        } else {
+            button.classList.remove('bg-blue-200', 'border-blue-400');
+            button.classList.add('bg-gray-100', 'border-gray-300');
+        }
+    }
+    
+    // Handle email input changes - uncheck Google if email is entered
+    if (emailInput) {
+        emailInput.addEventListener('input', function(e) {
+            if (this.value.trim() !== '' && googleCheckbox && googleCheckbox.checked) {
+                googleCheckbox.checked = false;
+                this.removeAttribute('data-google-selected');
+                this.setAttribute('required', 'required');
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+            }
+        });
+        
+        emailInput.addEventListener('focus', function(e) {
+            if (googleCheckbox && googleCheckbox.checked) {
+                googleCheckbox.checked = false;
+                this.removeAttribute('data-google-selected');
+                this.setAttribute('required', 'required');
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+            }
+        });
+    }
+
+    // Handle form submission
     const heroFormSubmit = document.getElementById('heroLetterForm');
     if (heroFormSubmit) {
         heroFormSubmit.addEventListener('submit', function(e) {
-            // If user is not logged in, save form data and redirect to Google auth
-            // (We can't check login status easily, so we'll save data and let the backend handle it)
+            const useGoogleAuth = document.getElementById('hero_use_google_auth');
+            const emailSignUpInput = document.getElementById('hero_email_signup_input');
+            
+            // Check if Google auth is selected (email input should not be required if Google is selected)
+            const useGoogle = useGoogleAuth && useGoogleAuth.checked;
+            
+            // If Google auth is selected, redirect to Google auth
+            if (useGoogle) {
+                // CRITICAL: Remove required attribute BEFORE preventDefault to avoid browser validation
+                if (emailSignUpInput) {
+                    emailSignUpInput.removeAttribute('required');
+                    emailSignUpInput.setAttribute('data-google-selected', 'true');
+                }
+                
             e.preventDefault();
             
             // Save form data to Flask session via AJAX before redirecting
             const formData = new FormData(heroFormSubmit);
             const formObject = {};
             for (let [key, value] of formData.entries()) {
+                    if (key !== 'use_google_auth') {
                 formObject[key] = value;
+                    }
             }
             
             // Store letter data in Flask session before Google redirect
@@ -1335,16 +1438,158 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(formObject)
             }).then(() => {
-                // Redirect to Google auth
-                const googleAuthUrl = '{{ url_for("views.google_auth") }}';
+                    // Get Google auth URL from button data attribute
+                    const googleAuthUrl = googleCheckboxBtn.getAttribute('data-google-auth-url');
+                    if (googleAuthUrl) {
                 window.location.href = googleAuthUrl;
+                    }
             }).catch(err => {
                 console.error('Error storing letter data:', err);
                 // Still redirect to Google auth
-                const googleAuthUrl = '{{ url_for("views.google_auth") }}';
+                    const googleAuthUrl = googleCheckboxBtn.getAttribute('data-google-auth-url');
+                    if (googleAuthUrl) {
                 window.location.href = googleAuthUrl;
+                    }
             });
             return false;
+            }
+            
+            // If Google is not selected, check if email is entered
+            const hasEmail = emailSignUpInput && emailSignUpInput.value.trim() !== '';
+            
+            // If neither email nor Google is selected, show alert and prevent submission
+            if (!hasEmail && !useGoogle) {
+                e.preventDefault();
+                alert('Please enter your email or select "Continue with Google" to create your account.');
+                return false;
+            }
+            
+            // If email is entered (but not Google), prevent form submission and redirect to sign-up
+            if (hasEmail && !useGoogle) {
+                e.preventDefault();
+                
+                // Store letter data in Flask session with email before redirecting
+                const formData = new FormData(heroFormSubmit);
+                const formObject = {};
+                for (let [key, value] of formData.entries()) {
+                    if (key !== 'use_google_auth') {
+                        formObject[key] = value;
+                    }
+                }
+                
+                // Store letter data with email in session, then redirect to sign-up
+                fetch('/store-hero-letter-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...formObject,
+                        _email: emailSignUpInput.value.trim()
+                    })
+                }).then(() => {
+                    // Redirect to sign-up page with email as URL parameter
+                    const emailValue = encodeURIComponent(emailSignUpInput.value.trim());
+                    const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                    window.location.href = `${signUpUrl}?email=${emailValue}`;
+                }).catch(err => {
+                    console.error('Error storing letter data:', err);
+                    // Still redirect even if storing failed
+                    const emailValue = encodeURIComponent(emailSignUpInput.value.trim());
+                    const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                    window.location.href = `${signUpUrl}?email=${emailValue}`;
+                });
+                return false;
+            }
+            
+            // If user is logged in and neither email nor Google is selected, let form submit normally
+            // This should only happen if user is already authenticated
+        });
+    }
+
+    // Handle email sign up form submission
+    const emailSignUpForm = document.getElementById('heroEmailSignUpForm');
+    if (emailSignUpForm && emailInput) {
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                // Uncheck Google if email is entered
+                if (googleCheckbox && googleCheckbox.checked) {
+                    googleCheckbox.checked = false;
+                    this.removeAttribute('data-google-selected');
+                    this.setAttribute('required', 'required');
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                }
+                
+                // Make email required and submit if email is entered
+                if (this.value.trim() !== '') {
+                    this.setAttribute('required', 'required');
+                    // Don't prevent default - let the form submit naturally
+                }
+            }
+        });
+        
+        emailSignUpForm.addEventListener('submit', function(e) {
+            // Uncheck Google if email form is submitted
+            if (googleCheckbox && googleCheckbox.checked) {
+                e.preventDefault();
+                googleCheckbox.checked = false;
+                emailInput.removeAttribute('data-google-selected');
+                emailInput.setAttribute('required', 'required');
+                updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                return false;
+            }
+            
+            // Make sure email is filled before proceeding
+            if (!emailInput || emailInput.value.trim() === '') {
+                e.preventDefault();
+                emailInput.setAttribute('required', 'required');
+                alert('Please enter your email address to continue.');
+                return false;
+            }
+            
+            // Before submitting email form, store letter data in Flask session with email
+            const heroFormForEmail = document.getElementById('heroLetterForm');
+            if (heroFormForEmail && emailInput.value.trim()) {
+                const formData = new FormData(heroFormForEmail);
+                const formObject = {};
+                for (let [key, value] of formData.entries()) {
+                    if (key !== 'use_google_auth') {
+                        formObject[key] = value;
+                    }
+                }
+                
+                // Store letter data with email in session - use sync fetch to ensure it completes
+                // We'll prevent default, store data, then redirect manually
+                e.preventDefault();
+                
+                fetch('/store-hero-letter-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...formObject,
+                        _email: emailInput.value.trim()
+                    })
+                }).then(() => {
+                    // Redirect to sign-up page with email as URL parameter
+                    const emailValue = encodeURIComponent(emailInput.value.trim());
+                    const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                    window.location.href = `${signUpUrl}?email=${emailValue}`;
+                }).catch(err => {
+                    console.error('Error storing letter data:', err);
+                    // Still redirect even if storing failed
+                    const emailValue = encodeURIComponent(emailInput.value.trim());
+                    const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                    window.location.href = `${signUpUrl}?email=${emailValue}`;
+                });
+            } else {
+                // No letter data, just redirect to sign-up with email
+                e.preventDefault();
+                const emailValue = encodeURIComponent(emailInput.value.trim());
+                const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                window.location.href = `${signUpUrl}?email=${emailValue}`;
+            }
         });
     }
 });

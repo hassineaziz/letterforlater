@@ -49,7 +49,9 @@ def stripe_webhook():
     
     # Handle the event
     try:
-        if event['type'] == 'customer.subscription.created':
+        if event['type'] == 'checkout.session.completed':
+            handle_checkout_completed(event['data']['object'])
+        elif event['type'] == 'customer.subscription.created':
             handle_subscription_created(event['data']['object'])
         elif event['type'] == 'customer.subscription.updated':
             handle_subscription_updated(event['data']['object'])
@@ -69,6 +71,76 @@ def stripe_webhook():
         return jsonify({'error': 'Webhook handler error'}), 500
     
     return jsonify({'status': 'success'})
+
+def handle_checkout_completed(session):
+    """Handle completed checkout session (for one-time payments like lifetime)"""
+    logger.info(f"Checkout session completed: {session['id']}")
+    
+    # Get user from metadata
+    user_id = session.get('metadata', {}).get('user_id')
+    plan = session.get('metadata', {}).get('plan')
+    
+    if not user_id:
+        logger.warning(f"No user_id in checkout session metadata: {session['id']}")
+        return
+    
+    try:
+        user_id = int(user_id)
+        user = User.query.get(user_id)
+    except (ValueError, TypeError):
+        logger.error(f"Invalid user_id in checkout session: {user_id}")
+        return
+    
+    if not user:
+        logger.warning(f"User not found for checkout session: {user_id}")
+        return
+    
+    # Handle one-time payments (lifetime plan)
+    if session.get('mode') == 'payment' and plan == 'lifetime':
+        # Update user to lifetime plan
+        user.plan = 'lifetime'
+        user.stripe_customer_id = session.get('customer') or user.stripe_customer_id
+        
+        # Create payment record
+        amount_total = session.get('amount_total', 0) / 100  # Convert from cents
+        currency = session.get('currency', 'usd').upper()
+        
+        payment = Payment(
+            user_id=user.id,
+            stripe_invoice_id=session.get('payment_intent'),
+            amount=int(amount_total * 100),  # Store in cents
+            currency=currency.lower(),
+            plan='lifetime',
+            cycle=None,
+            status='succeeded',
+            payment_date=datetime.now(timezone.utc),
+            description=f"Lifetime plan purchase (Checkout: {session['id']})"
+        )
+        db.session.add(payment)
+        db.session.commit()
+        
+        # Log promo code if used
+        if session.get('total_details', {}).get('amount_discount', 0) > 0:
+            logger.info(f"Promo code used for lifetime purchase by user {user.email}")
+        
+        logger.info(f"Updated user {user.email} to lifetime plan via checkout")
+    
+    # Handle subscription creation (premium plan)
+    elif session.get('mode') == 'subscription' and plan == 'premium':
+        # Subscription will be handled by customer.subscription.created event
+        # Only update customer ID if user doesn't have one yet (for new customers)
+        # Existing subscription users already have customer IDs and subscriptions
+        # Don't modify anything if user already has an active subscription
+        if user.subscription_id:
+            logger.info(f"User {user.email} already has subscription {user.subscription_id} - skipping checkout handler (subscription.created will handle it)")
+            return
+        
+        if session.get('customer') and not user.stripe_customer_id:
+            user.stripe_customer_id = session['customer']
+            db.session.commit()
+            logger.info(f"Updated Stripe customer ID for new user {user.email}")
+        else:
+            logger.info(f"Checkout completed for user {user.email} - subscription will be handled by subscription.created event")
 
 def handle_subscription_created(subscription):
     """Handle new subscription creation"""

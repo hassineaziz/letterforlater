@@ -1,0 +1,42 @@
+🎉 BLACK FRIDAY SALE - 50% OFF LIFETIME SUBSCRIPTION!
+
+Hi {{ user_name }},
+
+We're excited to offer you an exclusive Black Friday deal! For a limited time, you can get 50% off our Lifetime subscription - the best way to preserve your legacy forever.
+
+PRICING:
+Regular Price: $99.99
+Sale Price: $49.99 (50% OFF)
+Use Code: 50OFF
+
+⏰ LIMITED TIME OFFER
+This Black Friday sale ends on November 30, 2025. Don't miss out on this incredible opportunity to secure lifetime access at half the price!
+
+WHAT'S INCLUDED IN LIFETIME:
+✓ Everything in Premium - all features unlocked
+✓ Photos, videos, and audio attachments
+✓ Schedule letters for birthdays & milestones
+✓ Unlimited trusted contacts
+✓ Death verification delivery
+✓ Pay once, use forever - no recurring fees
+✓ Lifetime updates & support
+✓ Unlimited storage for all your memories
+
+This is the perfect time to upgrade and ensure your legacy letters are preserved forever. With lifetime access, you'll never have to worry about subscription renewals or payments again.
+
+CLAIM YOUR DISCOUNT:
+Visit: {{ pricing_url }}
+Use code: 50OFF at checkout
+
+Remember, you can always continue using the free plan with unlimited text letters. This offer is perfect if you want to add media attachments and advanced features to your legacy letters.
+
+Questions? Contact us at support@letterforlater.com
+
+Visit Dashboard: {{ dashboard_url }}
+View Pricing: {{ pricing_url }}
+
+---
+This email was sent to {{ user_email }}.
+LetterForLater - Preserve Your Legacy
+https://letterforlater.com
+

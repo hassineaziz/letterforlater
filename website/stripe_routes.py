@@ -39,6 +39,7 @@ def create_checkout_session():
             success_url=request.url_root + 'payment-success?session_id={CHECKOUT_SESSION_ID}',
             cancel_url=request.url_root + 'payment-cancel',
             customer_email=current_user.email,
+            allow_promotion_codes=True,
             metadata={
                 'user_id': current_user.id,
                 'plan': plan,

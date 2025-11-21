@@ -81,8 +81,10 @@ def create_app():
     app.register_blueprint(webhook_bp, url_prefix='/')
     
     # Exclude webhook endpoints from CSRF protection (they use Stripe signatures)
-    csrf.exempt('webhook.stripe_webhook')
-    csrf.exempt('webhook.test_webhook')
+    # Exempt by view function reference (more reliable than string name)
+    from website.webhook_handler import stripe_webhook, test_webhook
+    csrf.exempt(stripe_webhook)
+    csrf.exempt(test_webhook)
 
     from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment, BlockedIP
     

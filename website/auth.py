@@ -131,15 +131,16 @@ def send_confirmation_email(user):
         )
         
         # Render HTML template
+        user_name = user.first_name + (" " + user.last_name if user.last_name else "")
         msg.html = render_template('emails/email_confirmation.html',
-            user_name=f"{user.first_name} {user.last_name}",
+            user_name=user_name,
             user_email=user.email,
             confirm_link=confirm_link
         )
         
         # Render text template
         msg.body = render_template('emails/email_confirmation.txt',
-            user_name=f"{user.first_name} {user.last_name}",
+            user_name=user_name,
             user_email=user.email,
             confirm_link=confirm_link
         )
@@ -591,7 +592,7 @@ def sign_up():
     if request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('firstName')
-        last_name = request.form.get('lastName')
+        last_name = request.form.get('lastName', '').strip()  # Get last name, default to empty string and strip whitespace
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         intended_plan = request.form.get('intended_plan', 'free')
@@ -604,8 +605,8 @@ def sign_up():
             flash('Email must be greater than 3 characters.', category='error')
         elif len(first_name) < 2:
             flash('First name must be greater than 1 character.', category='error')
-        elif len(last_name) < 2:
-            flash('Last name must be greater than 1 character.', category='error')
+        elif last_name and len(last_name) < 2:
+            flash('Last name must be greater than 1 character if provided.', category='error')
         elif password1 != password2:
             flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7:
@@ -830,7 +831,7 @@ def sign_up_with_invite(token):
         
         email = request.form.get('email')
         first_name = request.form.get('firstName')
-        last_name = request.form.get('lastName')
+        last_name = request.form.get('lastName', '').strip()  # Get last name, default to empty string and strip whitespace
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         
@@ -847,8 +848,8 @@ def sign_up_with_invite(token):
             flash('Email must be greater than 3 characters.', 'error')
         elif len(first_name) < 2:
             flash('First name must be greater than 1 character.', 'error')
-        elif len(last_name) < 2:
-            flash('Last name must be greater than 1 character.', 'error')
+        elif last_name and len(last_name) < 2:
+            flash('Last name must be greater than 1 character if provided.', 'error')
         elif password1 != password2:
             flash('Passwords don\'t match.', 'error')
         elif len(password1) < 7:
@@ -962,15 +963,16 @@ def forgot_password():
                         sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com'))
             
             # Render HTML template
+            user_name = user.first_name + (" " + user.last_name if user.last_name else "")
             msg.html = render_template('emails/password_reset.html',
-                user_name=f"{user.first_name} {user.last_name}",
+                user_name=user_name,
                 user_email=user.email,
                 reset_link=reset_link
             )
             
             # Render text template
             msg.body = render_template('emails/password_reset.txt',
-                user_name=f"{user.first_name} {user.last_name}",
+                user_name=user_name,
                 user_email=user.email,
                 reset_link=reset_link
             )

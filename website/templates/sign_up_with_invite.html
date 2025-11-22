@@ -39,10 +39,10 @@
                  placeholder="First name" value="{{ invite.recipient_name.split()[0] if invite.recipient_name else '' }}">
         </div>
         <div>
-          <label for="lastName" class="sr-only">Last name</label>
-          <input id="lastName" name="lastName" type="text" autocomplete="family-name" required 
+          <label for="lastName" class="sr-only">Last name (optional)</label>
+          <input id="lastName" name="lastName" type="text" autocomplete="family-name" 
                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                 placeholder="Last name" value="{{ invite.recipient_name.split()[-1] if invite.recipient_name and ' ' in invite.recipient_name else '' }}">
+                 placeholder="Last name (optional)" value="{{ invite.recipient_name.split()[-1] if invite.recipient_name and ' ' in invite.recipient_name else '' }}">
         </div>
         <div>
           <label for="password1" class="sr-only">Password</label>

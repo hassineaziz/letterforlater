@@ -594,7 +594,6 @@ def sign_up():
         first_name = request.form.get('firstName')
         last_name = request.form.get('lastName', '').strip()  # Get last name, default to empty string and strip whitespace
         password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
         intended_plan = request.form.get('intended_plan', 'free')
         intended_cycle = request.form.get('intended_cycle', 'month')
         next_page = request.form.get('next') or next_page
@@ -607,8 +606,6 @@ def sign_up():
             flash('First name must be greater than 1 character.', category='error')
         elif last_name and len(last_name) < 2:
             flash('Last name must be greater than 1 character if provided.', category='error')
-        elif password1 != password2:
-            flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
@@ -833,7 +830,6 @@ def sign_up_with_invite(token):
         first_name = request.form.get('firstName')
         last_name = request.form.get('lastName', '').strip()  # Get last name, default to empty string and strip whitespace
         password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
         
         # Validate email matches invite
         if email != invite.recipient_email:
@@ -850,8 +846,6 @@ def sign_up_with_invite(token):
             flash('First name must be greater than 1 character.', 'error')
         elif last_name and len(last_name) < 2:
             flash('Last name must be greater than 1 character if provided.', 'error')
-        elif password1 != password2:
-            flash('Passwords don\'t match.', 'error')
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', 'error')
         else:

@@ -2,7 +2,10 @@
 <html lang="en">
 
 <head>
-    <!-- Google tag (gtag.js) & GA/GAds (lazy load) -->
+    {% set is_login_page = request.endpoint == 'auth.login' or request.endpoint == 'auth.login_2fa' or request.endpoint == 'auth.sign_up' or request.endpoint == 'auth.forgot_password' or request.endpoint == 'auth.reset_password' or request.endpoint == 'auth.resend_verification' %}
+    
+    {% if not is_login_page %}
+    <!-- Google tag (gtag.js) & GA/GAds (lazy load) - EXCLUDED from login pages for security -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);} 
@@ -21,7 +24,7 @@
       });
     </script>
     
-    <!-- Google Tag Manager (lazy) -->
+    <!-- Google Tag Manager (lazy) - EXCLUDED from login pages for security -->
     <script>
       window.addEventListener('load', function(){
         var init=function(){
@@ -35,7 +38,7 @@
       });
     </script>
     
-    <!-- Microsoft Clarity (lazy-load after first paint) -->
+    <!-- Microsoft Clarity (lazy-load after first paint) - EXCLUDED from login pages for security -->
     <script type="text/javascript">
         window.addEventListener('load', function(){
             var init = function(){
@@ -48,6 +51,7 @@
             if ('requestIdleCallback' in window) { requestIdleCallback(init, {timeout: 4000}); } else { setTimeout(init, 3000); }
         });
     </script>
+    {% endif %}
     
     <meta charset="utf-8" />
     <script type="application/ld+json">
@@ -88,8 +92,9 @@
     <meta property="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='logo.png', _external=True) }}{% endblock %}" />
 	
 
+{% if not is_login_page %}
 <meta name="wot-verification" content="de7d17edfa7e0257077b"/>
-<!-- WoT badge (lazy-load to reduce render impact) -->
+<!-- WoT badge (lazy-load to reduce render impact) - EXCLUDED from login pages for security -->
 <script>
     window.addEventListener('load', function(){
         setTimeout(function(){
@@ -99,6 +104,7 @@
         }, 3000);
     });
     </script>
+{% endif %}
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ request.url }}" />
@@ -169,10 +175,12 @@
 </head>
 
 <body class="font-sans text-gray-800 leading-relaxed" data-user-plan="{% if user.is_authenticated %}{{ user.plan or 'free' }}{% endif %}">
-    <!-- Google Tag Manager (noscript) -->
+    {% if not is_login_page %}
+    <!-- Google Tag Manager (noscript) - EXCLUDED from login pages for security -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX529JLM"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+    {% endif %}
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg shadow-lg rounded-b-2xl mb-4 sm:mb-6 lg:mb-8 mx-2 sm:mx-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">

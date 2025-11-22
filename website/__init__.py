@@ -101,6 +101,64 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
     
+    # SECURITY HEADERS - Add security headers to all responses
+    @app.after_request
+    def add_security_headers(response):
+        """Add security headers to prevent phishing and XSS attacks"""
+        from flask import request
+        
+        # Check if this is a login/auth page
+        is_auth_page = request.endpoint and any(
+            endpoint in request.endpoint for endpoint in 
+            ['auth.login', 'auth.login_2fa', 'auth.sign_up', 'auth.forgot_password', 
+             'auth.reset_password', 'auth.resend_verification']
+        )
+        
+        # Strict Content Security Policy for login pages
+        if is_auth_page:
+            # Very strict CSP for login pages - only allow same-origin resources
+            response.headers['Content-Security-Policy'] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; "
+                "font-src 'self' https://fonts.gstatic.com; "
+                "img-src 'self' data:; "
+                "connect-src 'self'; "
+                "frame-ancestors 'none'; "
+                "base-uri 'self'; "
+                "form-action 'self';"
+            )
+        else:
+            # More permissive CSP for other pages (allows tracking scripts)
+            response.headers['Content-Security-Policy'] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.google-analytics.com "
+                "https://www.clarity.ms https://static.mywot.com https://cdn.tailwindcss.com "
+                "https://code.jquery.com https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; "
+                "font-src 'self' https://fonts.gstatic.com; "
+                "img-src 'self' data: https:; "
+                "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com "
+                "https://www.clarity.ms https://challenges.cloudflare.com; "
+                "frame-src 'self' https://www.googletagmanager.com; "
+                "frame-ancestors 'none'; "
+                "base-uri 'self'; "
+                "form-action 'self';"
+            )
+        
+        # Security headers for all pages
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+        
+        # HSTS header (only in production/HTTPS)
+        if request.is_secure or os.getenv('FLASK_ENV') == 'production':
+            response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        
+        return response
+    
     # GLOBAL IP BLOCKING - Block ALL requests from blocked IPs
     @app.before_request
     def block_ip_globally():

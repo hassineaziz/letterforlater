@@ -192,8 +192,8 @@ def favicon():
     from flask import current_app, send_from_directory
     return send_from_directory(
         current_app.static_folder,
-        'logo.png',
-        mimetype='image/png'
+        'logo.ico',
+        mimetype='image/vnd.microsoft.icon'
     )
 
 @views.route('/download/legacy-template')

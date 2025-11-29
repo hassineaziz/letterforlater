@@ -6,7 +6,7 @@
     <!-- Page Header -->
     <div class="text-center mb-12">
         <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
                 <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Settings
                 </span>
@@ -22,20 +22,30 @@
 
         <!-- Settings Navigation -->
         <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-2 mb-8">
-            <nav class="flex space-x-2" role="tablist">
-                <button class="tab-button active px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300" data-tab="profile">
+            <nav class="flex space-x-2 overflow-x-auto whitespace-nowrap pb-2 md:pb-0 no-scrollbar" role="tablist">
+                <button
+                    class="tab-button active px-4 md:px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex-shrink-0"
+                    data-tab="profile">
                     Profile
                 </button>
-                <button class="tab-button px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300" data-tab="security">
+                <button
+                    class="tab-button px-4 md:px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex-shrink-0"
+                    data-tab="security">
                     Security
                 </button>
-                <button class="tab-button px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300" data-tab="privacy">
+                <button
+                    class="tab-button px-4 md:px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex-shrink-0"
+                    data-tab="privacy">
                     Privacy & Data
                 </button>
-                <button class="tab-button px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300" data-tab="billing">
+                <button
+                    class="tab-button px-4 md:px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex-shrink-0"
+                    data-tab="billing">
                     Billing
                 </button>
-                <button class="tab-button px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300" data-tab="notifications">
+                <button
+                    class="tab-button px-4 md:px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex-shrink-0"
+                    data-tab="notifications">
                     Notifications
                 </button>
             </nav>
@@ -45,11 +55,13 @@
         <div class="max-w-6xl mx-auto">
             <!-- Profile Section -->
             <div id="profile-tab" class="tab-content">
-                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-8">
                     <div class="flex items-center mb-8">
-                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                         </div>
                         <div>
@@ -57,103 +69,130 @@
                             <p class="text-sm text-gray-600">Manage your personal account details</p>
                         </div>
                     </div>
-            
-            <form method="POST" action="{{ url_for('views.settings') }}" id="accountSettingsForm" class="space-y-6">
-                <!-- CSRF Token -->
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="settingsFirstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                        <input type="text" id="settingsFirstName" name="first_name" value="{{ user.first_name }}" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                    </div>
-                    
-                    <div>
-                        <label for="settingsLastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                        <input type="text" id="settingsLastName" name="last_name" value="{{ user.last_name }}" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="settingsEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                    <div class="flex items-center space-x-3">
-                        <input type="email" id="settingsEmail" value="{{ user.email }}" readonly
-                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
-                        <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors flex items-center"
-                                data-modal="changeEmailModal">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                            Change Email
-                        </button>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-1">Email changes require verification for security</p>
-                </div>
-                
-                <div>
-                    <label for="settingsPhone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number (optional)</label>
-                    <input type="text" id="settingsPhone" name="phone" value="{{ user.phone if user.phone else '' }}" 
-                           placeholder="Enter your phone number"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                    <p class="text-sm text-gray-500 mt-1">This will be used for account recovery and notifications</p>
-                </div>
-                
-                <!-- Account Management -->
-                <div class="pt-6 border-t border-gray-200">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Account Management</h3>
-                            <p class="text-sm text-gray-500">Manage your account settings and data</p>
-                        </div>
-                        <button type="button" id="showAccountOptions" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Account Options
-                        </button>
-                    </div>
-                    
-                    <!-- Hidden Account Options -->
-                    <div id="accountOptions" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-red-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                            <div class="flex-1">
-                                <h4 class="text-sm font-semibold text-red-800 mb-2">Delete Account</h4>
-                                <p class="text-sm text-red-700 mb-4">Once you delete your account, there is no going back. All your data, letters, and settings will be permanently removed.</p>
-                                <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center text-sm"
-                                        data-modal="deleteAccountModal">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                    Delete My Account
-                                </button>
+
+                    <form method="POST" action="{{ url_for('views.settings') }}" id="accountSettingsForm"
+                        class="space-y-6">
+                        <!-- CSRF Token -->
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="settingsFirstName"
+                                    class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                <input type="text" id="settingsFirstName" name="first_name"
+                                    value="{{ user.first_name }}" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+
+                            <div>
+                                <label for="settingsLastName" class="block text-sm font-medium text-gray-700 mb-2">Last
+                                    Name</label>
+                                <input type="text" id="settingsLastName" name="last_name" value="{{ user.last_name }}"
+                                    required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                             </div>
                         </div>
-                    </div>
+
+                        <div>
+                            <label for="settingsEmail" class="block text-sm font-medium text-gray-700 mb-2">Email
+                                Address</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="email" id="settingsEmail" value="{{ user.email }}" readonly
+                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
+                                <button type="button"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors flex items-center"
+                                    data-modal="changeEmailModal">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                    Change Email
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">Email changes require verification for security</p>
+                        </div>
+
+                        <div>
+                            <label for="settingsPhone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number
+                                (optional)</label>
+                            <input type="text" id="settingsPhone" name="phone"
+                                value="{{ user.phone if user.phone else '' }}" placeholder="Enter your phone number"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <p class="text-sm text-gray-500 mt-1">This will be used for account recovery and
+                                notifications</p>
+                        </div>
+
+                        <!-- Account Management -->
+                        <div class="pt-6 border-t border-gray-200">
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Account Management</h3>
+                                    <p class="text-sm text-gray-500">Manage your account settings and data</p>
+                                </div>
+                                <button type="button" id="showAccountOptions"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Account Options
+                                </button>
+                            </div>
+
+                            <!-- Hidden Account Options -->
+                            <div id="accountOptions" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-red-600 mr-3 mt-0.5" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                                        </path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-semibold text-red-800 mb-2">Delete Account</h4>
+                                        <p class="text-sm text-red-700 mb-4">Once you delete your account, there is no
+                                            going back. All your data, letters, and settings will be permanently
+                                            removed.</p>
+                                        <button type="button"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center text-sm"
+                                            data-modal="deleteAccountModal">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
+                                            </svg>
+                                            Delete My Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit"
+                                class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                
-                    <div class="flex justify-end">
-                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Save Changes
-                        </button>
-                    </div>
-            </form>
-        </div>
-    </div>
+            </div>
 
             <!-- Security Section -->
             <div id="security-tab" class="tab-content hidden">
-                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-8">
                     <div class="flex items-center mb-8">
-                        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                </path>
                             </svg>
                         </div>
                         <div>
@@ -161,124 +200,150 @@
                             <p class="text-sm text-gray-600">Manage your account security and authentication</p>
                         </div>
                     </div>
-            
-            <!-- Password Management -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Password</h3>
-                        <p class="text-sm text-gray-500">Manage your account password</p>
+
+                    <!-- Password Management -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Password</h3>
+                                <p class="text-sm text-gray-500">Manage your account password</p>
+                            </div>
+                            <button type="button"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+                                data-modal="changePasswordModal">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z">
+                                    </path>
+                                </svg>
+                                Change Password
+                            </button>
+                        </div>
                     </div>
-                    <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
-                            data-modal="changePasswordModal">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                        </svg>
-                        Change Password
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Two-Factor Authentication -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Two-Factor Authentication (2FA)</h3>
-                        <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
-                    </div>
-                    <div>
-                        {% if user.two_factor_enabled %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Enabled</span>
+
+                    <!-- Two-Factor Authentication -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Two-Factor Authentication (2FA)</h3>
+                                <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                            </div>
+                            <div>
+                                {% if user.two_factor_enabled %}
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Enabled</span>
+                                {% else %}
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Disabled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if not user.two_factor_enabled %}
+                        <a href="{{ url_for('auth.setup_2fa') }}"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center w-fit">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Enable 2FA
+                        </a>
                         {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Disabled</span>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                {% if not user.two_factor_enabled %}
-                    <a href="{{ url_for('auth.setup_2fa') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center w-fit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Enable 2FA
-                    </a>
-                {% else %}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                            <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <button type="button"
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
                                     data-modal="disable2FAModal">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                Disable 2FA
-                            </button>
-                            <button type="button" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Disable 2FA
+                                </button>
+                                <button type="button"
+                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
                                     data-modal="generateBackupCodesModal">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                </svg>
-                                Generate New Backup Codes
-                            </button>
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                        </path>
+                                    </svg>
+                                    Generate New Backup Codes
+                                </button>
+                            </div>
+                            <div>
+                                <a href="{{ url_for('auth.verify_2fa') }}"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center w-fit">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4"></path>
+                                    </svg>
+                                    Test 2FA
+                                </a>
+                            </div>
                         </div>
-                        <div>
-                            <a href="{{ url_for('auth.verify_2fa') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center w-fit">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
-                                </svg>
-                                Test 2FA
-                            </a>
-                        </div>
-                    </div>
-                    
-                    {% if user.backup_codes %}
+
+                        {% if user.backup_codes %}
                         <div class="mt-6">
-                            <h4 class="text-sm font-semibold text-gray-900 mb-2">Backup Codes ({{ user.backup_codes|length }} remaining)</h4>
-                            <p class="text-sm text-gray-500 mb-3">Save these codes securely. Each can only be used once.</p>
+                            <h4 class="text-sm font-semibold text-gray-900 mb-2">Backup Codes ({{
+                                user.backup_codes|length }} remaining)</h4>
+                            <p class="text-sm text-gray-500 mb-3">Save these codes securely. Each can only be used once.
+                            </p>
                             <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm">
                                 {% for code in user.backup_codes %}
-                                    <span class="inline-block bg-gray-200 text-gray-800 px-2 py-1 rounded mr-2 mb-2">{{ code }}</span>
+                                <span class="inline-block bg-gray-200 text-gray-800 px-2 py-1 rounded mr-2 mb-2">{{ code
+                                    }}</span>
                                 {% endfor %}
                             </div>
                         </div>
-                    {% endif %}
-                {% endif %}
-            </div>
-            
-            <!-- Login Activity -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Login Activity</h3>
-                        <p class="text-sm text-gray-500">Recent login attempts and device information</p>
+                        {% endif %}
+                        {% endif %}
                     </div>
-                    <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
-                            data-modal="logoutAllDevicesModal">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        Logout All Devices
-                    </button>
-                </div>
-                
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="text-center text-gray-500">
-                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                        </svg>
-                        <p class="text-sm">Login activity tracking will be available soon</p>
+
+                    <!-- Login Activity -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Login Activity</h3>
+                                <p class="text-sm text-gray-500">Recent login attempts and device information</p>
+                            </div>
+                            <button type="button"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+                                data-modal="logoutAllDevicesModal">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                    </path>
+                                </svg>
+                                Logout All Devices
+                            </button>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="text-center text-gray-500">
+                                <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                    </path>
+                                </svg>
+                                <p class="text-sm">Login activity tracking will be available soon</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
             <!-- Privacy & Data Section -->
             <div id="privacy-tab" class="tab-content hidden">
-                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-8">
                     <div class="flex items-center mb-8">
-                        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                </path>
                             </svg>
                         </div>
                         <div>
@@ -286,66 +351,79 @@
                             <p class="text-sm text-gray-600">Control your data and privacy settings</p>
                         </div>
                     </div>
-            
-            <!-- Privacy Policy -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Privacy Policy</h3>
-                        <p class="text-sm text-gray-500">Review our privacy policy and data handling practices</p>
+
+                    <!-- Privacy Policy -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Privacy Policy</h3>
+                                <p class="text-sm text-gray-500">Review our privacy policy and data handling practices
+                                </p>
+                            </div>
+                            <a href="{{ url_for('views.privacy_policy') }}" target="_blank"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                    </path>
+                                </svg>
+                                View Privacy Policy
+                            </a>
+                        </div>
                     </div>
-                    <a href="{{ url_for('views.privacy_policy') }}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
-                        View Privacy Policy
-                    </a>
+
+                    <!-- Data Export -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Download Your Data</h3>
+                                <p class="text-sm text-gray-500">Request a copy of all your personal data</p>
+                            </div>
+                            <button type="button"
+                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+                                data-modal="downloadDataModal">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Download My Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Data Deletion -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Request Data Deletion</h3>
+                                <p class="text-sm text-gray-500">Request permanent deletion of your personal data</p>
+                            </div>
+                            <button type="button"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+                                data-modal="requestDataDeletionModal">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
+                                </svg>
+                                Request Data Deletion
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Data Export -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Download Your Data</h3>
-                        <p class="text-sm text-gray-500">Request a copy of all your personal data</p>
-                    </div>
-                    <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
-                            data-modal="downloadDataModal">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Download My Data
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Data Deletion -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Request Data Deletion</h3>
-                        <p class="text-sm text-gray-500">Request permanent deletion of your personal data</p>
-                    </div>
-                    <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
-                            data-modal="requestDataDeletionModal">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                        Request Data Deletion
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
             <!-- Billing Section -->
             <div id="billing-tab" class="tab-content hidden">
-                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-8">
                     <div class="flex items-center mb-8">
-                        <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                </path>
                             </svg>
                         </div>
                         <div>
@@ -353,91 +431,102 @@
                             <p class="text-sm text-gray-600">Manage your subscription, billing, and payment methods</p>
                         </div>
                     </div>
-                    
+
                     <!-- Current Subscription Status -->
                     <div class="mb-8">
                         <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center">
-                                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-4">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
+                                    <div
+                                        class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
                                     <div>
-                                        <h3 class="text-xl font-bold text-gray-900">{{ user.plan.title() if user.plan else 'Free' }} Plan</h3>
+                                        <h3 class="text-xl font-bold text-gray-900">{{ user.plan.title() if user.plan
+                                            else 'Free' }} Plan</h3>
                                         <p class="text-sm text-gray-600">
                                             {% if user.plan == 'premium' %}
-                                                {% if user.subscription_cycle %}
-                                                    Billed {{ user.subscription_cycle.title() }}
-                                                {% else %}
-                                                    Premium Subscription
-                                                {% endif %}
-                                            {% elif user.plan == 'lifetime' %}
-                                                One-time payment, lifetime access
+                                            {% if user.subscription_cycle %}
+                                            Billed {{ user.subscription_cycle.title() }}
                                             {% else %}
-                                                Free tier with basic features
+                                            Premium Subscription
+                                            {% endif %}
+                                            {% elif user.plan == 'lifetime' %}
+                                            One-time payment, lifetime access
+                                            {% else %}
+                                            Free tier with basic features
                                             {% endif %}
                                         </p>
                                     </div>
                                 </div>
                                 <div class="text-right">
                                     {% if user.plan == 'premium' %}
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Active
-                                        </span>
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Active
+                                    </span>
                                     {% elif user.plan == 'lifetime' %}
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Lifetime
-                                        </span>
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Lifetime
+                                    </span>
                                     {% else %}
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                            Free Plan
-                                        </span>
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                        Free Plan
+                                    </span>
                                     {% endif %}
                                 </div>
                             </div>
-                            
+
                             <!-- Subscription Details -->
                             {% if user.plan == 'premium' %}
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                    <div class="bg-white rounded-lg p-4 border border-gray-200">
-                                        <div class="text-sm text-gray-600 mb-1">Next Payment</div>
-                                        <div class="font-semibold text-gray-900">
-                                            {% if user.next_payment_date %}
-                                                {{ user.next_payment_date.strftime('%B %d, %Y') }}
-                                            {% else %}
-                                                N/A
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="bg-white rounded-lg p-4 border border-gray-200">
-                                        <div class="text-sm text-gray-600 mb-1">Last Payment</div>
-                                        <div class="font-semibold text-gray-900">
-                                            {% if user.last_payment_date %}
-                                                {{ user.last_payment_date.strftime('%B %d, %Y') }}
-                                            {% else %}
-                                                N/A
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="bg-white rounded-lg p-4 border border-gray-200">
-                                        <div class="text-sm text-gray-600 mb-1">Status</div>
-                                        <div class="font-semibold text-gray-900">
-                                            {% if user.subscription_status %}
-                                                {{ user.subscription_status.title() }}
-                                            {% else %}
-                                                Active
-                                            {% endif %}
-                                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="text-sm text-gray-600 mb-1">Next Payment</div>
+                                    <div class="font-semibold text-gray-900">
+                                        {% if user.next_payment_date %}
+                                        {{ user.next_payment_date.strftime('%B %d, %Y') }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
                                     </div>
                                 </div>
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="text-sm text-gray-600 mb-1">Last Payment</div>
+                                    <div class="font-semibold text-gray-900">
+                                        {% if user.last_payment_date %}
+                                        {{ user.last_payment_date.strftime('%B %d, %Y') }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="text-sm text-gray-600 mb-1">Status</div>
+                                    <div class="font-semibold text-gray-900">
+                                        {% if user.subscription_status %}
+                                        {{ user.subscription_status.title() }}
+                                        {% else %}
+                                        Active
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -447,7 +536,8 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Plan Features</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Free Plan -->
-                            <div class="bg-white rounded-xl border-2 {% if user.plan == 'free' %}border-blue-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
+                            <div
+                                class="bg-white rounded-xl border-2 {% if user.plan == 'free' %}border-blue-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
                                 <div class="text-center mb-4">
                                     <h4 class="text-lg font-bold text-gray-900">Free</h4>
                                     <div class="text-3xl font-bold text-gray-900 mt-2">$0</div>
@@ -455,53 +545,71 @@
                                 </div>
                                 <ul class="space-y-3 text-sm flex-grow">
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Unlimited letters (text only)
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Send letters to yourself only
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Scheduled delivery (date-based only)
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Bank-level encryption
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Email delivery tracking
                                     </li>
                                 </ul>
                                 {% if user.plan == 'free' %}
-                                    <div class="mt-4 text-center">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                            Current Plan
-                                        </span>
-                                    </div>
+                                <div class="mt-4 text-center">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                        Current Plan
+                                    </span>
+                                </div>
                                 {% endif %}
                             </div>
 
                             <!-- Premium Plan -->
-                            <div class="bg-white rounded-xl border-2 {% if user.plan == 'premium' %}border-purple-500{% else %}border-gray-200{% endif %} p-6 relative flex flex-col">
+                            <div
+                                class="bg-white rounded-xl border-2 {% if user.plan == 'premium' %}border-purple-500{% else %}border-gray-200{% endif %} p-6 relative flex flex-col">
                                 {% if user.plan == 'premium' %}
-                                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                                            Current Plan
-                                        </span>
-                                    </div>
+                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                        Current Plan
+                                    </span>
+                                </div>
                                 {% endif %}
                                 <div class="text-center mb-4">
                                     <h4 class="text-lg font-bold text-gray-900">Premium</h4>
@@ -510,94 +618,127 @@
                                 </div>
                                 <ul class="space-y-3 text-sm flex-grow">
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Everything in Free
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Photos, videos, and audio attachments
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Send letters to other recipients
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Unlimited trusted contacts
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Death verification delivery
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Schedule letters for birthdays & milestones
                                     </li>
                                 </ul>
                                 {% if user.plan != 'premium' %}
-                                    <div class="mt-4">
-                                        <a href="{{ url_for('pricing.pricing_page') }}" class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 rounded-lg transition-all duration-300">
-                                            Upgrade to Premium
-                                        </a>
-                                    </div>
+                                <div class="mt-4">
+                                    <a href="{{ url_for('pricing.pricing_page') }}"
+                                        class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 rounded-lg transition-all duration-300">
+                                        Upgrade to Premium
+                                    </a>
+                                </div>
                                 {% endif %}
                             </div>
 
                             <!-- Lifetime Plan -->
-                            <div class="bg-white rounded-xl border-2 {% if user.plan == 'lifetime' %}border-green-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
+                            <div
+                                class="bg-white rounded-xl border-2 {% if user.plan == 'lifetime' %}border-green-500{% else %}border-gray-200{% endif %} p-6 flex flex-col">
                                 <div class="text-center mb-4">
                                     <h4 class="text-lg font-bold text-gray-900">Lifetime</h4>
                                     <div class="mt-1">
-                                        <span class="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide animate-pulse">🎉 Black Friday</span>
+                                        <span
+                                            class="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide animate-pulse">🎉
+                                            Black Friday</span>
                                     </div>
                                     <div class="text-3xl font-bold text-gray-900 mt-2">
                                         <div class="flex items-center justify-center gap-2 mb-1">
                                             <span class="text-xs text-gray-400 line-through">$99.99</span>
-                                            <span class="inline-flex items-center bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-[10px] font-bold">50% OFF</span>
+                                            <span
+                                                class="inline-flex items-center bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-[10px] font-bold">50%
+                                                OFF</span>
                                         </div>
                                         $49.99
                                     </div>
                                     <div class="text-sm text-gray-600 mb-1">one-time payment</div>
-                                    <div class="text-xs text-orange-600 font-semibold">Use code: <span class="font-mono bg-orange-100 px-1.5 py-0.5 rounded">50OFF</span></div>
+                                    <div class="text-xs text-orange-600 font-semibold">Use code: <span
+                                            class="font-mono bg-orange-100 px-1.5 py-0.5 rounded">50OFF</span></div>
                                 </div>
                                 <ul class="space-y-3 text-sm flex-grow">
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Everything in Premium
                                     </li>
                                     <li class="flex items-center">
-                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
                                         </svg>
                                         Pay once, use forever
                                     </li>
                                 </ul>
                                 {% if user.plan == 'lifetime' %}
-                                    <div class="mt-4 text-center">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            Current Plan
-                                        </span>
-                                    </div>
+                                <div class="mt-4 text-center">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        Current Plan
+                                    </span>
+                                </div>
                                 {% else %}
-                                    <div class="mt-4">
-                                        <a href="{{ url_for('pricing.pricing_page') }}" class="block w-full text-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2 rounded-lg transition-all duration-300">
-                                            Get Lifetime Access
-                                        </a>
-                                    </div>
+                                <div class="mt-4">
+                                    <a href="{{ url_for('pricing.pricing_page') }}"
+                                        class="block w-full text-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2 rounded-lg transition-all duration-300">
+                                        Get Lifetime Access
+                                    </a>
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -605,86 +746,105 @@
 
                     <!-- Subscription Management Actions -->
                     {% if user.plan == 'premium' %}
-                        <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Subscription Management</h3>
-                            
-                            <!-- Cancelled Subscription Notice -->
-                            {% if user.subscription_cancel_at_period_end %}
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                                    <div class="flex items-center">
-                                        <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                        </svg>
-                                        <div>
-                                            <h4 class="font-semibold text-yellow-800">Subscription Cancelled</h4>
-                                            <p class="text-sm text-yellow-700">Your subscription will end on {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}. You can reactivate it anytime before then.</p>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <form method="POST" action="{{ url_for('stripe.reactivate_subscription') }}" class="inline">
-                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                                </svg>
-                                                Reactivate Subscription
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Change Billing Cycle -->
-                                <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900">Billing Cycle</h4>
-                                            <p class="text-sm text-gray-600">Switch between monthly and yearly billing</p>
-                                        </div>
-                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="text-sm text-gray-600 mb-3">
-                                        Current: {{ user.subscription_cycle.title() if user.subscription_cycle else 'Monthly' }}
-                                    </div>
-                                    <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
-                                            data-modal="changeBillingCycleModal">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                        </svg>
-                                        Change Billing Cycle
-                                    </button>
-                                </div>
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Subscription Management</h3>
 
-                                <!-- Cancel Subscription -->
-                                <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900">Cancel Subscription</h4>
-                                            <p class="text-sm text-gray-600">Cancel your subscription at any time</p>
-                                        </div>
-                                        <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="text-sm text-gray-600 mb-3">
-                                        You'll keep access until {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}
-                                    </div>
-                                    {% if not user.subscription_cancel_at_period_end %}
-                                        <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
-                                                data-modal="cancelSubscriptionModal">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                            Cancel Subscription
-                                        </button>
-                                    {% else %}
-                                        <div class="text-sm text-gray-500 italic">Subscription already cancelled</div>
-                                    {% endif %}
+                        <!-- Cancelled Subscription Notice -->
+                        {% if user.subscription_cancel_at_period_end %}
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                                    </path>
+                                </svg>
+                                <div>
+                                    <h4 class="font-semibold text-yellow-800">Subscription Cancelled</h4>
+                                    <p class="text-sm text-yellow-700">Your subscription will end on {{
+                                        user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else
+                                        'your next billing date' }}. You can reactivate it anytime before then.</p>
                                 </div>
                             </div>
+                            <div class="mt-3">
+                                <form method="POST" action="{{ url_for('stripe.reactivate_subscription') }}"
+                                    class="inline">
+                                    <button type="submit"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                            </path>
+                                        </svg>
+                                        Reactivate Subscription
+                                    </button>
+                                </form>
+                            </div>
                         </div>
+                        {% endif %}
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Change Billing Cycle -->
+                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Billing Cycle</h4>
+                                        <p class="text-sm text-gray-600">Switch between monthly and yearly billing</p>
+                                    </div>
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-3">
+                                    Current: {{ user.subscription_cycle.title() if user.subscription_cycle else
+                                    'Monthly' }}
+                                </div>
+                                <button type="button"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
+                                    data-modal="changeBillingCycleModal">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                    </svg>
+                                    Change Billing Cycle
+                                </button>
+                            </div>
+
+                            <!-- Cancel Subscription -->
+                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Cancel Subscription</h4>
+                                        <p class="text-sm text-gray-600">Cancel your subscription at any time</p>
+                                    </div>
+                                    <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-3">
+                                    You'll keep access until {{ user.next_payment_date.strftime('%B %d, %Y') if
+                                    user.next_payment_date else 'your next billing date' }}
+                                </div>
+                                {% if not user.subscription_cancel_at_period_end %}
+                                <button type="button"
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center"
+                                    data-modal="cancelSubscriptionModal">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Cancel Subscription
+                                </button>
+                                {% else %}
+                                <div class="text-sm text-gray-500 italic">Subscription already cancelled</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
 
                     <!-- Payment History -->
@@ -692,60 +852,74 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
                         <div class="bg-white rounded-lg border border-gray-200">
                             {% if user.payments %}
-                                <div class="overflow-x-auto">
-                                    <table class="w-full">
-                                        <thead class="bg-gray-50 border-b border-gray-200">
-                                            <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
-                                            {% for payment in user.payments|sort(attribute='payment_date', reverse=true) %}
-                                            <tr class="hover:bg-gray-50">
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {{ payment.payment_date.strftime('%B %d, %Y') }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50 border-b border-gray-200">
+                                        <tr>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Date</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Plan</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Amount</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Status</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for payment in user.payments|sort(attribute='payment_date', reverse=true) %}
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ payment.payment_date.strftime('%B %d, %Y') }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                         {% if payment.plan == 'premium' %}bg-purple-100 text-purple-800
                                                         {% elif payment.plan == 'lifetime' %}bg-green-100 text-green-800
                                                         {% else %}bg-blue-100 text-blue-800{% endif %}">
-                                                        {{ payment.plan.title() }}
-                                                        {% if payment.cycle %} ({{ payment.cycle.title() }}){% endif %}
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    ${{ "%.2f"|format(payment.amount / 100) }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                    {{ payment.plan.title() }}
+                                                    {% if payment.cycle %} ({{ payment.cycle.title() }}){% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                ${{ "%.2f"|format(payment.amount / 100) }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                         {% if payment.status == 'succeeded' %}bg-green-100 text-green-800
                                                         {% elif payment.status == 'failed' %}bg-red-100 text-red-800
                                                         {% elif payment.status == 'refunded' %}bg-yellow-100 text-yellow-800
                                                         {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                                        {{ payment.status.title() }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 text-sm text-gray-900">
-                                                    {{ payment.description or 'Subscription payment' }}
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                    {{ payment.status.title() }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900">
+                                                {{ payment.description or 'Subscription payment' }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                             {% else %}
-                                <div class="p-6 text-center text-gray-500">
-                                    <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                    </svg>
-                                    <p class="text-sm">No payment history available</p>
-                                    <p class="text-xs text-gray-400 mt-1">Payment records will appear here after your first transaction</p>
-                                </div>
+                            <div class="p-6 text-center text-gray-500">
+                                <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                    </path>
+                                </svg>
+                                <p class="text-sm">No payment history available</p>
+                                <p class="text-xs text-gray-400 mt-1">Payment records will appear here after your first
+                                    transaction</p>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -753,9 +927,12 @@
                     <!-- Support -->
                     <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
                         <div class="flex items-center mb-4">
-                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z">
+                                    </path>
                                 </svg>
                             </div>
                             <div>
@@ -764,15 +941,21 @@
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3">
-                            <a href="mailto:support@letterforlater.com" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            <a href="mailto:support@letterforlater.com"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                    </path>
                                 </svg>
                                 Email Support
                             </a>
-                            <a href="{{ url_for('pricing.pricing_page') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg transition-colors">
+                            <a href="{{ url_for('pricing.pricing_page') }}"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                    </path>
                                 </svg>
                                 View All Plans
                             </a>
@@ -783,11 +966,14 @@
 
             <!-- Notifications Section -->
             <div id="notifications-tab" class="tab-content hidden">
-                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-8">
                     <div class="flex items-center mb-8">
-                        <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a2 2 0 10-4 0v1.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m5 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a2 2 0 10-4 0v1.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m5 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
                             </svg>
                         </div>
                         <div>
@@ -795,60 +981,66 @@
                             <p class="text-sm text-gray-600">Control how and when you receive notifications</p>
                         </div>
                     </div>
-            
-            <form method="POST" action="{{ url_for('views.update_notification_preferences') }}" id="notificationForm" class="space-y-6">
-                <!-- Email Notifications -->
-                <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Email Notifications</h3>
-                    
-                    <!-- Security Alerts -->
-                    <div class="flex items-center justify-between py-3 border-b border-gray-200">
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900">Security Alerts</h4>
-                            <p class="text-sm text-gray-500">Critical security notifications (cannot be disabled)</p>
+
+                    <form method="POST" action="{{ url_for('views.update_notification_preferences') }}"
+                        id="notificationForm" class="space-y-6">
+                        <!-- Email Notifications -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Email Notifications</h3>
+
+                            <!-- Security Alerts -->
+                            <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Security Alerts</h4>
+                                    <p class="text-sm text-gray-500">Critical security notifications (cannot be
+                                        disabled)</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" checked disabled
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <span class="ml-2 text-sm text-gray-500">Always enabled</span>
+                                </div>
+                            </div>
+
+                            <!-- Product Updates -->
+                            <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Product Updates</h4>
+                                    <p class="text-sm text-gray-500">New features and improvements</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="product_updates" value="true" {% if
+                                        user.notification_preferences.get('product_updates', True) %}checked{% endif %}
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                </div>
+                            </div>
+
+                            <!-- Marketing Emails -->
+                            <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Marketing Emails</h4>
+                                    <p class="text-sm text-gray-500">Promotional content and special offers (CAN-SPAM
+                                        compliant)</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="marketing_emails" value="true" {% if
+                                        user.notification_preferences.get('marketing_emails', True) %}checked{% endif %}
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" checked disabled class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <span class="ml-2 text-sm text-gray-500">Always enabled</span>
+
+                        <div class="flex justify-end pt-6 border-t border-gray-200">
+                            <button type="submit"
+                                class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Save Preferences
+                            </button>
                         </div>
-                    </div>
-                    
-                    <!-- Product Updates -->
-                    <div class="flex items-center justify-between py-3 border-b border-gray-200">
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900">Product Updates</h4>
-                            <p class="text-sm text-gray-500">New features and improvements</p>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="product_updates" value="true" 
-                                   {% if user.notification_preferences.get('product_updates', True) %}checked{% endif %}
-                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        </div>
-                    </div>
-                    
-                    <!-- Marketing Emails -->
-                    <div class="flex items-center justify-between py-3 border-b border-gray-200">
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900">Marketing Emails</h4>
-                            <p class="text-sm text-gray-500">Promotional content and special offers (CAN-SPAM compliant)</p>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="marketing_emails" value="true" 
-                                   {% if user.notification_preferences.get('marketing_emails', True) %}checked{% endif %}
-                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        </div>
-                    </div>
-                </div>
-                
-                    <div class="flex justify-end pt-6 border-t border-gray-200">
-                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Save Preferences
-                        </button>
-                    </div>
-                </form>
+                    </form>
                 </div>
             </div>
         </div>
@@ -868,7 +1060,8 @@
                 <h5 class="modal-title">Change Email Address</h5>
                 <button type="button" class="modal-close" data-modal="changeEmailModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -876,27 +1069,32 @@
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <strong class="text-blue-800">Security Notice:</strong>
-                        <span class="text-blue-700 ml-1">Changing your email requires verification of both old and new addresses.</span>
+                        <span class="text-blue-700 ml-1">Changing your email requires verification of both old and new
+                            addresses.</span>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label for="newEmail" class="block text-sm font-medium text-gray-700 mb-2">New Email Address</label>
+                        <label for="newEmail" class="block text-sm font-medium text-gray-700 mb-2">New Email
+                            Address</label>
                         <input type="email" id="newEmail" name="new_email" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                     </div>
                     <div>
-                        <label for="confirmNewEmail" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Email</label>
+                        <label for="confirmNewEmail" class="block text-sm font-medium text-gray-700 mb-2">Confirm New
+                            Email</label>
                         <input type="email" id="confirmNewEmail" name="confirm_new_email" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                     </div>
                     <div>
-                        <label for="currentPasswordEmail" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                        <label for="currentPasswordEmail" class="block text-sm font-medium text-gray-700 mb-2">Current
+                            Password</label>
                         <input type="password" id="currentPasswordEmail" name="current_password" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                     </div>
                 </div>
             </div>
@@ -916,7 +1114,8 @@
                 <h5 class="modal-title text-red-900">Delete Account</h5>
                 <button type="button" class="modal-close" data-modal="deleteAccountModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -924,24 +1123,29 @@
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
                         <strong class="text-red-800">Warning:</strong>
-                        <span class="text-red-700 ml-1">This action cannot be undone. All your data will be permanently deleted.</span>
+                        <span class="text-red-700 ml-1">This action cannot be undone. All your data will be permanently
+                            deleted.</span>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-4">To confirm account deletion, please enter your password and type "DELETE" in the confirmation field:</p>
+                <p class="text-gray-700 mb-4">To confirm account deletion, please enter your password and type "DELETE"
+                    in the confirmation field:</p>
                 <div class="space-y-4">
                     <div>
-                        <label for="deletePassword" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                        <label for="deletePassword" class="block text-sm font-medium text-gray-700 mb-2">Current
+                            Password</label>
                         <input type="password" id="deletePassword" name="password" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
                     </div>
                     <div>
-                        <label for="deleteConfirmation" class="block text-sm font-medium text-gray-700 mb-2">Type "DELETE" to confirm</label>
-                        <input type="text" id="deleteConfirmation" name="confirmation" required
-                               placeholder="DELETE"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                        <label for="deleteConfirmation" class="block text-sm font-medium text-gray-700 mb-2">Type
+                            "DELETE" to confirm</label>
+                        <input type="text" id="deleteConfirmation" name="confirmation" required placeholder="DELETE"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
                     </div>
                 </div>
             </div>
@@ -961,7 +1165,8 @@
                 <h5 class="modal-title">Logout All Devices</h5>
                 <button type="button" class="modal-close" data-modal="logoutAllDevicesModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -969,13 +1174,17 @@
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
                         <strong class="text-yellow-800">Notice:</strong>
-                        <span class="text-yellow-700 ml-1">This will log you out of all devices and require re-authentication.</span>
+                        <span class="text-yellow-700 ml-1">This will log you out of all devices and require
+                            re-authentication.</span>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-4">Are you sure you want to logout from all devices? You will need to log in again on this device.</p>
+                <p class="text-gray-700 mb-4">Are you sure you want to logout from all devices? You will need to log in
+                    again on this device.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-modal="logoutAllDevicesModal">Cancel</button>
@@ -992,7 +1201,8 @@
             <h5 class="modal-title">Download Your Data</h5>
             <button type="button" class="modal-close" data-modal="downloadDataModal">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
                 </svg>
             </button>
         </div>
@@ -1000,16 +1210,20 @@
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <strong class="text-blue-800">Data Export:</strong>
-                    <span class="text-blue-700 ml-1">We'll prepare your data and email you a secure download link.</span>
+                    <span class="text-blue-700 ml-1">We'll prepare your data and email you a secure download
+                        link.</span>
                 </div>
             </div>
-            <p class="text-gray-700 mb-4">We'll compile all your personal data including letters, settings, and account information into a downloadable archive. This process may take a few minutes.</p>
+            <p class="text-gray-700 mb-4">We'll compile all your personal data including letters, settings, and account
+                information into a downloadable archive. This process may take a few minutes.</p>
         </div>
         <div class="modal-footer">
-            <form method="POST" action="{{ url_for('views.request_data_export') }}" class="flex justify-end space-x-3 w-full">
+            <form method="POST" action="{{ url_for('views.request_data_export') }}"
+                class="flex justify-end space-x-3 w-full">
                 <button type="button" class="btn btn-secondary" data-modal="downloadDataModal">Cancel</button>
                 <button type="submit" class="btn btn-success">Request Data Export</button>
             </form>
@@ -1025,7 +1239,8 @@
                 <h5 class="modal-title text-red-900">Request Data Deletion</h5>
                 <button type="button" class="modal-close" data-modal="requestDataDeletionModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -1033,24 +1248,30 @@
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
                         <strong class="text-red-800">Warning:</strong>
-                        <span class="text-red-700 ml-1">This will permanently delete all your personal data and cannot be undone.</span>
+                        <span class="text-red-700 ml-1">This will permanently delete all your personal data and cannot
+                            be undone.</span>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-4">To request data deletion, please enter your password and type "DELETE MY DATA" in the confirmation field:</p>
+                <p class="text-gray-700 mb-4">To request data deletion, please enter your password and type "DELETE MY
+                    DATA" in the confirmation field:</p>
                 <div class="space-y-4">
                     <div>
-                        <label for="deletionPassword" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                        <label for="deletionPassword" class="block text-sm font-medium text-gray-700 mb-2">Current
+                            Password</label>
                         <input type="password" id="deletionPassword" name="password" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
                     </div>
                     <div>
-                        <label for="deletionConfirmation" class="block text-sm font-medium text-gray-700 mb-2">Type "DELETE MY DATA" to confirm</label>
+                        <label for="deletionConfirmation" class="block text-sm font-medium text-gray-700 mb-2">Type
+                            "DELETE MY DATA" to confirm</label>
                         <input type="text" id="deletionConfirmation" name="confirmation" required
-                               placeholder="DELETE MY DATA"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            placeholder="DELETE MY DATA"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
                     </div>
                 </div>
             </div>
@@ -1070,7 +1291,8 @@
                 <h5 class="modal-title">Disable Two-Factor Authentication</h5>
                 <button type="button" class="modal-close" data-modal="disable2FAModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -1078,17 +1300,21 @@
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
                         <strong class="text-yellow-800">Warning:</strong>
                         <span class="text-yellow-700 ml-1">Disabling 2FA will make your account less secure.</span>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-4">To disable two-factor authentication, please enter your current password:</p>
+                <p class="text-gray-700 mb-4">To disable two-factor authentication, please enter your current password:
+                </p>
                 <div>
-                    <label for="disable2FAPassword" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                    <label for="disable2FAPassword" class="block text-sm font-medium text-gray-700 mb-2">Current
+                        Password</label>
                     <input type="password" id="disable2FAPassword" name="password" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1107,7 +1333,8 @@
                 <h5 class="modal-title">Change Billing Cycle</h5>
                 <button type="button" class="modal-close" data-modal="changeBillingCycleModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -1115,27 +1342,32 @@
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <strong class="text-blue-800">Billing Cycle Change:</strong>
                         <span class="text-blue-700 ml-1">Changes will take effect on your next billing date.</span>
                     </div>
                 </div>
                 <div class="space-y-4">
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-3">Select New Billing Cycle:</label>
                         <div class="space-y-3">
-                            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="new_cycle" value="month" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" 
-                                       {% if user.subscription_cycle == 'month' %}checked{% endif %}>
+                            <label
+                                class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="new_cycle" value="month"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" {% if
+                                    user.subscription_cycle=='month' %}checked{% endif %}>
                                 <div class="ml-3">
                                     <div class="text-sm font-medium text-gray-900">Monthly</div>
                                     <div class="text-sm text-gray-500">$2.99 per month</div>
                                 </div>
                             </label>
-                            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="new_cycle" value="year" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                       {% if user.subscription_cycle == 'year' %}checked{% endif %}>
+                            <label
+                                class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="new_cycle" value="year"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" {% if
+                                    user.subscription_cycle=='year' %}checked{% endif %}>
                                 <div class="ml-3">
                                     <div class="text-sm font-medium text-gray-900">Yearly</div>
                                     <div class="text-sm text-gray-500">$19.99 per year (Save 44%)</div>
@@ -1161,7 +1393,8 @@
                 <h5 class="modal-title text-red-900">Cancel Subscription</h5>
                 <button type="button" class="modal-close" data-modal="cancelSubscriptionModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -1169,28 +1402,35 @@
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
                         <strong class="text-red-800">Important:</strong>
                         <span class="text-red-700 ml-1">You'll keep access until your next billing date.</span>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-4">Are you sure you want to cancel your subscription? You'll lose access to premium features after {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}.</p>
-                
+                <p class="text-gray-700 mb-4">Are you sure you want to cancel your subscription? You'll lose access to
+                    premium features after {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date
+                    else 'your next billing date' }}.</p>
+
                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
                     <h4 class="font-semibold text-gray-900 mb-2">What happens when you cancel:</h4>
                     <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• You'll keep premium access until {{ user.next_payment_date.strftime('%B %d, %Y') if user.next_payment_date else 'your next billing date' }}</li>
+                        <li>• You'll keep premium access until {{ user.next_payment_date.strftime('%B %d, %Y') if
+                            user.next_payment_date else 'your next billing date' }}</li>
                         <li>• Your account will revert to the free plan</li>
                         <li>• You can resubscribe anytime</li>
                         <li>• All your letters will remain safe and accessible</li>
                     </ul>
                 </div>
-                
+
                 <div class="space-y-4">
                     <div>
-                        <label for="cancelReason" class="block text-sm font-medium text-gray-700 mb-2">Reason for cancellation (optional)</label>
-                        <select id="cancelReason" name="cancel_reason" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                        <label for="cancelReason" class="block text-sm font-medium text-gray-700 mb-2">Reason for
+                            cancellation (optional)</label>
+                        <select id="cancelReason" name="cancel_reason"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
                             <option value="">Select a reason...</option>
                             <option value="too_expensive">Too expensive</option>
                             <option value="not_using">Not using the service</option>
@@ -1200,14 +1440,17 @@
                         </select>
                     </div>
                     <div>
-                        <label for="cancelFeedback" class="block text-sm font-medium text-gray-700 mb-2">Additional feedback (optional)</label>
-                        <textarea id="cancelFeedback" name="cancel_feedback" rows="3" placeholder="Help us improve by sharing your feedback..."
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"></textarea>
+                        <label for="cancelFeedback" class="block text-sm font-medium text-gray-700 mb-2">Additional
+                            feedback (optional)</label>
+                        <textarea id="cancelFeedback" name="cancel_feedback" rows="3"
+                            placeholder="Help us improve by sharing your feedback..."
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"></textarea>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-modal="cancelSubscriptionModal">Keep Subscription</button>
+                <button type="button" class="btn btn-secondary" data-modal="cancelSubscriptionModal">Keep
+                    Subscription</button>
                 <button type="submit" class="btn btn-danger">Cancel Subscription</button>
             </div>
         </form>
@@ -1222,27 +1465,31 @@
                 <h5 class="modal-title">Change Password</h5>
                 <button type="button" class="modal-close" data-modal="changePasswordModal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="space-y-4">
                     <div>
-                        <label for="currentPassword" class="block text-lg font-semibold text-primary mb-2">Current Password</label>
+                        <label for="currentPassword" class="block text-lg font-semibold text-primary mb-2">Current
+                            Password</label>
                         <input type="password" id="currentPassword" name="current_password" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-colors">
                     </div>
                     <div>
-                        <label for="newPassword" class="block text-lg font-semibold text-primary mb-2">New Password</label>
+                        <label for="newPassword" class="block text-lg font-semibold text-primary mb-2">New
+                            Password</label>
                         <input type="password" id="newPassword" name="new_password" required minlength="7"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-colors">
                         <p class="text-sm text-gray-500 mt-1">Password must be at least 7 characters long</p>
                     </div>
                     <div>
-                        <label for="confirmPassword" class="block text-lg font-semibold text-primary mb-2">Confirm New Password</label>
+                        <label for="confirmPassword" class="block text-lg font-semibold text-primary mb-2">Confirm New
+                            Password</label>
                         <input type="password" id="confirmPassword" name="confirm_password" required minlength="7"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-colors">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-colors">
                     </div>
                 </div>
             </div>
@@ -1256,605 +1503,618 @@
 
 <!-- Add CSS for modal system -->
 <style>
-/* Modal Backdrop */
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Modal Container */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Modal Content */
-.modal-content {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border: 1px solid #e5e7eb;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    margin: 1rem;
-}
-
-/* Modal Header */
-.modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    transition: color 0.2s;
-}
-
-.modal-close:hover {
-    color: #374151;
-}
-
-/* Modal Body */
-.modal-body {
-    padding: 1.5rem;
-}
-
-/* Modal Footer */
-.modal-footer {
-    padding: 1.5rem;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-}
-
-/* Button Styles */
-.btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-primary {
-    background-color: #3b82f6;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #2563eb;
-}
-
-.btn-secondary {
-    background-color: #6b7280;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #4b5563;
-}
-
-.btn-danger {
-    background-color: #dc2626;
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #b91c1c;
-}
-
-.btn-success {
-    background-color: #059669;
-    color: white;
-}
-
-.btn-success:hover {
-    background-color: #047857;
-}
-
-.btn-warning {
-    background-color: #d97706;
-    color: white;
-}
-
-.btn-warning:hover {
-    background-color: #b45309;
-}
-
-/* Responsive Design */
-@media (max-width: 640px) {
-    .modal-content {
-        width: 95%;
-        margin: 0.5rem;
-    }
-    
-    .modal-header,
-    .modal-body,
-    .modal-footer {
-        padding: 1rem;
-    }
-    
-    .modal-footer {
-        flex-direction: column;
-    }
-    
-    .btn {
+    /* Modal Backdrop */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
         justify-content: center;
     }
-}
 
-/* Animation */
-.modal {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+    /* Modal Container */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.modal.show {
-    opacity: 1;
-    visibility: visible;
-}
+    /* Modal Content */
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid #e5e7eb;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        margin: 1rem;
+    }
 
-.modal-content {
-    transform: scale(0.9) translateY(-20px);
-    transition: transform 0.3s ease;
-}
+    /* Modal Header */
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.modal.show .modal-content {
-    transform: scale(1) translateY(0);
-}
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+        color: #374151;
+    }
+
+    /* Modal Body */
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+
+    .btn-secondary {
+        background-color: #6b7280;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #4b5563;
+    }
+
+    .btn-danger {
+        background-color: #dc2626;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #b91c1c;
+    }
+
+    .btn-success {
+        background-color: #059669;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #047857;
+    }
+
+    .btn-warning {
+        background-color: #d97706;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background-color: #b45309;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+        .modal-content {
+            width: 95%;
+            margin: 0.5rem;
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            padding: 1rem;
+        }
+
+        .modal-footer {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Animation */
+    .modal {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        transform: scale(0.9) translateY(-20px);
+        transition: transform 0.3s ease;
+    }
+
+    .modal.show .modal-content {
+        transform: scale(1) translateY(0);
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
+    }
 </style>
 
 <!-- Add JavaScript for tab functionality and form validation -->
 {% block javascript %}
 <script>
-// Tab functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    // Add click event listeners to tab buttons
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
-            
-            // Remove active class from all buttons
-            tabButtons.forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
-            tabButtons.forEach(btn => btn.classList.add('text-gray-600', 'hover:text-gray-800'));
-            
-            // Add active class to clicked button
-            this.classList.add('active', 'bg-blue-600', 'text-white');
-            this.classList.remove('text-gray-600', 'hover:text-gray-800');
-            
-            // Hide all tab contents
-            tabContents.forEach(content => content.classList.add('hidden'));
-            
-            // Show target tab content
-            const targetContent = document.getElementById(targetTab + '-tab');
-            if (targetContent) {
-                targetContent.classList.remove('hidden');
-            }
+    // Tab functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Add click event listeners to tab buttons
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const targetTab = this.getAttribute('data-tab');
+
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
+                tabButtons.forEach(btn => btn.classList.add('text-gray-600', 'hover:text-gray-800'));
+
+                // Add active class to clicked button
+                this.classList.add('active', 'bg-blue-600', 'text-white');
+                this.classList.remove('text-gray-600', 'hover:text-gray-800');
+
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.add('hidden'));
+
+                // Show target tab content
+                const targetContent = document.getElementById(targetTab + '-tab');
+                if (targetContent) {
+                    targetContent.classList.remove('hidden');
+                }
+            });
         });
-    });
-    
-    // Set initial active state
-    const activeButton = document.querySelector('.tab-button.active');
-    if (activeButton) {
-        activeButton.classList.add('bg-blue-600', 'text-white');
-        activeButton.classList.remove('text-gray-600', 'hover:text-gray-800');
-    }
-    
-    // Account options toggle functionality
-    function initAccountOptionsToggle() {
-        const showAccountOptionsBtn = document.getElementById('showAccountOptions');
-        const accountOptions = document.getElementById('accountOptions');
-        
-        console.log('Account Options Button:', showAccountOptionsBtn);
-        console.log('Account Options Div:', accountOptions);
-        
-        if (showAccountOptionsBtn && accountOptions) {
-            console.log('Adding event listener to Account Options button');
-            
-            // Remove any existing event listeners
-            const newBtn = showAccountOptionsBtn.cloneNode(true);
-            showAccountOptionsBtn.parentNode.replaceChild(newBtn, showAccountOptionsBtn);
-            
-            newBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Account Options button clicked');
-                
-                if (accountOptions.classList.contains('hidden')) {
-                    console.log('Showing account options');
-                    accountOptions.classList.remove('hidden');
-                    this.innerHTML = `
+
+        // Set initial active state
+        const activeButton = document.querySelector('.tab-button.active');
+        if (activeButton) {
+            activeButton.classList.add('bg-blue-600', 'text-white');
+            activeButton.classList.remove('text-gray-600', 'hover:text-gray-800');
+        }
+
+        // Account options toggle functionality
+        function initAccountOptionsToggle() {
+            const showAccountOptionsBtn = document.getElementById('showAccountOptions');
+            const accountOptions = document.getElementById('accountOptions');
+
+            console.log('Account Options Button:', showAccountOptionsBtn);
+            console.log('Account Options Div:', accountOptions);
+
+            if (showAccountOptionsBtn && accountOptions) {
+                console.log('Adding event listener to Account Options button');
+
+                // Remove any existing event listeners
+                const newBtn = showAccountOptionsBtn.cloneNode(true);
+                showAccountOptionsBtn.parentNode.replaceChild(newBtn, showAccountOptionsBtn);
+
+                newBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Account Options button clicked');
+
+                    if (accountOptions.classList.contains('hidden')) {
+                        console.log('Showing account options');
+                        accountOptions.classList.remove('hidden');
+                        this.innerHTML = `
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                         Hide Account Options
                     `;
-                    this.classList.remove('bg-gray-600', 'hover:bg-gray-700');
-                    this.classList.add('bg-red-600', 'hover:bg-red-700');
-                } else {
-                    console.log('Hiding account options');
-                    accountOptions.classList.add('hidden');
-                    this.innerHTML = `
+                        this.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                        this.classList.add('bg-red-600', 'hover:bg-red-700');
+                    } else {
+                        console.log('Hiding account options');
+                        accountOptions.classList.add('hidden');
+                        this.innerHTML = `
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                         Account Options
                     `;
-                    this.classList.remove('bg-red-600', 'hover:bg-red-700');
-                    this.classList.add('bg-gray-600', 'hover:bg-gray-700');
-                }
-            });
-        } else {
-            console.error('Could not find Account Options button or div');
-            console.log('Available elements with IDs:', document.querySelectorAll('[id]'));
+                        this.classList.remove('bg-red-600', 'hover:bg-red-700');
+                        this.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                    }
+                });
+            } else {
+                console.error('Could not find Account Options button or div');
+                console.log('Available elements with IDs:', document.querySelectorAll('[id]'));
+            }
         }
-    }
-    
-    // Initialize account options toggle
-    initAccountOptionsToggle();
-});
 
-// Fallback: Use event delegation for account options toggle
-document.addEventListener('click', function(e) {
-    if (e.target && e.target.id === 'showAccountOptions') {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const accountOptions = document.getElementById('accountOptions');
-        const button = e.target;
-        
-        console.log('Account Options button clicked via event delegation');
-        
-        if (accountOptions) {
-            if (accountOptions.classList.contains('hidden')) {
-                console.log('Showing account options via delegation');
-                accountOptions.classList.remove('hidden');
-                button.innerHTML = `
+        // Initialize account options toggle
+        initAccountOptionsToggle();
+    });
+
+    // Fallback: Use event delegation for account options toggle
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'showAccountOptions') {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const accountOptions = document.getElementById('accountOptions');
+            const button = e.target;
+
+            console.log('Account Options button clicked via event delegation');
+
+            if (accountOptions) {
+                if (accountOptions.classList.contains('hidden')) {
+                    console.log('Showing account options via delegation');
+                    accountOptions.classList.remove('hidden');
+                    button.innerHTML = `
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                     Hide Account Options
                 `;
-                button.classList.remove('bg-gray-600', 'hover:bg-gray-700');
-                button.classList.add('bg-red-600', 'hover:bg-red-700');
-            } else {
-                console.log('Hiding account options via delegation');
-                accountOptions.classList.add('hidden');
-                button.innerHTML = `
+                    button.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                    button.classList.add('bg-red-600', 'hover:bg-red-700');
+                } else {
+                    console.log('Hiding account options via delegation');
+                    accountOptions.classList.add('hidden');
+                    button.innerHTML = `
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Account Options
                 `;
-                button.classList.remove('bg-red-600', 'hover:bg-red-700');
-                button.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                    button.classList.remove('bg-red-600', 'hover:bg-red-700');
+                    button.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
             }
         }
-    }
-});
+    });
 
-// Modal System
-class ModalManager {
-    constructor() {
-        this.currentModal = null;
-        this.init();
-    }
-    
-    init() {
-        // Handle modal trigger buttons
-        document.addEventListener('click', (e) => {
-            const modalTrigger = e.target.closest('[data-modal]');
-            if (modalTrigger) {
-                e.preventDefault();
-                const modalId = modalTrigger.getAttribute('data-modal');
-                this.openModal(modalId);
-            }
-        });
-        
-        // Handle modal close buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-close') || 
-                e.target.closest('.modal-close') ||
-                (e.target.classList.contains('btn-secondary') && e.target.hasAttribute('data-modal'))) {
-                e.preventDefault();
-                this.closeModal();
-            }
-        });
-        
-        // Handle backdrop clicks
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-backdrop')) {
-                this.closeModal();
-            }
-        });
-        
-        // Handle escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.currentModal) {
-                this.closeModal();
-            }
-        });
-    }
-    
-    openModal(modalId) {
-        // Close any existing modal
-        if (this.currentModal) {
-            this.closeModal();
-        }
-        
-        const modal = document.getElementById(modalId);
-        const backdrop = document.getElementById('modalBackdrop');
-        
-        if (!modal) {
-            console.error(`Modal with ID '${modalId}' not found`);
-            return;
-        }
-        
-        // Show backdrop
-        if (backdrop) {
-            backdrop.style.display = 'block';
-        }
-        
-        // Show modal
-        modal.style.display = 'flex';
-        
-        // Add show class for animation
-        setTimeout(() => {
-            modal.classList.add('show');
-        }, 10);
-        
-        this.currentModal = modal;
-        
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
-        
-        console.log(`Opened modal: ${modalId}`);
-    }
-    
-    closeModal() {
-        if (!this.currentModal) return;
-        
-        const backdrop = document.getElementById('modalBackdrop');
-        
-        // Remove show class for animation
-        this.currentModal.classList.remove('show');
-        
-        // Hide modal and backdrop after animation
-        setTimeout(() => {
-            this.currentModal.style.display = 'none';
-            if (backdrop) {
-                backdrop.style.display = 'none';
-            }
-            
-            // Restore body scroll
-            document.body.style.overflow = '';
-            
+    // Modal System
+    class ModalManager {
+        constructor() {
             this.currentModal = null;
-        }, 300);
-        
-        console.log('Closed modal');
-    }
-}
+            this.init();
+        }
 
-// Initialize modal system
-const modalManager = new ModalManager();
+        init() {
+            // Handle modal trigger buttons
+            document.addEventListener('click', (e) => {
+                const modalTrigger = e.target.closest('[data-modal]');
+                if (modalTrigger) {
+                    e.preventDefault();
+                    const modalId = modalTrigger.getAttribute('data-modal');
+                    this.openModal(modalId);
+                }
+            });
 
-// Password change form validation
-document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    
-    // Check if passwords match
-    if (newPassword !== confirmPassword) {
-        e.preventDefault();
-        showNotificationToast('❌ New passwords do not match!', 'error');
-        document.getElementById('confirmPassword').focus();
-        return false;
+            // Handle modal close buttons
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-close') ||
+                    e.target.closest('.modal-close') ||
+                    (e.target.classList.contains('btn-secondary') && e.target.hasAttribute('data-modal'))) {
+                    e.preventDefault();
+                    this.closeModal();
+                }
+            });
+
+            // Handle backdrop clicks
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-backdrop')) {
+                    this.closeModal();
+                }
+            });
+
+            // Handle escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.currentModal) {
+                    this.closeModal();
+                }
+            });
+        }
+
+        openModal(modalId) {
+            // Close any existing modal
+            if (this.currentModal) {
+                this.closeModal();
+            }
+
+            const modal = document.getElementById(modalId);
+            const backdrop = document.getElementById('modalBackdrop');
+
+            if (!modal) {
+                console.error(`Modal with ID '${modalId}' not found`);
+                return;
+            }
+
+            // Show backdrop
+            if (backdrop) {
+                backdrop.style.display = 'block';
+            }
+
+            // Show modal
+            modal.style.display = 'flex';
+
+            // Add show class for animation
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+
+            this.currentModal = modal;
+
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+
+            console.log(`Opened modal: ${modalId}`);
+        }
+
+        closeModal() {
+            if (!this.currentModal) return;
+
+            const backdrop = document.getElementById('modalBackdrop');
+
+            // Remove show class for animation
+            this.currentModal.classList.remove('show');
+
+            // Hide modal and backdrop after animation
+            setTimeout(() => {
+                this.currentModal.style.display = 'none';
+                if (backdrop) {
+                    backdrop.style.display = 'none';
+                }
+
+                // Restore body scroll
+                document.body.style.overflow = '';
+
+                this.currentModal = null;
+            }, 300);
+
+            console.log('Closed modal');
+        }
     }
-    
-    // Check password length
-    if (newPassword.length < 7) {
-        e.preventDefault();
-        showNotificationToast('❌ New password must be at least 7 characters long!', 'error');
-        document.getElementById('newPassword').focus();
-        return false;
-    }
-    
-    // If validation passes, show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
+
+    // Initialize modal system
+    const modalManager = new ModalManager();
+
+    // Password change form validation
+    document.getElementById('changePasswordForm').addEventListener('submit', function (e) {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            showNotificationToast('❌ New passwords do not match!', 'error');
+            document.getElementById('confirmPassword').focus();
+            return false;
+        }
+
+        // Check password length
+        if (newPassword.length < 7) {
+            e.preventDefault();
+            showNotificationToast('❌ New password must be at least 7 characters long!', 'error');
+            document.getElementById('newPassword').focus();
+            return false;
+        }
+
+        // If validation passes, show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
         <svg class="w-4 h-4 inline mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
         Changing Password...
     `;
-});
+    });
 
-// Account settings form validation
-document.getElementById('accountSettingsForm').addEventListener('submit', function(e) {
-    const firstName = document.getElementById('settingsFirstName').value.trim();
-    const lastName = document.getElementById('settingsLastName').value.trim();
-    
-    if (firstName.length < 2) {
-        e.preventDefault();
-        showNotificationToast('❌ First name must be at least 2 characters long!', 'error');
-        document.getElementById('settingsFirstName').focus();
-        return false;
-    }
-    
-    if (lastName.length < 2) {
-        e.preventDefault();
-        showNotificationToast('❌ Last name must be at least 2 characters long!', 'error');
-        document.getElementById('settingsLastName').focus();
-        return false;
-    }
-    
-    // If validation passes, show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
+    // Account settings form validation
+    document.getElementById('accountSettingsForm').addEventListener('submit', function (e) {
+        const firstName = document.getElementById('settingsFirstName').value.trim();
+        const lastName = document.getElementById('settingsLastName').value.trim();
+
+        if (firstName.length < 2) {
+            e.preventDefault();
+            showNotificationToast('❌ First name must be at least 2 characters long!', 'error');
+            document.getElementById('settingsFirstName').focus();
+            return false;
+        }
+
+        if (lastName.length < 2) {
+            e.preventDefault();
+            showNotificationToast('❌ Last name must be at least 2 characters long!', 'error');
+            document.getElementById('settingsLastName').focus();
+            return false;
+        }
+
+        // If validation passes, show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
         <svg class="w-4 h-4 inline mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
         Saving Changes...
     `;
-});
+    });
 
-// Notification preferences form validation
-document.getElementById('notificationForm').addEventListener('submit', function(e) {
-    // If validation passes, show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
+    // Notification preferences form validation
+    document.getElementById('notificationForm').addEventListener('submit', function (e) {
+        // If validation passes, show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
         <svg class="w-4 h-4 inline mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
         Saving Preferences...
     `;
-});
+    });
 
-// Phone number formatting
-document.getElementById('settingsPhone').addEventListener('input', function(e) {
-    // Remove all non-digit characters
-    let value = e.target.value.replace(/\D/g, '');
-    
-    // Format as (XXX) XXX-XXXX
-    if (value.length >= 6) {
-        value = '(' + value.substring(0, 3) + ') ' + value.substring(3, 6) + '-' + value.substring(6, 10);
-    } else if (value.length >= 3) {
-        value = '(' + value.substring(0, 3) + ') ' + value.substring(3);
-    }
-    
-    e.target.value = value;
-});
+    // Phone number formatting
+    document.getElementById('settingsPhone').addEventListener('input', function (e) {
+        // Remove all non-digit characters
+        let value = e.target.value.replace(/\D/g, '');
 
-// Email change form validation
-document.querySelector('form[action*="change_email"]').addEventListener('submit', function(e) {
-    const newEmail = document.getElementById('newEmail').value;
-    const confirmEmail = document.getElementById('confirmNewEmail').value;
-    
-    if (newEmail !== confirmEmail) {
-        e.preventDefault();
-        showNotificationToast('❌ Email addresses do not match!', 'error');
-        document.getElementById('confirmNewEmail').focus();
-        return false;
-    }
-    
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newEmail)) {
-        e.preventDefault();
-        showNotificationToast('❌ Please enter a valid email address!', 'error');
-        document.getElementById('newEmail').focus();
-        return false;
-    }
-});
+        // Format as (XXX) XXX-XXXX
+        if (value.length >= 6) {
+            value = '(' + value.substring(0, 3) + ') ' + value.substring(3, 6) + '-' + value.substring(6, 10);
+        } else if (value.length >= 3) {
+            value = '(' + value.substring(0, 3) + ') ' + value.substring(3);
+        }
 
-// Delete account form validation
-document.querySelector('form[action*="delete_account"]').addEventListener('submit', function(e) {
-    const confirmation = document.getElementById('deleteConfirmation').value;
-    
-    if (confirmation !== 'DELETE') {
-        e.preventDefault();
-        showNotificationToast('❌ Please type "DELETE" exactly to confirm account deletion!', 'error');
-        document.getElementById('deleteConfirmation').focus();
-        return false;
-    }
-    
-    showConfirmationModal(
-        'Delete Account',
-        'Are you absolutely sure you want to delete your account? This action cannot be undone!',
-        'Delete Account',
-        'Cancel'
-    ).then(function(confirmed) {
-        if (!confirmed) {
+        e.target.value = value;
+    });
+
+    // Email change form validation
+    document.querySelector('form[action*="change_email"]').addEventListener('submit', function (e) {
+        const newEmail = document.getElementById('newEmail').value;
+        const confirmEmail = document.getElementById('confirmNewEmail').value;
+
+        if (newEmail !== confirmEmail) {
             e.preventDefault();
+            showNotificationToast('❌ Email addresses do not match!', 'error');
+            document.getElementById('confirmNewEmail').focus();
+            return false;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            e.preventDefault();
+            showNotificationToast('❌ Please enter a valid email address!', 'error');
+            document.getElementById('newEmail').focus();
             return false;
         }
     });
-});
 
-// Data deletion form validation
-document.querySelector('form[action*="request_data_deletion"]').addEventListener('submit', function(e) {
-    const confirmation = document.getElementById('deletionConfirmation').value;
-    
-    if (confirmation !== 'DELETE MY DATA') {
-        e.preventDefault();
-        showNotificationToast('❌ Please type "DELETE MY DATA" exactly to confirm data deletion!', 'error');
-        document.getElementById('deletionConfirmation').focus();
-        return false;
-    }
-    
-    showConfirmationModal(
-        'Request Data Deletion',
-        'Are you absolutely sure you want to request data deletion? This action cannot be undone!',
-        'Request Deletion',
-        'Cancel'
-    ).then(function(confirmed) {
-        if (!confirmed) {
+    // Delete account form validation
+    document.querySelector('form[action*="delete_account"]').addEventListener('submit', function (e) {
+        const confirmation = document.getElementById('deleteConfirmation').value;
+
+        if (confirmation !== 'DELETE') {
             e.preventDefault();
+            showNotificationToast('❌ Please type "DELETE" exactly to confirm account deletion!', 'error');
+            document.getElementById('deleteConfirmation').focus();
             return false;
         }
-    });
-});
 
-// Show success message when form is submitted successfully
-// Auto-hide success messages after 5 seconds
-setTimeout(function() {
-    const alert = document.querySelector('.alert-success');
-    if (alert) {
-        alert.style.transition = 'opacity 0.5s';
-        alert.style.opacity = '0';
-        setTimeout(function() {
-            alert.remove();
-        }, 500);
-    }
-}, 5000);
+        showConfirmationModal(
+            'Delete Account',
+            'Are you absolutely sure you want to delete your account? This action cannot be undone!',
+            'Delete Account',
+            'Cancel'
+        ).then(function (confirmed) {
+            if (!confirmed) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    });
+
+    // Data deletion form validation
+    document.querySelector('form[action*="request_data_deletion"]').addEventListener('submit', function (e) {
+        const confirmation = document.getElementById('deletionConfirmation').value;
+
+        if (confirmation !== 'DELETE MY DATA') {
+            e.preventDefault();
+            showNotificationToast('❌ Please type "DELETE MY DATA" exactly to confirm data deletion!', 'error');
+            document.getElementById('deletionConfirmation').focus();
+            return false;
+        }
+
+        showConfirmationModal(
+            'Request Data Deletion',
+            'Are you absolutely sure you want to request data deletion? This action cannot be undone!',
+            'Request Deletion',
+            'Cancel'
+        ).then(function (confirmed) {
+            if (!confirmed) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    });
+
+    // Show success message when form is submitted successfully
+    // Auto-hide success messages after 5 seconds
+    setTimeout(function () {
+        const alert = document.querySelector('.alert-success');
+        if (alert) {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(function () {
+                alert.remove();
+            }, 500);
+        }
+    }, 5000);
 </script>
 {% endblock %}
-{% endblock %} 
+{% endblock %}

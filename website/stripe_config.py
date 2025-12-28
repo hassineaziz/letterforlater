@@ -12,7 +12,7 @@ STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 # Your Stripe product/price IDs (replace with your actual LIVE IDs from Stripe dashboard)
 STRIPE_PRODUCTS = {
     'free': None,  # No payment needed for free plan
-    'premium_monthly': 'price_1SM6APDzxRSZ7ssLdj3WcWTP',  # Replace with your live monthly price ID
+    'premium_monthly': 'price_1SjKL2DzxRSZ7ssLFPUUrfBk',  # Replace with your live monthly price ID
     'premium_yearly': 'price_1SM6B2DzxRSZ7ssLhVOVz3AQ',   # Replace with your live yearly price ID  
     'lifetime': 'price_1SHmG0DzxRSZ7ssL1UDSX9Wg'          # Replace with your live lifetime price ID
 }

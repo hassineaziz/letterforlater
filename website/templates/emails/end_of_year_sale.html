@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎉 Black Friday: 50% OFF Lifetime - LetterForLater</title>
+    <title>🎉 End of the Year: 50% OFF Lifetime - LetterForLater</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -14,6 +15,7 @@
             padding: 20px;
             background-color: #f8fafc;
         }
+
         .container {
             background: white;
             border-radius: 12px;
@@ -21,6 +23,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
+
         .black-friday-header {
             background: linear-gradient(to right, #111827, #1f2937, #000000);
             color: white;
@@ -29,6 +32,7 @@
             position: relative;
             overflow: hidden;
         }
+
         .black-friday-header::before {
             content: '';
             position: absolute;
@@ -37,6 +41,7 @@
             opacity: 0.3;
             pointer-events: none;
         }
+
         .black-friday-badge {
             display: inline-block;
             background: #f97316;
@@ -50,10 +55,19 @@
             margin-bottom: 20px;
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
         }
+
         .header-title {
             color: white;
             font-size: 32px;
@@ -62,6 +76,7 @@
             position: relative;
             z-index: 1;
         }
+
         .header-subtitle {
             color: rgba(255, 255, 255, 0.9);
             font-size: 18px;
@@ -69,6 +84,7 @@
             position: relative;
             z-index: 1;
         }
+
         .discount-box {
             background: rgba(249, 115, 22, 0.2);
             border: 2px solid #f97316;
@@ -79,6 +95,7 @@
             position: relative;
             z-index: 1;
         }
+
         .discount-amount {
             font-size: 48px;
             font-weight: 900;
@@ -86,21 +103,25 @@
             margin: 0;
             line-height: 1;
         }
+
         .discount-text {
             color: white;
             font-size: 16px;
             margin: 10px 0 0 0;
             font-weight: 600;
         }
+
         .content {
             padding: 40px 30px;
         }
+
         .intro-text {
             font-size: 16px;
             color: #374151;
             margin: 20px 0;
             line-height: 1.7;
         }
+
         .pricing-comparison {
             background: #F9FAFB;
             border: 2px solid #E5E7EB;
@@ -109,23 +130,27 @@
             margin: 30px 0;
             text-align: center;
         }
+
         .old-price {
             color: #9CA3AF;
             font-size: 24px;
             text-decoration: line-through;
             margin: 0;
         }
+
         .new-price {
             color: #1F2937;
             font-size: 48px;
             font-weight: 900;
             margin: 10px 0;
         }
+
         .price-label {
             color: #6B7280;
             font-size: 14px;
             margin: 0 0 20px 0;
         }
+
         .coupon-code-box {
             background: linear-gradient(to right, #f97316, #dc2626);
             color: white;
@@ -134,11 +159,13 @@
             margin: 25px 0;
             text-align: center;
         }
+
         .coupon-label {
             font-size: 14px;
             margin: 0 0 10px 0;
             opacity: 0.9;
         }
+
         .coupon-code {
             font-family: 'Courier New', monospace;
             font-size: 32px;
@@ -150,11 +177,13 @@
             border-radius: 8px;
             display: inline-block;
         }
+
         .features-list {
             list-style: none;
             padding: 0;
             margin: 25px 0;
         }
+
         .features-list li {
             padding: 12px 0;
             color: #374151;
@@ -162,6 +191,7 @@
             padding-left: 30px;
             position: relative;
         }
+
         .features-list li::before {
             content: "✓";
             position: absolute;
@@ -170,6 +200,7 @@
             font-weight: bold;
             font-size: 18px;
         }
+
         .cta-section {
             background: linear-gradient(to right, #111827, #1f2937, #000000);
             border-top: 4px solid #f97316;
@@ -177,17 +208,20 @@
             text-align: center;
             margin-top: 30px;
         }
+
         .cta-title {
             color: white;
             font-size: 24px;
             font-weight: 700;
             margin: 0 0 15px 0;
         }
+
         .cta-text {
             color: rgba(255, 255, 255, 0.9);
             font-size: 16px;
             margin: 0 0 25px 0;
         }
+
         .cta-button {
             display: inline-block;
             background: #f97316;
@@ -200,11 +234,13 @@
             margin: 10px;
             transition: all 0.3s ease;
         }
+
         .cta-button:hover {
             background: #ea580c;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
         }
+
         .urgency-box {
             background: #FEF3C7;
             border-left: 4px solid #F59E0B;
@@ -212,17 +248,20 @@
             padding: 20px;
             margin: 25px 0;
         }
+
         .urgency-title {
             font-weight: 700;
             color: #92400E;
             margin: 0 0 10px 0;
             font-size: 16px;
         }
+
         .urgency-text {
             color: #78350F;
             margin: 0;
             font-size: 14px;
         }
+
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -231,31 +270,39 @@
             color: #6B7280;
             font-size: 14px;
         }
+
         .footer a {
             color: #3B82F6;
             text-decoration: none;
         }
+
         @media (max-width: 600px) {
             .container {
                 margin: 0;
                 border-radius: 0;
             }
+
             .content {
                 padding: 30px 20px;
             }
+
             .black-friday-header {
                 padding: 30px 20px;
             }
+
             .header-title {
                 font-size: 26px;
             }
+
             .new-price {
                 font-size: 36px;
             }
+
             .coupon-code {
                 font-size: 24px;
                 letter-spacing: 2px;
             }
+
             .cta-button {
                 display: block;
                 margin: 10px 0;
@@ -265,13 +312,14 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="black-friday-header">
-            <div class="black-friday-badge">🎉 Black Friday Sale</div>
+            <div class="black-friday-badge">🎉 End of the Year Sale</div>
             <h1 class="header-title">50% OFF Lifetime Subscription!</h1>
             <p class="header-subtitle">The biggest deal of the year is here</p>
-            
+
             <div class="discount-box">
                 <div class="discount-amount">50%</div>
                 <div class="discount-text">OFF Lifetime Plan</div>
@@ -282,9 +330,10 @@
             <p class="intro-text">
                 Hi {{ user_name }},
             </p>
-            
+
             <p class="intro-text">
-                We're excited to offer you an exclusive Black Friday deal! For a limited time, you can get <strong>50% off</strong> our Lifetime subscription - the best way to preserve your legacy forever.
+                We're excited to offer you an exclusive End of the Year deal! For a limited time, you can get
+                <strong>50% off</strong> our Lifetime subscription - the best way to preserve your legacy forever.
             </p>
 
             <div class="pricing-comparison">
@@ -301,7 +350,8 @@
             <div class="urgency-box">
                 <h3 class="urgency-title">⏰ Limited Time Offer</h3>
                 <p class="urgency-text">
-                    This Black Friday sale ends on <strong>November 30, 2025</strong>. Don't miss out on this incredible opportunity to secure lifetime access at half the price!
+                    This End of the Year sale ends on <strong>December 31, 2025</strong>. Don't miss out on this
+                    incredible opportunity to secure lifetime access at half the price!
                 </p>
             </div>
 
@@ -318,7 +368,8 @@
             </ul>
 
             <p class="intro-text">
-                This is the perfect time to upgrade and ensure your legacy letters are preserved forever. With lifetime access, you'll never have to worry about subscription renewals or payments again.
+                This is the perfect time to upgrade and ensure your legacy letters are preserved forever. With lifetime
+                access, you'll never have to worry about subscription renewals or payments again.
             </p>
         </div>
 
@@ -330,17 +381,19 @@
 
         <div class="content">
             <p class="intro-text" style="font-size: 14px; color: #6B7280; text-align: center;">
-                Remember, you can always continue using the free plan with unlimited text letters. This offer is perfect if you want to add media attachments and advanced features to your legacy letters.
+                Remember, you can always continue using the free plan with unlimited text letters. This offer is perfect
+                if you want to add media attachments and advanced features to your legacy letters.
             </p>
 
             <div class="footer">
-                <p>Questions? Contact us at <a href="mailto:support@letterforlater.com">support@letterforlater.com</a></p>
+                <p>Questions? Contact us at <a href="mailto:support@letterforlater.com">support@letterforlater.com</a>
+                </p>
                 <p style="margin-top: 15px;">
-                    <a href="{{ dashboard_url }}">Visit Dashboard</a> | 
+                    <a href="{{ dashboard_url }}">Visit Dashboard</a> |
                     <a href="{{ pricing_url }}">View Pricing</a>
                 </p>
                 <p style="margin-top: 15px; font-size: 12px; color: #9CA3AF;">
-                    This email was sent to {{ user_email }}. 
+                    This email was sent to {{ user_email }}.
                     <br>LetterForLater - Preserve Your Legacy
                     <br>https://letterforlater.com
                 </p>
@@ -348,5 +401,5 @@
         </div>
     </div>
 </body>
-</html>
 
+</html>

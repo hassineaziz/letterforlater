@@ -238,18 +238,18 @@ def send_newsletter_welcome_email(email):
         traceback.print_exc()
         return False
 
-def send_black_friday_sale_email(user):
-    """Send Black Friday sale email to free users"""
+def send_end_of_year_sale_email(user):
+    """Send End of the Year sale email to free users"""
     try:
         # Create email message
         msg = Message(
-            subject="🎉 Black Friday: 50% OFF Lifetime Subscription - LetterForLater",
+            subject="🎉 End of the Year: 50% OFF Lifetime Subscription - LetterForLater",
             recipients=[user.email],
             sender=os.getenv('MAIL_USERNAME', 'support@letterforlater.com')
         )
         
         # Render HTML template
-        msg.html = render_template('emails/black_friday_sale.html',
+        msg.html = render_template('emails/end_of_year_sale.html',
             user_name=f"{user.first_name} {user.last_name}",
             user_email=user.email,
             pricing_url="https://letterforlater.com/pricing",
@@ -257,7 +257,7 @@ def send_black_friday_sale_email(user):
         )
         
         # Render text template
-        msg.body = render_template('emails/black_friday_sale.txt',
+        msg.body = render_template('emails/end_of_year_sale.txt',
             user_name=f"{user.first_name} {user.last_name}",
             user_email=user.email,
             pricing_url="https://letterforlater.com/pricing",
@@ -265,17 +265,17 @@ def send_black_friday_sale_email(user):
         )
         
         # Send email using safe_send_email for rate limiting and error handling
-        success = safe_send_email(msg, email_type='black_friday_sale')
+        success = safe_send_email(msg, email_type='end_of_year_sale')
         
         if success:
-            print(f"✅ Black Friday sale email sent to {user.email}")
+            print(f"✅ End of the Year sale email sent to {user.email}")
             return True
         else:
-            print(f"❌ Failed to send Black Friday sale email to {user.email} (rate limited or error)")
+            print(f"❌ Failed to send End of the Year sale email to {user.email} (rate limited or error)")
             return False
         
     except Exception as e:
-        print(f"❌ Error sending Black Friday sale email: {str(e)}")
+        print(f"❌ Error sending End of the Year sale email: {str(e)}")
         import traceback
         traceback.print_exc()
         return False

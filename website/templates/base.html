@@ -2,57 +2,62 @@
 <html lang="en">
 
 <head>
-    {% set is_login_page = request.endpoint == 'auth.login' or request.endpoint == 'auth.login_2fa' or request.endpoint == 'auth.sign_up' or request.endpoint == 'auth.forgot_password' or request.endpoint == 'auth.reset_password' or request.endpoint == 'auth.resend_verification' %}
-    
+    {% set is_login_page = request.endpoint == 'auth.login' or request.endpoint == 'auth.login_2fa' or request.endpoint
+    == 'auth.sign_up' or request.endpoint == 'auth.forgot_password' or request.endpoint == 'auth.reset_password' or
+    request.endpoint == 'auth.resend_verification' %}
+
     {% if not is_login_page %}
     <!-- Google tag (gtag.js) & GA/GAds (lazy load) - EXCLUDED from login pages for security -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);} 
-      window.addEventListener('load', function(){
-        var loadGtag = function(){
-          var s1 = document.createElement('script');
-          s1.async = true; s1.src = 'https://www.googletagmanager.com/gtag/js?id=G-GLM0J3PS3M';
-          var s2 = document.createElement('script');
-          s2.async = true; s2.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17491757620';
-          document.head.appendChild(s1); document.head.appendChild(s2);
-          gtag('js', new Date());
-          gtag('config', 'G-GLM0J3PS3M');
-          gtag('config', 'AW-17491757620');
-        };
-        if ('requestIdleCallback' in window) { requestIdleCallback(loadGtag, {timeout: 4000}); } else { setTimeout(loadGtag, 3000); }
-      });
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.addEventListener('load', function () {
+            var loadGtag = function () {
+                var s1 = document.createElement('script');
+                s1.async = true; s1.src = 'https://www.googletagmanager.com/gtag/js?id=G-GLM0J3PS3M';
+                var s2 = document.createElement('script');
+                s2.async = true; s2.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17491757620';
+                document.head.appendChild(s1); document.head.appendChild(s2);
+                gtag('js', new Date());
+                gtag('config', 'G-GLM0J3PS3M');
+                gtag('config', 'AW-17491757620');
+            };
+            if ('requestIdleCallback' in window) { requestIdleCallback(loadGtag, { timeout: 4000 }); } else { setTimeout(loadGtag, 3000); }
+        });
     </script>
-    
+
     <!-- Google Tag Manager (lazy) - EXCLUDED from login pages for security -->
     <script>
-      window.addEventListener('load', function(){
-        var init=function(){
-          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-MX529JLM');
-        };
-        if ('requestIdleCallback' in window) { requestIdleCallback(init, {timeout: 4000}); } else { setTimeout(init, 3000); }
-      });
+        window.addEventListener('load', function () {
+            var init = function () {
+                (function (w, d, s, l, i) {
+                    w[l] = w[l] || []; w[l].push({
+                        'gtm.start':
+                            new Date().getTime(), event: 'gtm.js'
+                    }); var f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+                })(window, document, 'script', 'dataLayer', 'GTM-MX529JLM');
+            };
+            if ('requestIdleCallback' in window) { requestIdleCallback(init, { timeout: 4000 }); } else { setTimeout(init, 3000); }
+        });
     </script>
-    
+
     <!-- Microsoft Clarity (lazy-load after first paint) - EXCLUDED from login pages for security -->
     <script type="text/javascript">
-        window.addEventListener('load', function(){
-            var init = function(){
-                (function(c,l,a,r,i,t,y){
-                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        window.addEventListener('load', function () {
+            var init = function () {
+                (function (c, l, a, r, i, t, y) {
+                    c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+                    t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+                    y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
                 })(window, document, "clarity", "script", "tu243ks4mw");
             };
-            if ('requestIdleCallback' in window) { requestIdleCallback(init, {timeout: 4000}); } else { setTimeout(init, 3000); }
+            if ('requestIdleCallback' in window) { requestIdleCallback(init, { timeout: 4000 }); } else { setTimeout(init, 3000); }
         });
     </script>
     {% endif %}
-    
+
     <meta charset="utf-8" />
     <script type="application/ld+json">
         {
@@ -63,78 +68,92 @@
           "logo": "https://letterforlater.com/static/logo.png"
         }
         </script>
-        
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{% block meta_description %}Create heartfelt letters for your future self and for loved ones for free. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
-    <meta name="keywords" content="{% block meta_keywords %}legacy letters, future self letters, digital letters, family messages, memorial letters, capsule letters, milestone messages, schedule letters{% endblock %}" />
+    <meta name="description"
+        content="{% block meta_description %}Create heartfelt letters for your future self and for loved ones for free. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
+    <meta name="keywords"
+        content="{% block meta_keywords %}legacy letters, future self letters, digital letters, family messages, memorial letters, capsule letters, milestone messages, schedule letters{% endblock %}" />
     <meta name="author" content="LetterForLater" />
     <meta name="robots" content="index, follow" />
-    
-    
+
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ request.url }}" />
-    <meta property="og:title" content="{% block og_title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}" />
-    <meta property="og:description" content="{% block og_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery.{% endblock %}" />
-    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='og-image.png', _external=True) }}{% endblock %}" />
+    <meta property="og:title"
+        content="{% block og_title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}" />
+    <meta property="og:description"
+        content="{% block og_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery.{% endblock %}" />
+    <meta property="og:image"
+        content="{% block og_image %}{{ url_for('static', filename='og-image.png', _external=True) }}{% endblock %}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:site_name" content="LetterForLater" />
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:site" content="@LetterForLater" />
     <meta property="twitter:url" content="{{ request.url }}" />
-    <meta property="twitter:title" content="{% block twitter_title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}" />
-    <meta property="twitter:description" content="{% block twitter_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
-    <meta property="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='og-image.png', _external=True) }}{% endblock %}" />
-	
+    <meta property="twitter:title"
+        content="{% block twitter_title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}" />
+    <meta property="twitter:description"
+        content="{% block twitter_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}" />
+    <meta property="twitter:image"
+        content="{% block twitter_image %}{{ url_for('static', filename='og-image.png', _external=True) }}{% endblock %}" />
 
-{% if not is_login_page %}
-<meta name="wot-verification" content="de7d17edfa7e0257077b"/>
-<!-- WoT badge (lazy-load to reduce render impact) - EXCLUDED from login pages for security -->
-<script>
-    window.addEventListener('load', function(){
-        setTimeout(function(){
-            var s=document.createElement('script');
-            s.src='https://static.mywot.com/website_owners_badges/websiteOwnersBadge.js';
-            s.async=true; document.head.appendChild(s);
-        }, 3000);
-    });
+
+    {% if not is_login_page %}
+    <meta name="wot-verification" content="de7d17edfa7e0257077b" />
+    <!-- WoT badge (lazy-load to reduce render impact) - EXCLUDED from login pages for security -->
+    <script>
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                var s = document.createElement('script');
+                s.src = 'https://static.mywot.com/website_owners_badges/websiteOwnersBadge.js';
+                s.async = true; document.head.appendChild(s);
+            }, 3000);
+        });
     </script>
-{% endif %}
+    {% endif %}
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ request.url }}" />
-    
+
     <!-- Microsoft Verification -->
     <meta name="msvalidate.01" content="B1A3E5DA1DE239A9DC6CF01E1A778CCE" />
-    
-<!-- Favicon & App Icons -->
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo-32.png') }}">
-<link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='logo-48.png') }}">
-<link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='logo-64.png') }}">
-<link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico') }}" type="image/x-icon">
 
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo-180.png') }}">
-<meta name="theme-color" content="#3B82F6">
-<meta name="msapplication-TileColor" content="#3B82F6">
-<meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo-180.png') }}">
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='logo-32.png') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='logo-48.png') }}">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='logo-64.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico') }}" type="image/x-icon">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='logo-180.png') }}">
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="msapplication-TileColor" content="#3B82F6">
+    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='logo-180.png') }}">
 
     <!-- Small perf wins: preconnect to font/Tailwind origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <!-- Google Fonts: non-blocking load with noscript fallback -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap"></noscript>
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Inter:400,600,700|Merriweather:400,700|Manrope:400,600,700&display=swap">
+    </noscript>
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}LetterForLater – Legacy Letters & Future Self Messages{% endblock %}</title>
-        <script>
+    <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -176,34 +195,42 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
-<body class="font-sans text-gray-800 leading-relaxed" data-user-plan="{% if user.is_authenticated %}{{ user.plan or 'free' }}{% endif %}">
+<body class="font-sans text-gray-800 leading-relaxed"
+    data-user-plan="{% if user.is_authenticated %}{{ user.plan or 'free' }}{% endif %}">
     {% if not is_login_page %}
     <!-- Google Tag Manager (noscript) - EXCLUDED from login pages for security -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX529JLM"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX529JLM" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     {% endif %}
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg shadow-lg rounded-b-2xl mb-4 sm:mb-6 lg:mb-8 mx-2 sm:mx-4">
+    <nav
+        class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg shadow-lg rounded-b-2xl mb-4 sm:mb-6 lg:mb-8 mx-2 sm:mx-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div class="flex justify-between items-center h-12 sm:h-14 lg:h-16">
                 <!-- Brand -->
                 <div class="flex items-center space-x-4 sm:space-x-6">
                     <a href="/" class="flex items-center space-x-2 sm:space-x-3">
                         <picture>
-                            <source type="image/webp" srcset="{{ url_for('static', filename='logo-32.webp') }} 32w, {{ url_for('static', filename='logo-48.webp') }} 48w, {{ url_for('static', filename='logo-64.webp') }} 64w" sizes="(min-width:1024px) 32px, 28px">
-                            <img src="{{ url_for('static', filename='logo-48.png') }}" alt="LetterForLater" class="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 rounded-md shadow-sm" loading="lazy" decoding="async" fetchpriority="low" width="32" height="32">
+                            <source type="image/webp"
+                                srcset="{{ url_for('static', filename='logo-32.webp') }} 32w, {{ url_for('static', filename='logo-48.webp') }} 48w, {{ url_for('static', filename='logo-64.webp') }} 64w"
+                                sizes="(min-width:1024px) 32px, 28px">
+                            <img src="{{ url_for('static', filename='logo-48.png') }}" alt="LetterForLater"
+                                class="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 rounded-md shadow-sm" loading="lazy"
+                                decoding="async" fetchpriority="low" width="32" height="32">
                         </picture>
                         <span class="hidden sm:inline text-lg sm:text-xl font-bold text-primary">LetterForLater</span>
                     </a>
-                    <a href="{{ url_for('pricing.pricing_page') }}" class="text-sm sm:text-base font-medium text-primary hover:text-primary-light transition-colors">
+                    <a href="{{ url_for('pricing.pricing_page') }}"
+                        class="text-sm sm:text-base font-medium text-primary hover:text-primary-light transition-colors">
                         Pricing
                     </a>
                 </div>
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button type="button" class="text-primary hover:text-primary-light focus:outline-none p-1"
-                        onclick="toggleMobileMenu()" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
+                        onclick="toggleMobileMenu()" aria-label="Open menu" aria-controls="mobile-menu"
+                        aria-expanded="false">
                         <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -217,7 +244,8 @@
                     {% if user.is_authenticated %}
                     <a href="/"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
@@ -226,8 +254,10 @@
                     <!-- Create Letter -->
                     <a href="{{ url_for('views.add_letter') }}"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                         <span class="hidden lg:inline">Add Letter</span>
                         <span class="lg:hidden">Create</span>
@@ -235,8 +265,10 @@
                     <!-- View Letters -->
                     <a href="{{ url_for('views.view_letters', user_id=user.id) }}"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span class="hidden lg:inline">My Letters</span>
                         <span class="lg:hidden">Letters</span>
@@ -245,8 +277,10 @@
                     {% if has_received_letters(user) %}
                     <a href="{{ url_for('views.received_letters') }}"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                         <span class="hidden lg:inline">Received</span>
                         <span class="lg:hidden">Inbox</span>
@@ -254,46 +288,74 @@
                     {% endif %}
                     <!-- Contacts dropdown -->
                     <div class="relative">
-                        <button id="contactsDropdown" class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base" onclick="toggleContactsDropdown(event)">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <button id="contactsDropdown"
+                            class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base"
+                            onclick="toggleContactsDropdown(event)">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                 <circle cx="9" cy="7" r="4" />
                             </svg>
                             <span class="hidden lg:inline">Contacts</span>
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
-                        <div id="contacts-dropdown-menu" class="absolute left-0 top-full mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-[9999] hidden">
+                        <div id="contacts-dropdown-menu"
+                            class="absolute left-0 top-full mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-[9999] hidden">
                             {% if is_premium_user %}
-                            <a href="{{ url_for('views.trusted_contacts') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Trusted Contacts</a>
+                            <a href="{{ url_for('views.trusted_contacts') }}"
+                                class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Trusted
+                                Contacts</a>
                             {% if check_trusted_contact_status(user) %}
-                            <a href="{{ url_for('views.verify_death') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Verify Death</a>
+                            <a href="{{ url_for('views.verify_death') }}"
+                                class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Verify
+                                Death</a>
                             {% endif %}
                             {% else %}
-                            <a href="{{ url_for('pricing.pricing_page') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-blue-600 hover:bg-blue-50 font-semibold">Trusted Contacts (Premium)</a>
+                            <a href="{{ url_for('pricing.pricing_page') }}"
+                                class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-blue-600 hover:bg-blue-50 font-semibold">Trusted
+                                Contacts (Premium)</a>
                             {% endif %}
                         </div>
                     </div>
                     <!-- Account dropdown -->
                     <div class="relative">
-                        <button id="accountDropdown" class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base" onclick="toggleAccountDropdown(event)">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <button id="accountDropdown"
+                            class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base"
+                            onclick="toggleAccountDropdown(event)">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             <span class="hidden lg:inline">Account</span>
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
-                        <div id="account-dropdown-menu" class="absolute left-0 top-full mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-[9999] hidden">
-                            <a href="{{ url_for('views.blog_index') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Blog</a>
-                            <a href="{{ url_for('views.settings') }}" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Settings</a>
+                        <div id="account-dropdown-menu"
+                            class="absolute left-0 top-full mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-[9999] hidden">
+                            <a href="{{ url_for('views.blog_index') }}"
+                                class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Blog</a>
+                            <a href="{{ url_for('views.settings') }}"
+                                class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50">Settings</a>
                             <div class="border-t border-gray-100 my-1"></div>
-                            <a href="/logout" class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50">Logout</a>
+                            <a href="/logout"
+                                class="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50">Logout</a>
                         </div>
                     </div>
                     {% else %}
                     <a href="/login"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                         </svg>
@@ -301,7 +363,8 @@
                     </a>
                     <a href="/sign-up"
                         class="nav-link flex items-center px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl text-primary hover:bg-primary-light hover:text-gray-800 transition-colors text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
@@ -315,8 +378,8 @@
                 <div class="relative">
                     <button id="notificationDropdown"
                         class="relative p-1 sm:p-2 text-primary hover:text-primary-light focus:outline-none transition-colors">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-                            stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor"
+                            stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                             <path
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V4a2 2 0 10-4 0v1.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m5 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
@@ -353,41 +416,63 @@
                     <a href="/"
                         class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Home</a>
                     <a href="{{ url_for('views.add_letter') }}"
-                        class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Create Letter</a>
+                        class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Create
+                        Letter</a>
                     <a href="{{ url_for('views.view_letters', user_id=user.id) }}"
-                        class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">My Letters</a>
+                        class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">My
+                        Letters</a>
                     {% if has_received_letters(user) %}
                     <a href="{{ url_for('views.received_letters') }}"
-                        class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Received Letters</a>
+                        class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Received
+                        Letters</a>
                     {% endif %}
                     <details id="mobile-contacts" class="px-1 group">
-                        <summary class="flex items-center justify-between px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800 cursor-pointer">
+                        <summary
+                            class="flex items-center justify-between px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800 cursor-pointer">
                             <span>Contacts</span>
-                            <svg class="chev w-3 h-3 sm:w-4 sm:h-4 text-primary transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="chev w-3 h-3 sm:w-4 sm:h-4 text-primary transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
                         </summary>
                         <div class="ml-3 sm:ml-4 mt-1 space-y-1">
                             {% if is_premium_user %}
-                            <a href="{{ url_for('views.trusted_contacts') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Trusted Contacts</a>
+                            <a href="{{ url_for('views.trusted_contacts') }}"
+                                class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Trusted
+                                Contacts</a>
                             {% if check_trusted_contact_status(user) %}
-                            <a href="{{ url_for('views.verify_death') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Verify Death</a>
+                            <a href="{{ url_for('views.verify_death') }}"
+                                class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Verify
+                                Death</a>
                             {% endif %}
                             {% else %}
-                            <a href="{{ url_for('pricing.pricing_page') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-blue-600 hover:bg-blue-50 font-semibold">Trusted Contacts (Premium)</a>
+                            <a href="{{ url_for('pricing.pricing_page') }}"
+                                class="block px-3 py-2 rounded-md text-xs sm:text-sm text-blue-600 hover:bg-blue-50 font-semibold">Trusted
+                                Contacts (Premium)</a>
                             {% endif %}
                         </div>
                     </details>
                     <details id="mobile-account" class="px-1 group">
-                        <summary class="flex items-center justify-between px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800 cursor-pointer">
+                        <summary
+                            class="flex items-center justify-between px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800 cursor-pointer">
                             <span>Account</span>
-                            <svg class="chev w-3 h-3 sm:w-4 sm:h-4 text-primary transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="chev w-3 h-3 sm:w-4 sm:h-4 text-primary transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
                         </summary>
                         <div class="ml-3 sm:ml-4 mt-1 space-y-1">
-                            <a href="{{ url_for('views.blog_index') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Blog</a>
-                            <a href="{{ url_for('views.settings') }}" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Settings</a>
-                            <a href="/logout" class="block px-3 py-2 rounded-md text-xs sm:text-sm text-red-600 hover:bg-red-50">Logout</a>
+                            <a href="{{ url_for('views.blog_index') }}"
+                                class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Blog</a>
+                            <a href="{{ url_for('views.settings') }}"
+                                class="block px-3 py-2 rounded-md text-xs sm:text-sm text-primary hover:bg-primary-light hover:text-gray-800">Settings</a>
+                            <a href="/logout"
+                                class="block px-3 py-2 rounded-md text-xs sm:text-sm text-red-600 hover:bg-red-50">Logout</a>
                         </div>
                     </details>
-                    
+
                     {% else %}
                     <a href="/login"
                         class="block px-3 py-2 rounded-md text-sm sm:text-base font-medium text-primary hover:bg-primary-light hover:text-gray-800">Login</a>
@@ -399,50 +484,9 @@
             </div>
         </div>
     </nav>
-    
-    <!-- Black Friday Sale Banner for Logged-in Free Users -->
-    {% if user.is_authenticated and (user.plan == 'free' or not user.plan) and request.endpoint != 'pricing.pricing_page' %}
-    <div class="bg-gradient-to-r from-gray-900 via-gray-800 to-black py-3 border-b-4 border-orange-500 relative overflow-hidden mx-2 sm:mx-4 mb-4 sm:mb-6 lg:mb-8 rounded-b-xl">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-3">
-                <div class="flex items-center gap-3 flex-1">
-                    <div class="flex-shrink-0">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-500 text-white uppercase tracking-wider animate-pulse">
-                            🎉 Black Friday
-                        </span>
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-white font-bold text-sm md:text-base mb-0.5">
-                            50% OFF Lifetime Subscription!
-                        </div>
-                        <p class="text-gray-300 text-xs">
-                            Use code <span class="font-mono font-bold text-orange-400 bg-gray-800 px-1.5 py-0.5 rounded">50OFF</span> at checkout • Valid until November 30, 2025
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="text-right hidden sm:block">
-                        <div class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Ends in</div>
-                        <div id="countdown-base" class="flex items-center gap-1.5 text-white font-bold text-xs">
-                            <span id="days-base" class="bg-orange-500 px-1.5 py-0.5 rounded text-xs">00</span>
-                            <span class="text-xs">:</span>
-                            <span id="hours-base" class="bg-orange-500 px-1.5 py-0.5 rounded text-xs">00</span>
-                            <span class="text-xs">:</span>
-                            <span id="minutes-base" class="bg-orange-500 px-1.5 py-0.5 rounded text-xs">00</span>
-                            <span class="text-xs">:</span>
-                            <span id="seconds-base" class="bg-orange-500 px-1.5 py-0.5 rounded text-xs">00</span>
-                        </div>
-                    </div>
-                    <a href="{{ url_for('pricing.pricing_page') }}" class="flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-1.5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 whitespace-nowrap text-sm">
-                        Claim Deal →
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    
+
+
+
     <!-- Main Content Container -->
     <main id="main-content" class="max-w-screen-2xl mx-auto px-2 sm:px-4 lg:px-10 pb-8 sm:pb-12 lg:pb-16" role="main">
         <script>
@@ -659,16 +703,16 @@
             async function markAsRead(notificationId) {
                 // Find the notification element
                 const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
-                
+
                 try {
                     const response = await fetch(`/api/mark-notification-read/${notificationId}`, {
                         method: 'POST'
                     });
-                    
+
                     if (response.ok) {
                         // Show subtle success feedback
                         showNotificationToast('✅ Notification marked as read', 'info');
-                        
+
                         // Remove the notification with animation
                         if (notificationElement) {
                             notificationElement.style.opacity = '0.5';
@@ -678,7 +722,7 @@
                                 updateNotificationCount();
                             }, 500);
                         }
-                        
+
                         // Refresh notifications to get updated state
                         setTimeout(() => pollNotifications(), 1000);
                     } else {
@@ -695,7 +739,7 @@
                 const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
                 const aliveBtn = notificationElement?.querySelector(`button[onclick*="rejectDeathConfirmation"]`);
                 const dismissBtn = notificationElement?.querySelector(`button[onclick*="markAsRead"]`);
-                
+
                 // Show loading state
                 if (aliveBtn && dismissBtn) {
                     aliveBtn.disabled = true;
@@ -718,7 +762,7 @@
                     const result = await response.json();
                     if (result.success) {
                         showNotificationToast('✅ Death confirmation rejected successfully. The trusted contact has been notified and is now in a 7-day cooldown period.', 'success');
-                        
+
                         // Remove the notification immediately
                         if (notificationElement) {
                             notificationElement.style.opacity = '0.5';
@@ -728,12 +772,12 @@
                                 updateNotificationCount();
                             }, 500);
                         }
-                        
+
                         // Refresh notifications to get updated state
                         setTimeout(() => pollNotifications(), 1000);
                     } else {
                         showNotificationToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
-                        
+
                         // Restore button states
                         if (aliveBtn && dismissBtn) {
                             aliveBtn.disabled = false;
@@ -744,7 +788,7 @@
                 } catch (error) {
                     console.error('Error rejecting death confirmation:', error);
                     showNotificationToast('❌ Error rejecting confirmation. Please try again.', 'error');
-                    
+
                     // Restore button states
                     if (aliveBtn && dismissBtn) {
                         aliveBtn.disabled = false;
@@ -759,7 +803,7 @@
                 const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
                 const acceptBtn = notificationElement?.querySelector(`button[onclick*="accept"]`);
                 const denyBtn = notificationElement?.querySelector(`button[onclick*="deny"]`);
-                
+
                 // Show loading state
                 if (acceptBtn && denyBtn) {
                     acceptBtn.disabled = true;
@@ -784,12 +828,12 @@
                     if (result.success) {
                         // Show success feedback
                         showNotificationToast(
-                            action === 'accept' 
-                                ? '✅ Trusted contact invitation accepted successfully!' 
+                            action === 'accept'
+                                ? '✅ Trusted contact invitation accepted successfully!'
                                 : '❌ Trusted contact invitation declined.',
                             'success'
                         );
-                        
+
                         // Remove the notification immediately
                         if (notificationElement) {
                             notificationElement.style.opacity = '0.5';
@@ -799,12 +843,12 @@
                                 updateNotificationCount();
                             }, 500);
                         }
-                        
+
                         // Refresh notifications to get updated state
                         setTimeout(() => pollNotifications(), 1000);
                     } else {
                         showNotificationToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
-                        
+
                         // Restore button states
                         if (acceptBtn && denyBtn) {
                             acceptBtn.disabled = false;
@@ -816,7 +860,7 @@
                 } catch (error) {
                     console.error('Error handling invitation:', error);
                     showNotificationToast('❌ Error handling invitation. Please try again.', 'error');
-                    
+
                     // Restore button states
                     if (acceptBtn && denyBtn) {
                         acceptBtn.disabled = false;
@@ -928,12 +972,12 @@
                         `🚨 URGENT: ${contactNames} has confirmed your death. If you're alive, please review immediately!`,
                         'error'
                     );
-                    
+
                     // Also show a custom modal as fallback
                     showCustomDeathConfirmationModal(confirmations);
                 }
             }
-            
+
             // Custom death confirmation modal fallback
             function showCustomDeathConfirmationModal(confirmations) {
                 const modal = document.createElement('div');
@@ -976,7 +1020,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 document.body.appendChild(modal);
             }
 
@@ -991,11 +1035,11 @@
                 // Remove existing toasts
                 const existingToasts = document.querySelectorAll('.notification-toast');
                 existingToasts.forEach(toast => toast.remove());
-                
+
                 // Create toast element
                 const toast = document.createElement('div');
                 toast.className = `notification-toast fixed top-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 p-4 transform transition-all duration-300 ease-in-out`;
-                
+
                 // Set border color based on type
                 if (type === 'success') {
                     toast.classList.add('border-green-500');
@@ -1004,7 +1048,7 @@
                 } else {
                     toast.classList.add('border-blue-500');
                 }
-                
+
                 toast.innerHTML = `
                     <div class="flex items-start">
                         <div class="flex-1">
@@ -1017,28 +1061,28 @@
                         </button>
                     </div>
                 `;
-                
+
                 document.body.appendChild(toast);
-                
+
                 // Animate in
                 setTimeout(() => {
                     toast.style.transform = 'translateX(0)';
                 }, 100);
-                
+
                 // Auto remove after 5 seconds
                 setTimeout(() => {
                     toast.style.transform = 'translateX(100%)';
                     setTimeout(() => toast.remove(), 300);
                 }, 5000);
             }
-            
+
             // Custom confirmation modal
             function showConfirmationModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
                 return new Promise((resolve) => {
                     // Remove existing modals
                     const existingModals = document.querySelectorAll('.confirmation-modal');
                     existingModals.forEach(modal => modal.remove());
-                    
+
                     // Create modal
                     const modal = document.createElement('div');
                     modal.className = 'confirmation-modal fixed inset-0 z-50 overflow-y-auto';
@@ -1072,21 +1116,21 @@
                             </div>
                         </div>
                     `;
-                    
+
                     document.body.appendChild(modal);
                 });
             }
-            
+
             // Update notification count helper
             function updateNotificationCount() {
                 const notificationList = document.getElementById('notification-list');
                 const noNotifications = document.getElementById('no-notifications');
                 const notificationCount = document.getElementById('notification-count');
                 const badge = document.getElementById('notification-badge');
-                
+
                 const visibleNotifications = notificationList.querySelectorAll('[data-notification-id]');
                 const count = visibleNotifications.length;
-                
+
                 if (count === 0) {
                     badge.classList.add('hidden');
                     notificationCount.textContent = '0 unread';
@@ -1157,10 +1201,18 @@
             <div class="text-center">
                 <p class="text-sm text-gray-600">
                     © <span id="currentYear"></span> Letter for Later. All rights reserved. |
-                    <a href="{{ url_for('pricing.pricing_page') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Pricing</a> |
-                    <a href="{{ url_for('views.blog_index') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Blog</a> |
-                    <a href="{{ url_for('views.privacy_policy') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Privacy Policy</a> |
-                    <a href="{{ url_for('views.terms_of_service') }}" class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Terms of Service</a>
+                    <a href="{{ url_for('pricing.pricing_page') }}"
+                        class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Pricing</a>
+                    |
+                    <a href="{{ url_for('views.blog_index') }}"
+                        class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Blog</a>
+                    |
+                    <a href="{{ url_for('views.privacy_policy') }}"
+                        class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Privacy
+                        Policy</a> |
+                    <a href="{{ url_for('views.terms_of_service') }}"
+                        class="text-blue-700 underline font-medium hover:text-blue-800 focus:underline focus-visible:underline">Terms
+                        of Service</a>
                 </p>
             </div>
         </div>
@@ -1170,13 +1222,13 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
     <script>
-        function hideAllDesktopMenus(exceptId){
-            var ids=['contacts-dropdown-menu','account-dropdown-menu'];
-            ids.forEach(function(id){ if(id!==exceptId){ var el=document.getElementById(id); if(el){ el.classList.add('hidden'); } } });
+        function hideAllDesktopMenus(exceptId) {
+            var ids = ['contacts-dropdown-menu', 'account-dropdown-menu'];
+            ids.forEach(function (id) { if (id !== exceptId) { var el = document.getElementById(id); if (el) { el.classList.add('hidden'); } } });
         }
-        function toggleContactsDropdown(e){ e.preventDefault(); e.stopPropagation(); hideAllDesktopMenus('contacts-dropdown-menu'); document.getElementById('contacts-dropdown-menu').classList.toggle('hidden'); }
-        function toggleAccountDropdown(e){ e.preventDefault(); e.stopPropagation(); hideAllDesktopMenus('account-dropdown-menu'); document.getElementById('account-dropdown-menu').classList.toggle('hidden'); }
-        document.addEventListener('click', function(ev){
+        function toggleContactsDropdown(e) { e.preventDefault(); e.stopPropagation(); hideAllDesktopMenus('contacts-dropdown-menu'); document.getElementById('contacts-dropdown-menu').classList.toggle('hidden'); }
+        function toggleAccountDropdown(e) { e.preventDefault(); e.stopPropagation(); hideAllDesktopMenus('account-dropdown-menu'); document.getElementById('account-dropdown-menu').classList.toggle('hidden'); }
+        document.addEventListener('click', function (ev) {
             var c = document.getElementById('contacts-dropdown-menu');
             var a = document.getElementById('account-dropdown-menu');
             if (c) c.classList.add('hidden');
@@ -1184,14 +1236,14 @@
         });
 
         // Mobile: ensure only one group open; rotate chevron
-        document.addEventListener('DOMContentLoaded', function(){
-            var groups = ['mobile-contacts','mobile-account'];
-            groups.forEach(function(id){
+        document.addEventListener('DOMContentLoaded', function () {
+            var groups = ['mobile-contacts', 'mobile-account'];
+            groups.forEach(function (id) {
                 var det = document.getElementById(id);
                 if (!det) return;
-                det.addEventListener('toggle', function(){
+                det.addEventListener('toggle', function () {
                     if (det.open) {
-                        groups.filter(function(x){return x!==id;}).forEach(function(other){
+                        groups.filter(function (x) { return x !== id; }).forEach(function (other) {
                             var od = document.getElementById(other); if (od) od.open = false;
                         });
                     }
@@ -1204,9 +1256,10 @@
 
     <!-- Bootstrap JS for modals only (deferred) -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        crossorigin="anonymous" defer></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"
+        defer></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"
+        defer></script>
 
     <!-- Global scroll position preservation -->
     <script>
@@ -1243,118 +1296,80 @@
     <!-- Modal System JavaScript (deferred) -->
     <script src="{{ url_for('static', filename='modal-system.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/premium-features.js') }}" defer></script>
-    
+
     <!-- CSRF Token Setup for AJAX -->
     <script>
-    // Get CSRF token from meta tag
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    
-    // Override fetch to automatically include CSRF token
-    const originalFetch = window.fetch;
-    window.fetch = function(url, options = {}) {
-        // Only add CSRF token to POST/PUT/PATCH/DELETE requests to same origin
-        if (csrfToken && options.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method.toUpperCase())) {
-            const urlObj = new URL(url, window.location.origin);
-            // Only add CSRF for same-origin requests
-            if (urlObj.origin === window.location.origin) {
-                // Initialize headers if not present
-                if (!options.headers) {
-                    options.headers = {};
-                }
-                
-                // Handle both Headers object and plain object
-                if (options.headers instanceof Headers) {
-                    options.headers.set('X-CSRFToken', csrfToken);
-                } else {
-                    options.headers['X-CSRFToken'] = csrfToken;
-                }
-            }
-        }
-        return originalFetch.apply(this, arguments);
-    };
-    
-    // Override XMLHttpRequest to automatically include CSRF token
-    const originalXHROpen = XMLHttpRequest.prototype.open;
-    const originalXHRSend = XMLHttpRequest.prototype.send;
-    
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        this._method = method;
-        this._url = url;
-        return originalXHROpen.apply(this, [method, url, ...args]);
-    };
-    
-    XMLHttpRequest.prototype.send = function(data) {
-        // Only add CSRF token to POST/PUT/PATCH/DELETE requests to same origin
-        if (csrfToken && this._method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(this._method.toUpperCase())) {
-            try {
-                const urlObj = new URL(this._url, window.location.origin);
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        // Override fetch to automatically include CSRF token
+        const originalFetch = window.fetch;
+        window.fetch = function (url, options = {}) {
+            // Only add CSRF token to POST/PUT/PATCH/DELETE requests to same origin
+            if (csrfToken && options.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method.toUpperCase())) {
+                const urlObj = new URL(url, window.location.origin);
                 // Only add CSRF for same-origin requests
                 if (urlObj.origin === window.location.origin) {
-                    this.setRequestHeader('X-CSRFToken', csrfToken);
+                    // Initialize headers if not present
+                    if (!options.headers) {
+                        options.headers = {};
+                    }
+
+                    // Handle both Headers object and plain object
+                    if (options.headers instanceof Headers) {
+                        options.headers.set('X-CSRFToken', csrfToken);
+                    } else {
+                        options.headers['X-CSRFToken'] = csrfToken;
+                    }
                 }
-            } catch (e) {
-                // If URL parsing fails, skip CSRF token
             }
-        }
-        return originalXHRSend.apply(this, arguments);
-    };
-    
-    // Automatically add CSRF token to all forms that don't have it
-    document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('form[method="POST"], form[method="post"]');
-        forms.forEach(function(form) {
-            // Check if form already has CSRF token
-            const existingToken = form.querySelector('input[name="csrf_token"]');
-            if (!existingToken && csrfToken) {
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = 'csrf_token';
-                csrfInput.value = csrfToken;
-                form.insertBefore(csrfInput, form.firstChild);
+            return originalFetch.apply(this, arguments);
+        };
+
+        // Override XMLHttpRequest to automatically include CSRF token
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        const originalXHRSend = XMLHttpRequest.prototype.send;
+
+        XMLHttpRequest.prototype.open = function (method, url, ...args) {
+            this._method = method;
+            this._url = url;
+            return originalXHROpen.apply(this, [method, url, ...args]);
+        };
+
+        XMLHttpRequest.prototype.send = function (data) {
+            // Only add CSRF token to POST/PUT/PATCH/DELETE requests to same origin
+            if (csrfToken && this._method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(this._method.toUpperCase())) {
+                try {
+                    const urlObj = new URL(this._url, window.location.origin);
+                    // Only add CSRF for same-origin requests
+                    if (urlObj.origin === window.location.origin) {
+                        this.setRequestHeader('X-CSRFToken', csrfToken);
+                    }
+                } catch (e) {
+                    // If URL parsing fails, skip CSRF token
+                }
             }
+            return originalXHRSend.apply(this, arguments);
+        };
+
+        // Automatically add CSRF token to all forms that don't have it
+        document.addEventListener('DOMContentLoaded', function () {
+            const forms = document.querySelectorAll('form[method="POST"], form[method="post"]');
+            forms.forEach(function (form) {
+                // Check if form already has CSRF token
+                const existingToken = form.querySelector('input[name="csrf_token"]');
+                if (!existingToken && csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = csrfToken;
+                    form.insertBefore(csrfInput, form.firstChild);
+                }
+            });
         });
-    });
     </script>
-    
-    <!-- Black Friday Countdown Timer -->
-    {% if user.is_authenticated and (user.plan == 'free' or not user.plan) %}
-    <script>
-    (function() {
-      const endDate = new Date('November 30, 2025 23:59:59').getTime();
-      
-      function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = endDate - now;
-        
-        if (distance < 0) {
-          const countdownEl = document.getElementById('countdown-base');
-          if (countdownEl) {
-            countdownEl.innerHTML = '<span class="text-gray-400">Sale Ended</span>';
-          }
-          return;
-        }
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        const daysEl = document.getElementById('days-base');
-        const hoursEl = document.getElementById('hours-base');
-        const minutesEl = document.getElementById('minutes-base');
-        const secondsEl = document.getElementById('seconds-base');
-        
-        if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
-        if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
-        if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
-        if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
-      }
-      
-      updateCountdown();
-      setInterval(updateCountdown, 1000);
-    })();
-    </script>
-    {% endif %}
+
+
 </body>
 
 </html>

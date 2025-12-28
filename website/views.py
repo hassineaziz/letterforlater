@@ -3863,7 +3863,7 @@ def google_callback():
                 db.session.add(new_letter)
                 db.session.commit()
                 session.pop('pending_hero_letter_data', None)
-                flash('Your letter has been saved! Please review and finalize it.', 'success')
+                # flash('Your letter has been saved! Please review and finalize it.', 'success')
                 return redirect(url_for('views.add_letter', letter_id=new_letter.id))
             except Exception as e:
                 db.session.rollback()

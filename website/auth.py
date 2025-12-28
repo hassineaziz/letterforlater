@@ -1131,7 +1131,7 @@ def confirm_email(token):
             except Exception as e:
                 print(f"Error sending welcome email: {str(e)}")
             
-            flash('Your email has been confirmed! Your letter has been saved. Please review and finalize it.', 'success')
+            flash('Your email has been confirmed!', 'success')
             return redirect(url_for('views.add_letter', letter_id=new_letter.id))
         except Exception as e:
             db.session.rollback()

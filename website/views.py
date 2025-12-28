@@ -3846,7 +3846,7 @@ def google_callback():
                     delivery_type=delivery_type,
                     user_id=user.id,
                     is_send_to_myself=send_to_myself,
-                    status='draft'  # Create as draft so user can review before finalizing
+                    status='scheduled'  # Save as scheduled per user request
                 )
                 
                 # Encrypt title and content before saving

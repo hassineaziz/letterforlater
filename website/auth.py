@@ -1106,7 +1106,7 @@ def confirm_email(token):
                 delivery_type=letter_data.get('delivery_type', 'date'),
                 user_id=user.id,
                 is_send_to_myself=letter_data.get('send_to_myself') == 'on',
-                status='draft'  # Create as draft so user can review before finalizing
+                status='scheduled'  # Save as scheduled per user request
             )
             
             # Encrypt title and content before saving

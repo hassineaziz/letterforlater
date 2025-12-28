@@ -1,8 +1,8 @@
-🎉 END OF THE YEAR SALE - 50% OFF LIFETIME SUBSCRIPTION!
+🎉 50% OFF SPECIAL OFFER - 50% OFF LIFETIME SUBSCRIPTION!
 
 Hi {{ user_name }},
 
-We're excited to offer you an exclusive End of the Year deal! For a limited time, you can get 50% off our Lifetime subscription - the best way to preserve your legacy forever.
+We're excited to offer you an exclusive 50% OFF deal! For a limited time, you can get 50% off our Lifetime subscription - the best way to preserve your legacy forever.
 
 PRICING:
 Regular Price: $99.99
@@ -10,7 +10,7 @@ Sale Price: $49.99 (50% OFF)
 Use Code: 50OFF
 
 ⏰ LIMITED TIME OFFER
-This End of the Year sale ends on December 31, 2025. Don't miss out on this incredible opportunity to secure lifetime access at half the price!
+This 50% OFF sale ends on December 31, 2025. Don't miss out on this incredible opportunity to secure lifetime access at half the price!
 
 WHAT'S INCLUDED IN LIFETIME:
 ✓ Everything in Premium - all features unlocked

@@ -291,7 +291,7 @@ class PremiumFeatures {
                     return `
                     <div class="fixed-upgrade-content">
                         <div class="fixed-upgrade-text">
-                            <div class="fixed-upgrade-title">🎉 End of the Year: Lifetime Deal</div>
+                            <div class="fixed-upgrade-title">🎉 Special Offer: Lifetime Deal</div>
                             <div class="fixed-upgrade-subtitle"><span style="text-decoration:line-through;color:#9ca3af;">$99.99</span> → <strong>$49.99</strong> — Save 50% • Use code: <strong style="color:#f97316;font-family:monospace;">50OFF</strong></div>
                         </div>
                         <div class="fixed-upgrade-buttons">
@@ -303,7 +303,7 @@ class PremiumFeatures {
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Upgrade to Premium
                             </a>
-                            <span class="fixed-upgrade-savings" style="background:linear-gradient(to right, #f97316, #dc2626);">50% OFF End of the Year</span>
+                            <span class="fixed-upgrade-savings" style="background:linear-gradient(to right, #f97316, #dc2626);">50% OFF with code 50OFF</span>
                         </div>
                         <button class="fixed-upgrade-close" title="Close banner">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>

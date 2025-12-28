@@ -2,15 +2,15 @@
 
 Hi {{ user_name }},
 
-We're excited to offer you an exclusive 50% OFF deal! For a limited time, you can get 50% off our Lifetime subscription - the best way to preserve your legacy forever.
+We're excited to offer you an exclusive 50% OFF deal! You can get 50% off all our subscriptions - the best way to preserve your legacy forever.
 
 PRICING:
-Regular Price: $99.99
-Sale Price: $49.99 (50% OFF)
+Lifetime: $99.99 -> $49.99
+Monthly: $2.99 -> $1.49
+Yearly: $19.99 -> $9.99
 Use Code: 50OFF
 
-⏰ LIMITED TIME OFFER
-This 50% OFF sale ends on December 31, 2025. Don't miss out on this incredible opportunity to secure lifetime access at half the price!
+Use code 50OFF at checkout to claim your 50% discount on any plan. Don't miss out on this incredible opportunity!
 
 WHAT'S INCLUDED IN LIFETIME:
 ✓ Everything in Premium - all features unlocked
@@ -22,7 +22,7 @@ WHAT'S INCLUDED IN LIFETIME:
 ✓ Lifetime updates & support
 ✓ Unlimited storage for all your memories
 
-This is the perfect time to upgrade and ensure your legacy letters are preserved forever. With lifetime access, you'll never have to worry about subscription renewals or payments again.
+This is the perfect time to upgrade and ensure your legacy letters are preserved forever. With our plans, you can add media attachments and share your memories securely.
 
 CLAIM YOUR DISCOUNT:
 Visit: {{ pricing_url }}

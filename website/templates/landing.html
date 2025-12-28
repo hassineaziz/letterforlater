@@ -2059,39 +2059,14 @@ capsule letters{% endblock %}
     });
 
     // 50OFF Countdown Timer
+    // 50OFF Countdown Timer - Always active
     (function () {
-        const endDate = new Date('December 31, 2025 23:59:59').getTime();
-
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = endDate - now;
-
-            if (distance < 0) {
-                const countdownEl = document.getElementById('countdown-landing');
-                if (countdownEl) {
-                    countdownEl.innerHTML = '<span class="text-gray-400">Sale Ended</span>';
-                }
-                return;
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            const daysEl = document.getElementById('days-landing');
-            const hoursEl = document.getElementById('hours-landing');
-            const minutesEl = document.getElementById('minutes-landing');
-            const secondsEl = document.getElementById('seconds-landing');
-
-            if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
-            if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
-            if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
-            if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+        // No countdown needed for permanent offer
+        const countdownEl = document.getElementById('countdown-landing');
+        if (countdownEl) {
+            // Optional: Hide countdown element or set static text if it exists
+            countdownEl.innerHTML = '<span class="text-orange-500 font-bold">Offer Available Now</span>';
         }
-
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
     })();
 </script>
 

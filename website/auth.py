@@ -277,7 +277,7 @@ def login():
                         User.created_date >= five_minutes_ago
                     ).count()
                     
-                    if recent_signups >= 3:
+                    if recent_signups >= 10:
                         print(f"[LOGIN RATE LIMIT] Failed login from IP {client_ip} with {recent_signups} recent signups - potential spam")
                         from .blocking import block_ip
                         block_ip(client_ip, reason=f"Failed login with {recent_signups} recent spam signups", blocked_by_user_id=None)
@@ -292,7 +292,7 @@ def login():
                 User.created_date >= five_minutes_ago
             ).count()
             
-            if recent_signups >= 3:
+            if recent_signups >= 10:
                 print(f"[LOGIN RATE LIMIT] Failed login (user not found) from IP {client_ip} with {recent_signups} recent signups - potential spam")
                 from .blocking import block_ip
                 block_ip(client_ip, reason=f"Failed login (user not found) with {recent_signups} recent spam signups", blocked_by_user_id=None)
@@ -533,9 +533,9 @@ def sign_up():
             User.created_date >= five_minutes_ago
         ).count()
         
-        # AUTO-BLOCK if 2+ signups already (catch them at attempt #3, so only 2 get through)
+        # AUTO-BLOCK if 5+ signups already (catch them at attempt #6, so only 5 get through)
         # This prevents most spam while still allowing legitimate users
-        if rapid_signups >= 2:
+        if rapid_signups >= 5:
             print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet: {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
             # Auto-block the IP and entire subnet (prevents IP rotation)
             from .blocking import block_ip_subnet
@@ -550,8 +550,8 @@ def sign_up():
             User.created_date >= thirty_seconds_ago
         ).count()
         
-        # AUTO-BLOCK if 2+ signups in 30 seconds (definitely spam!)
-        if very_rapid_signups >= 2:
+        # AUTO-BLOCK if 4+ signups in 30 seconds (definitely spam!)
+        if very_rapid_signups >= 4:
             print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip} and entire subnet: {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
             from .blocking import block_ip_subnet
             block_ip_subnet(client_ip, reason=f"Critical spam: {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
@@ -565,10 +565,10 @@ def sign_up():
             User.created_date >= one_hour_ago
         ).count()
         
-        if recent_signups >= 5:  # Max 5 signups per hour from same IP
+        if recent_signups >= 20:  # Max 20 signups per hour from same IP
             print(f"[SIGNUP RATE LIMIT] Blocked signup from IP {client_ip}: {recent_signups} signups in last hour")
             # Auto-block if they hit the limit
-            if recent_signups >= 10:
+            if recent_signups >= 30:
                 print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet: {recent_signups} signups in 1 hour - SPAM DETECTED!")
                 from .blocking import block_ip_subnet
                 block_ip_subnet(client_ip, reason=f"Spam signups: {recent_signups} signups in 1 hour", blocked_by_user_id=None)
@@ -679,11 +679,11 @@ def sign_up():
                 should_delete = True
                 should_block = True
             
-            if very_rapid_now >= 2:
+            if very_rapid_now >= 4:
                 print(f"[SPAM ALERT] POST-SIGNUP CRITICAL: Auto-blocking IP {client_ip}: {very_rapid_now} signups in 30 seconds!")
                 should_block = True
                 should_delete = True
-            elif rapid_signups_now >= 2:
+            elif rapid_signups_now >= 5:
                 print(f"[SPAM ALERT] POST-SIGNUP: Auto-blocking IP {client_ip}: {rapid_signups_now} signups in 5 minutes!")
                 should_block = True
                 should_delete = True

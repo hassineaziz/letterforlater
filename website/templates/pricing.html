@@ -98,7 +98,7 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
         </div>
         <div class="flex-1">
           <h3 class="text-white font-bold text-lg md:text-xl mb-1">
-            50% OFF of all product!
+            50OFF Sale !
           </h3>
           <p class="text-gray-300 text-sm">
             Use code <span class="font-mono font-bold text-orange-400 bg-gray-800 px-2 py-0.5 rounded">50OFF</span>
@@ -107,19 +107,7 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
         </div>
       </div>
       <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto justify-center lg:justify-end">
-        <div class="text-center sm:text-right">
-          <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Ends in</div>
-          <div id="countdown"
-            class="flex items-center gap-2 text-white font-bold text-lg justify-center sm:justify-end">
-            <span id="days" class="bg-orange-500 px-2 py-1 rounded">00</span>
-            <span>:</span>
-            <span id="hours" class="bg-orange-500 px-2 py-1 rounded">00</span>
-            <span>:</span>
-            <span id="minutes" class="bg-orange-500 px-2 py-1 rounded">00</span>
-            <span>:</span>
-            <span id="seconds" class="bg-orange-500 px-2 py-1 rounded">00</span>
-          </div>
-        </div>
+
         <a href="#lifetime-plan" onclick="checkout('lifetime')"
           class="flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 whitespace-nowrap w-full sm:w-auto text-center">
           Claim Deal →
@@ -286,8 +274,8 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
         class="group relative bg-white rounded-2xl border-2 border-blue-500 p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 order-2 lg:order-none">
         <div class="absolute -top-4 right-4 z-20">
           <span
-            class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50%
-            OFF with code 50OFF
+            class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50OFF
+            Sale !
           </span>
         </div>
         <div class="absolute -top-4 left-4 z-20">
@@ -440,8 +428,8 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
         class="group relative bg-white rounded-2xl border-2 border-purple-200 p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 order-3 lg:order-none">
         <div class="absolute -top-4 right-4 z-20">
           <span
-            class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50%
-            OFF with code 50OFF</span>
+            class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50OFF
+            Sale !</span>
         </div>
         <div class="absolute -top-4 left-4 z-20">
           <span
@@ -896,33 +884,7 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
 </script>
 
 <script>
-  // Black Friday Countdown Timer
-  (function () {
-    const endDate = new Date('December 31, 2025 23:59:59').getTime();
 
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = endDate - now;
-
-      if (distance < 0) {
-        document.getElementById('countdown').innerHTML = '<span class="text-gray-400">Sale Ended</span>';
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      document.getElementById('days').textContent = String(days).padStart(2, '0');
-      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-  })();
 
   function toggleFAQ(button) {
     const content = button.nextElementSibling;

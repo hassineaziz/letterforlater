@@ -25,7 +25,7 @@ import requests as http_requests
 
 views = Blueprint('views', __name__)
 
-def check_letter_creation_rate_limit(user_id, limit=5, hours=1):
+def check_letter_creation_rate_limit(user_id, limit=20, hours=1):
     """
     Check if user has exceeded the letter creation rate limit.
     Returns (is_allowed, count, message)
@@ -55,8 +55,8 @@ def check_letter_creation_rate_limit(user_id, limit=5, hours=1):
         Letter.created_date >= five_minutes_ago
     ).count()
     
-    # Block if creating more than 10 letters in 5 minutes (spam detection)
-    if rapid_count >= 10:
+    # Block if creating more than 25 letters in 5 minutes (spam detection)
+    if rapid_count >= 25:
         error_msg = f"Account temporarily blocked due to suspicious activity. Please wait before creating more letters."
         print(f"[RATE LIMIT] BLOCKED User {user_id}: Rapid creation detected ({rapid_count} in 5 minutes)")
         # Auto-suspend user if creating too rapidly
@@ -3715,8 +3715,8 @@ def google_callback():
                 User.created_date >= five_minutes_ago
             ).count()
             
-            # AUTO-BLOCK if 2+ signups already (catch them at attempt #3, so only 2 get through)
-            if rapid_signups >= 2:
+            # AUTO-BLOCK if 5+ signups already (catch them at attempt #6, so only 5 get through)
+            if rapid_signups >= 5:
                 print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
                 from .blocking import block_ip_subnet
                 block_ip_subnet(client_ip, reason=f"Spam signups (Google OAuth): {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
@@ -3730,8 +3730,8 @@ def google_callback():
                 User.created_date >= thirty_seconds_ago
             ).count()
             
-            # AUTO-BLOCK if 2+ signups in 30 seconds (definitely spam!)
-            if very_rapid_signups >= 2:
+            # AUTO-BLOCK if 4+ signups in 30 seconds (definitely spam!)
+            if very_rapid_signups >= 4:
                 print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
                 from .blocking import block_ip_subnet
                 block_ip_subnet(client_ip, reason=f"Critical spam (Google OAuth): {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
@@ -3745,10 +3745,10 @@ def google_callback():
                 User.created_date >= one_hour_ago
             ).count()
             
-            if recent_signups >= 5:  # Max 5 signups per hour from same IP
+            if recent_signups >= 20:  # Max 20 signups per hour from same IP
                 print(f"[SIGNUP RATE LIMIT] Blocked Google OAuth signup from IP {client_ip}: {recent_signups} signups in last hour")
                 # Auto-block if they hit the limit
-                if recent_signups >= 10:
+                if recent_signups >= 30:
                     print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {recent_signups} signups in 1 hour - SPAM DETECTED!")
                     from .blocking import block_ip_subnet
                     block_ip_subnet(client_ip, reason=f"Spam signups (Google OAuth): {recent_signups} signups in 1 hour", blocked_by_user_id=None)

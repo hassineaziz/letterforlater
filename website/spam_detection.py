@@ -131,7 +131,7 @@ def detect_spam_pattern(email, first_name, last_name, registration_ip):
                 confidence += 40
     
     # High confidence = spam
-    is_spam = confidence >= 50
+    is_spam = confidence >= 80
     
     reason = ", ".join(reasons) if reasons else "pattern detection"
     
@@ -153,7 +153,7 @@ def check_recent_spam_activity(registration_ip):
         User.created_date >= five_minutes_ago
     ).all()
     
-    if len(recent_users) >= 1:  # Even 1 signup in 5 minutes is suspicious if pattern matches
+    if len(recent_users) >= 3:  # Only flag if there are 3+ signups in 5 minutes
         # Check if any of them have spam patterns
         spam_count = 0
         for user in recent_users:
@@ -338,7 +338,7 @@ def detect_spam_pattern(email, first_name, last_name, registration_ip):
                 confidence += 40
     
     # High confidence = spam
-    is_spam = confidence >= 50
+    is_spam = confidence >= 80
     
     reason = ", ".join(reasons) if reasons else "pattern detection"
     

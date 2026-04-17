@@ -45,15 +45,15 @@ class S3Config:
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == '404':
-                raise ValueError(f"S3 bucket '{self.s3_bucket}' not found")
+                print(f"WARNING: S3 bucket '{self.s3_bucket}' not found")
             elif error_code == '403':
-                raise ValueError(f"Access denied to S3 bucket '{self.s3_bucket}'")
+                print(f"WARNING: Access denied to S3 bucket '{self.s3_bucket}'. Could be missing s3:ListBucket permission.")
             else:
-                raise ValueError(f"S3 connection error: {str(e)}")
+                print(f"WARNING: S3 connection error: {str(e)}")
         except NoCredentialsError:
-            raise ValueError("AWS credentials not configured properly")
+            print("WARNING: AWS credentials not configured properly")
         except Exception as e:
-            raise ValueError(f"Unexpected S3 connection error: {str(e)}")
+            print(f"WARNING: Unexpected S3 connection error: {str(e)}")
     
     def get_user_folder(self, user_id):
         """Get S3 folder path for a user"""

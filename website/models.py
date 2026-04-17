@@ -169,16 +169,16 @@ class Letter(db.Model):
             if self.is_encrypted and self.title:
                 # Verify title is actually encrypted before trying to decrypt
                 if is_encrypted_text(self.title):
-                    return decrypt_text(self.title)
+                    return decrypt_text(self.title) or ""
                 else:
                     # Title is plain text even though is_encrypted=True - return as-is
                     print(f"Warning: Letter {self.id} is marked encrypted but title appears plain text - returning as-is")
-                    return self.title
-            return self.title if self.title else None
+                    return self.title or ""
+            return self.title or ""
         except Exception as e:
             print(f"Error getting decrypted title for letter {self.id}: {e}")
             # If decryption fails, it might be plain text - return as-is
-            return self.title  # Fallback to original
+            return self.title or ""  # Fallback to original
     
     @property
     def decrypted_content(self):
@@ -190,16 +190,16 @@ class Letter(db.Model):
             if self.is_encrypted and self.content:
                 # Verify content is actually encrypted before trying to decrypt
                 if is_encrypted_text(self.content):
-                    return decrypt_text(self.content)
+                    return decrypt_text(self.content) or ""
                 else:
                     # Content is plain text even though is_encrypted=True - return as-is
                     print(f"Warning: Letter {self.id} is marked encrypted but content appears plain text - returning as-is")
-                    return self.content
-            return self.content if self.content else None
+                    return self.content or ""
+            return self.content or ""
         except Exception as e:
             print(f"Error getting decrypted content for letter {self.id}: {e}")
             # If decryption fails, it might be plain text - return as-is
-            return self.content  # Fallback to original
+            return self.content or ""  # Fallback to original
     
     @property
     def effective_scheduled_date(self):

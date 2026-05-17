@@ -7,8 +7,8 @@ Your LetterForLater subscription has been cancelled. We're sorry to see you go, 
 
 YOU STILL HAVE ACCESS TO:
 -------------------------
-✓ 1 legacy letter (create and manage)
-✓ Bank-level encryption and security
+✓ Unlimited legacy letters (text only)
+✓ End-to-end encryption and security
 ✓ Trusted contact verification system
 ✓ Email delivery tracking
 ✓ Basic scheduling options

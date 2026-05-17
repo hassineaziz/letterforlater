@@ -56,6 +56,7 @@
             </div>
 
             <form method="post" class="actions">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button class="btn btn-keep" name="action" value="keep" type="submit">Keep receiving updates</button>
                 <button class="btn btn-unsub" name="action" value="confirm" type="submit">Unsubscribe from marketing</button>
             </form>

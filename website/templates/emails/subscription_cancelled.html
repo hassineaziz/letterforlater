@@ -3,231 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Cancelled - LetterForLater</title>
+    <title>Subscription Update - LetterForLater</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif:italic,wght@400;700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f9fafb;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f9fafb;
+            padding-bottom: 60px;
+        }
+        .main {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
         }
         .header {
+            padding: 60px 40px 40px;
             text-align: center;
-            margin-bottom: 30px;
         }
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            display: block;
+        .brand {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-style: italic;
+            font-size: 24px;
+            color: #0f172a;
+            text-decoration: none;
+            letter-spacing: -0.02em;
         }
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .content {
+            padding: 0 40px 60px;
         }
-        .info-icon {
-            width: 80px;
-            height: 80px;
-            background: #6B7280;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-        }
-        h1 {
-            color: #1F2937;
-            font-size: 28px;
-            margin: 0;
+        .hero-title {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-size: 32px;
             font-weight: 700;
+            line-height: 1.2;
+            color: #0f172a;
+            margin: 0 0 24px;
+            text-align: center;
         }
-        .subtitle {
-            color: #6B7280;
-            font-size: 16px;
-            margin: 10px 0 0 0;
-        }
-        .message-box {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 24px;
-            margin: 30px 0;
-        }
-        .message-text {
-            color: #374151;
+        .body-text {
             font-size: 16px;
             line-height: 1.6;
-            margin: 0;
-        }
-        .free-features {
-            background: #F0F9FF;
-            border: 1px solid #BAE6FD;
-            border-radius: 8px;
-            padding: 24px;
-            margin: 30px 0;
-        }
-        .free-features h3 {
-            color: #0C4A6E;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 16px 0;
-        }
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .feature-list li {
-            display: flex;
-            align-items: center;
-            margin: 12px 0;
-            color: #374151;
-            font-size: 14px;
-        }
-        .feature-list li::before {
-            content: "✓";
-            color: #10B981;
-            font-weight: bold;
-            margin-right: 12px;
-        }
-        .cta-section {
-            background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
-            border: 1px solid #BAE6FD;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
+            color: #475569;
+            margin-bottom: 32px;
             text-align: center;
         }
-        .cta-title {
-            color: #0C4A6E;
-            font-size: 20px;
+        .secondary-section {
+            padding: 32px;
+            background-color: #f8fafc;
+            border-radius: 24px;
+            margin-bottom: 32px;
+        }
+        .section-label {
+            font-size: 10px;
             font-weight: 700;
-            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: block;
         }
-        .cta-text {
-            color: #0369A1;
-            font-size: 14px;
-            margin: 0 0 20px 0;
+        .note-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #64748b;
         }
-        .cta-button {
+        .cta-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .button {
             display: inline-block;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            color: white;
+            background-color: #6366f1;
+            color: #ffffff !important;
+            padding: 18px 36px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
             text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            margin: 10px;
-        }
-        .cta-button:hover {
-            background: linear-gradient(135deg, #2563EB, #7C3AED);
-        }
-        .secondary-button {
-            background: white;
-            color: #3B82F6;
-            border: 2px solid #3B82F6;
-        }
-        .secondary-button:hover {
-            background: #3B82F6;
-            color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
         }
         .footer {
+            padding: 40px;
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-            color: #6B7280;
-            font-size: 14px;
+            font-size: 12px;
+            color: #94a3b8;
         }
-        .footer a {
-            color: #3B82F6;
+        .footer-links {
+            margin-bottom: 16px;
+        }
+        .footer-link {
+            color: #64748b;
             text-decoration: none;
+            margin: 0 12px;
         }
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            .cta-button {
-                display: block;
-                width: 100%;
-                text-align: center;
-                box-sizing: border-box;
-                margin: 10px 0;
-            }
-            .secondary-button {
-                display: block;
-                width: 100%;
-                text-align: center;
-                box-sizing: border-box;
-                margin: 10px 0;
-            }
-            h1 {
-                font-size: 24px;
-            }
-            .free-features {
-                padding: 20px;
-            }
-            .cta-section {
-                padding: 20px;
-            }
+        @media screen and (max-width: 600px) {
+            .content { padding: 0 24px 48px; }
+            .header { padding: 48px 24px 32px; }
+            .hero-title { font-size: 28px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="https://letterforlater.com/static/logo.png" alt="LetterForLater" />
-            </div>
-            <div class="info-icon">ℹ️</div>
-            <h1>Subscription Cancelled</h1>
-            <p class="subtitle">Your LetterForLater subscription has been cancelled</p>
-        </div>
+    <div class="wrapper">
+        <table class="main">
+            <tr>
+                <td class="header">
+                    <a href="https://letterforlater.com" class="brand">LetterForLater</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <h1 class="hero-title">Subscription Cancelled</h1>
+                    <p class="body-text">
+                        Hi {{ user_name }},<br>
+                        Your LetterForLater subscription has been cancelled. While your premium access will end, your existing legacy remains secure within our free tier limits.
+                    </p>
+                    
+                    <div class="secondary-section">
+                        <span class="section-label">Your Archive</span>
+                        <p class="note-text">
+                            You still have access to unlimited text letters, end-to-end encryption, and our future self scheduling. Your words are still safe.
+                        </p>
+                    </div>
 
-        <div class="message-box">
-            <p class="message-text">
-                Hi {{ user_name }},<br><br>
-                Your LetterForLater subscription has been cancelled. We're sorry to see you go, but we understand that circumstances change.
-            </p>
-        </div>
-
-        <div class="free-features">
-            <h3>You Still Have Access To:</h3>
-            <ul class="feature-list">
-                <li>1 legacy letter (create and manage)</li>
-                <li>Bank-level encryption and security</li>
-                <li>Trusted contact verification system</li>
-                <li>Email delivery tracking</li>
-                <li>Basic scheduling options</li>
-                <li>Account management and settings</li>
-            </ul>
-        </div>
-
-        <div class="cta-section">
-            <h3 class="cta-title">Change Your Mind?</h3>
-            <p class="cta-text">You can resubscribe anytime to unlock unlimited letters and premium features</p>
-            <a href="{{ dashboard_url }}/pricing" class="cta-button">View Pricing Plans</a>
-            <a href="{{ dashboard_url }}" class="cta-button secondary-button">Continue with Free Plan</a>
-        </div>
-
-        <div class="footer">
-            <p>Thank you for being part of the LetterForLater community.</p>
-            <p>Questions? Contact us at <a href="mailto:support@letterforlater.com">support@letterforlater.com</a></p>
-            <p>This email was sent to {{ user_email }}.</p>
-        </div>
+                    <div class="cta-container">
+                        <a href="{{ dashboard_url }}/pricing" class="button">View Plans</a>
+                    </div>
+                    
+                    <p class="note-text" style="text-align: center; margin-top: 40px;">
+                        Update for {{ user_email }}
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <div class="footer-links">
+                        <a href="{{ dashboard_url }}" class="footer-link">Dashboard</a>
+                        <a href="https://letterforlater.com/privacy" class="footer-link">Privacy</a>
+                        <a href="mailto:support@letterforlater.com" class="footer-link">Support</a>
+                    </div>
+                    <p>&copy; LetterForLater. Preserving moments, intentionally.</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

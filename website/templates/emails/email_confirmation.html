@@ -3,283 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Your LetterForLater Account</title>
+    <title>Confirm Your Account - LetterForLater</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f9f9ff;
+            color: #141b2b;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f9f9ff;
+            padding: 40px 0;
+        }
+        .main {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border: 1px solid #ede9fe;
         }
         .header {
+            padding: 48px 40px 32px;
             text-align: center;
-            margin-bottom: 30px;
+            background: linear-gradient(to bottom, #ffffff, #fdfaff);
         }
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            display: block;
-        }
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .verify-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-        }
-        h1 {
-            color: #1F2937;
-            font-size: 28px;
-            margin: 0;
+        .brand {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-size: 24px;
             font-weight: 700;
-        }
-        .subtitle {
-            color: #6B7280;
-            font-size: 16px;
-            margin: 10px 0 0 0;
-        }
-        .welcome-text {
-            font-size: 16px;
-            color: #374151;
-            text-align: center;
-            margin: 30px 0;
-            line-height: 1.7;
-        }
-        .confirmation-box {
-            background: #F0F9FF;
-            border: 2px solid #3B82F6;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-            text-align: center;
-        }
-        .confirmation-title {
-            color: #1E40AF;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 16px 0;
-        }
-        .confirmation-text {
-            color: #1E40AF;
-            font-size: 14px;
-            margin: 0 0 24px 0;
-        }
-        .confirm-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-            color: white;
+            color: #9333EA;
             text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .content {
+            padding: 0 48px 48px;
+        }
+        .hero-title {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #141b2b;
+            margin: 0 0 24px;
+            text-align: center;
+        }
+        .body-text {
             font-size: 16px;
-            margin: 10px 0;
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            line-height: 1.6;
+            color: #4d4354;
+            margin-bottom: 32px;
+            text-align: center;
         }
-        .confirm-button:hover {
-            background: linear-gradient(135deg, #2563EB, #1E40AF);
-            box-shadow: 0 6px 8px rgba(59, 130, 246, 0.4);
+        .cta-container {
+            text-align: center;
+            margin: 40px 0;
         }
-        .backup-link {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .backup-title {
-            color: #374151;
+        .button {
+            display: inline-block;
+            background-color: #9333EA;
+            color: #ffffff !important;
+            padding: 18px 40px;
             font-size: 14px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-        }
-        .backup-text {
-            color: #6B7280;
-            font-size: 12px;
-            margin: 0 0 8px 0;
-            word-break: break-all;
-        }
-        .expiry-warning {
-            background: #FEF3C7;
-            border: 1px solid #F59E0B;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 20px 0;
-        }
-        .expiry-title {
-            color: #92400E;
-            font-size: 14px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-        }
-        .expiry-text {
-            color: #92400E;
-            font-size: 13px;
-            margin: 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(147, 51, 234, 0.2);
         }
         .security-note {
-            background: #F0FDF4;
-            border: 1px solid #10B981;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 20px 0;
+            padding: 24px;
+            background-color: #f8fafc;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
         }
-        .security-title {
-            color: #065F46;
-            font-size: 14px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-        }
-        .security-text {
-            color: #065F46;
+        .note-text {
             font-size: 13px;
-            margin: 0;
+            line-height: 1.5;
+            color: #64748b;
+            text-align: center;
         }
         .footer {
+            padding: 40px;
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-            color: #6B7280;
-            font-size: 14px;
+            background-color: #f3e8ff;
+            border-top: 1px solid #ede9fe;
         }
-        .footer a {
-            color: #3B82F6;
-            text-decoration: none;
-        }
-        .features-preview {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 24px;
-            margin: 30px 0;
-        }
-        .features-title {
-            color: #1F2937;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0 0 16px 0;
-            text-align: center;
-        }
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .feature-item {
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            color: #374151;
-        }
-        .feature-item::before {
-            content: "✓";
-            color: #10B981;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        @media (max-width: 600px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            .container {
-                padding: 20px;
-            }
-            .confirm-button {
-                display: block;
-                width: 100%;
-                text-align: center;
-                box-sizing: border-box;
-                margin: 10px 0;
-            }
-            .backup-text {
-                font-size: 11px;
-                word-break: break-all;
-            }
-            h1 {
-                font-size: 24px;
-            }
-            .welcome-text {
-                font-size: 15px;
-            }
-            .confirmation-box {
-                padding: 20px;
-            }
+        .footer-text {
+            font-size: 12px;
+            color: #4d4354;
+            line-height: 1.5;
+            margin-bottom: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="https://letterforlater.com/static/logo.png" alt="LetterForLater" />
+    <div class="wrapper">
+        <div class="main">
+            <div class="header">
+                <a href="{{ url_for('views.home', _external=True) }}" class="brand">LetterForLater</a>
             </div>
-            <h1>Confirm Your Account</h1>
-            <p class="subtitle">Almost there! Just one more step to get started</p>
-        </div>
-
-        <div class="welcome-text">
-            Hi {{ user_name }},<br><br>
-            Welcome to LetterForLater! We're excited to help you preserve your most important messages for the people you love.
-        </div>
-
-        <div class="confirmation-box">
-            <h3 class="confirmation-title">Verify Your Email Address</h3>
-            <p class="confirmation-text">Click the button below to confirm your account and start creating your legacy letters.</p>
-            <a href="{{ confirm_link }}" class="confirm-button">Confirm My Account</a>
-        </div>
-
-        <div class="backup-link">
-            <div class="backup-title">Button not working?</div>
-            <div class="backup-text">Copy and paste this link into your browser:</div>
-            <div class="backup-text" style="color: #3B82F6; font-family: monospace;">{{ confirm_link }}</div>
-        </div>
-
-        <div class="expiry-warning">
-            <div class="expiry-title">⏰ Link Expires Soon</div>
-            <div class="expiry-text">This confirmation link will expire in 48 hours for security reasons. If it expires, you can request a new one from the login page.</div>
-        </div>
-
-        <div class="features-preview">
-            <h3 class="features-title">What's Waiting for You</h3>
-            <div class="features-grid">
-                <div class="feature-item">Create unlimited legacy letters</div>
-                <div class="feature-item">Bank-level encryption</div>
-                <div class="feature-item">Trusted contact verification</div>
-                <div class="feature-item">Scheduled delivery options</div>
-                <div class="feature-item">Rich text formatting</div>
-                <div class="feature-item">Media attachments</div>
+            <div class="content">
+                <h1 class="hero-title">Verify Your Email Protocol</h1>
+                <p class="body-text">
+                    Welcome to LetterForLater. To ensure the security of your digital estate, please confirm your email address by clicking the button below.
+                </p>
+                
+                <div class="cta-container">
+                    <a href="{{ confirm_url }}" class="button">Verify Account</a>
+                </div>
+                
+                <div class="security-note">
+                    <p class="note-text">
+                        This verification link will expire in 24 hours. If you did not create an account on LetterForLater, please ignore this email.
+                    </p>
+                </div>
+                
+                <p class="body-text" style="font-size: 14px;">
+                    If the button above doesn't work, copy and paste this link into your browser:<br>
+                    <a href="{{ confirm_url }}" style="color: #9333EA; word-break: break-all;">{{ confirm_url }}</a>
+                </p>
             </div>
-        </div>
-
-        <div class="security-note">
-            <div class="security-title">🔒 Security Note</div>
-            <div class="security-text">If you didn't create this account, please ignore this email. Your email address will not be used without confirmation.</div>
-        </div>
-
-        <div class="footer">
-            <p>Questions? Contact us at <a href="mailto:support@letterforlater.com">support@letterforlater.com</a></p>
-            <p>This email was sent to {{ user_email }}.</p>
+            <div class="footer">
+                <p class="footer-text">
+                    &copy; {{ current_year }} LetterForLater. All rights reserved.<br>
+                    Delivered with care when it matters most.
+                </p>
+            </div>
         </div>
     </div>
 </body>

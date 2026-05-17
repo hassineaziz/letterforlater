@@ -8,13 +8,15 @@ load_dotenv()
 # Initialize Stripe with your secret key
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
-# Your Stripe product/price IDs (replace with your actual LIVE IDs from Stripe dashboard)
+# Your Stripe product/price IDs (configured in Stripe Dashboard)
+# Using environment variables is preferred for production
 STRIPE_PRODUCTS = {
-    'free': None,  # No payment needed for free plan
-    'premium_monthly': 'price_1SjKL2DzxRSZ7ssLFPUUrfBk',  # Replace with your live monthly price ID
-    'premium_yearly': 'price_1SM6B2DzxRSZ7ssLhVOVz3AQ',   # Replace with your live yearly price ID  
-    'lifetime': 'price_1SHmG0DzxRSZ7ssL1UDSX9Wg'          # Replace with your live lifetime price ID
+    'free': None,
+    'premium_monthly': os.getenv('STRIPE_PRICE_PREMIUM_MONTHLY', 'price_1TXjIVDzxRSZ7ssLS76WxLu7'),
+    'premium_yearly': os.getenv('STRIPE_PRICE_PREMIUM_YEARLY', 'price_1TXjHpDzxRSZ7ssLL1X3eWoH'),
+    'lifetime': os.getenv('STRIPE_PRICE_LIFETIME', 'price_1TXiH7DzxRSZ7ssLAKLk25Mq')
 }
 
 def get_stripe_price_id(plan, cycle='month'):
@@ -22,7 +24,14 @@ def get_stripe_price_id(plan, cycle='month'):
     if plan == 'free':
         return None
     elif plan == 'premium':
-        return STRIPE_PRODUCTS[f'premium_{cycle}ly']
+        key = f'premium_{cycle}ly'
+        return STRIPE_PRODUCTS.get(key)
     elif plan == 'lifetime':
-        return STRIPE_PRODUCTS['lifetime']
+        return STRIPE_PRODUCTS.get('lifetime')
     return None
+
+def is_premium(user):
+    """Check if a user has an active premium or lifetime plan"""
+    if not user or not user.is_authenticated:
+        return False
+    return user.plan in ['premium', 'lifetime']

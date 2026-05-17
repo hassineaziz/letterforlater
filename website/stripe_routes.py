@@ -11,210 +11,159 @@ stripe_bp = Blueprint('stripe', __name__)
 @stripe_bp.route('/create-checkout-session', methods=['POST'])
 @login_required
 def create_checkout_session():
+    """Create a Stripe Checkout Session for plan upgrades"""
     try:
-        plan = request.json.get('plan')
-        cycle = request.json.get('cycle', 'month')
+        data = request.get_json()
+        plan = data.get('plan')
+        cycle = data.get('cycle', 'month')
         
-        # Handle free plan - just redirect to signup
+        print(f"DEBUG: Create Checkout Session - User: {current_user.email}, Plan: {plan}, Cycle: {cycle}")
+        
+        # Handle free plan - redirect to dashboard as they are already logged in
         if plan == 'free':
-            return jsonify({'redirect': url_for('auth.sign_up', plan='free')})
+            print("DEBUG: Plan is free, redirecting to home")
+            return jsonify({'redirect': url_for('views.home')})
         
         # Get Stripe price ID
         price_id = get_stripe_price_id(plan, cycle)
+        print(f"DEBUG: Price ID: {price_id}")
         
         if not price_id:
-            return jsonify({'error': 'Invalid plan'}), 400
+            print(f"DEBUG: Invalid price ID for plan {plan}, cycle {cycle}")
+            return jsonify({'error': 'Invalid plan or billing cycle selected.'}), 400
         
-        # Determine if it's a subscription or one-time payment
+        # Determine if it's a subscription (Premium) or one-time payment (Lifetime)
         mode = 'subscription' if plan == 'premium' else 'payment'
+        print(f"DEBUG: Mode: {mode}")
         
-        # Create checkout session
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
+        # Build checkout session parameters
+        session_params = {
+            'payment_method_types': ['card'],
+            'line_items': [{
                 'price': price_id,
                 'quantity': 1,
             }],
-            mode=mode,
-            success_url=request.url_root + 'payment-success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=request.url_root + 'payment-cancel',
-            customer_email=current_user.email,
-            allow_promotion_codes=True,
-            metadata={
+            'mode': mode,
+            'success_url': request.url_root.rstrip('/') + url_for('stripe.payment_success') + '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url': request.url_root.rstrip('/') + url_for('stripe.payment_cancel'),
+            'allow_promotion_codes': True,
+            'metadata': {
                 'user_id': current_user.id,
                 'plan': plan,
                 'cycle': cycle
             }
-        )
+        }
+        
+        # Reuse existing customer ID if available to prevent duplicates in Stripe
+        if current_user.stripe_customer_id:
+            session_params['customer'] = current_user.stripe_customer_id
+        else:
+            session_params['customer_email'] = current_user.email
+            
+        # Create checkout session
+        checkout_session = stripe.checkout.Session.create(**session_params)
         
         return jsonify({'checkout_url': checkout_session.url})
         
+    except stripe.InvalidRequestError as e:
+        if 'No such customer' in str(e):
+            print(f"DEBUG: Invalid customer ID {current_user.stripe_customer_id} for this environment. Clearing it.")
+            current_user.stripe_customer_id = None
+            db.session.commit()
+            # Optionally: Re-call the function or tell the user to try again
+            return jsonify({'error': 'Your billing record was outdated for this environment. It has been reset. Please click the button again to proceed.', 'retry': True}), 400
+        
+        print(f"Stripe Invalid Request: {str(e)}")
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
-        print(f"Stripe error: {str(e)}")
-        return jsonify({'error': 'Payment processing failed. Please try again.'}), 500
+        print(f"Stripe Checkout Error: {str(e)}")
+        return jsonify({'error': 'Could not initiate payment. Please try again or contact support.'}), 500
+
+@stripe_bp.route('/create-customer-portal', methods=['POST'])
+@login_required
+def create_customer_portal():
+    """Create a Stripe Customer Portal session for billing management"""
+    try:
+        # Fallback: If customer ID is missing, try to find it in Stripe by email
+        if not current_user.stripe_customer_id:
+            print(f"DEBUG: Customer ID missing for {current_user.email}, attempting recovery...")
+            customers = stripe.Customer.list(email=current_user.email, limit=1)
+            if customers.data:
+                current_user.stripe_customer_id = customers.data[0].id
+                db.session.commit()
+                print(f"DEBUG: Recovered Customer ID: {current_user.stripe_customer_id}")
+            else:
+                flash("No billing record found. Please upgrade your plan first.", "info")
+                return redirect(url_for('pricing.pricing_page'))
+
+        # Create portal session
+        return_url = url_for('views.settings', _external=True)
+        print(f"DEBUG: Billing Portal - User: {current_user.email}")
+        print(f"DEBUG: Customer ID: {current_user.stripe_customer_id}")
+        print(f"DEBUG: Return URL: {return_url}")
+        
+        try:
+            portal_session = stripe.billing_portal.Session.create(
+                customer=current_user.stripe_customer_id,
+                return_url=return_url,
+            )
+            print(f"DEBUG: Portal Session Created: {portal_session.url[:50]}...")
+            return redirect(portal_session.url)
+        except stripe.error.StripeError as e:
+            print(f"STRIPE ERROR: {str(e)}")
+            flash(f"Stripe Portal Error: {e.user_message if hasattr(e, 'user_message') else str(e)}", "error")
+            return redirect(url_for('views.settings'))
+        
+    except Exception as e:
+        print(f"GENERAL ERROR: {str(e)}")
+        flash(f"System Error: {str(e)}", "error")
+        return redirect(url_for('views.settings'))
 
 @stripe_bp.route('/payment-cancel')
 def payment_cancel():
-    flash('Payment was cancelled. You can try again anytime.', 'info')
-    return render_template('payment_cancel.html')
+    flash('Payment was cancelled. You can resume writing or try again anytime.', 'info')
+    return redirect(url_for('pricing.pricing_page'))
 
 @stripe_bp.route('/payment-success')
 @login_required
 def payment_success():
+    """Display success page after payment (Webhook handles the actual DB update)"""
     session_id = request.args.get('session_id')
     
+    # Optional: Force a quick sync from Stripe if session_id is present
+    # This provides immediate feedback even if the webhook is slightly delayed
     if session_id:
         try:
-            # Retrieve the session from Stripe
             session = stripe.checkout.Session.retrieve(session_id)
-            
-            # Get plan info from metadata
-            plan = session.metadata.get('plan')
-            cycle = session.metadata.get('cycle', 'month')
-            
-            # Update user's plan in database
-            current_user.plan = plan
-            if plan == 'premium':
-                current_user.subscription_cycle = cycle
-            
-            # Store Stripe customer ID if this is their first payment
-            if not current_user.stripe_customer_id:
-                current_user.stripe_customer_id = session.customer
-            
-            db.session.commit()
-            
-            # Send payment success email
-            email_sent = send_payment_success_email(current_user, session)
-            if email_sent:
-                print(f"✅ Payment success email sent to {current_user.email}")
-            else:
-                print(f"❌ Failed to send payment success email to {current_user.email}")
-            
-            flash(f'Welcome to {plan.title()} plan! Your payment was successful.', 'success')
-            
+            if session.payment_status == 'paid':
+                # Use the core sync utility for a full update (dates, status, etc.)
+                if not current_user.stripe_customer_id:
+                    current_user.stripe_customer_id = session.customer
+                    db.session.commit()
+                
+                sync_user_subscription(current_user.id)
+                print(f"DEBUG: Post-payment sync completed for {current_user.email}")
         except Exception as e:
-            print(f"Error processing payment success: {str(e)}")
-            flash('Payment was successful, but there was an error updating your account. Please contact support.', 'warning')
-    
+            print(f"Post-payment sync warning: {str(e)}")
+
     return render_template('payment_success.html',
-        user_name=f"{current_user.first_name} {current_user.last_name}",
-        user_plan=current_user.plan,
-        user_cycle=current_user.subscription_cycle,
-        user_next_payment=current_user.next_payment_date
+        user_name=f"{current_user.first_name}",
+        user_plan=current_user.plan
     )
 
+# Redundant routes kept for backward compatibility but marked for removal
+# The Customer Portal now handles these actions more reliably.
 @stripe_bp.route('/change-billing-cycle', methods=['POST'])
 @login_required
 def change_billing_cycle():
-    """Change user's billing cycle"""
-    try:
-        new_cycle = request.form.get('new_cycle')
-        
-        if not new_cycle or new_cycle not in ['month', 'year']:
-            flash('Invalid billing cycle selected.', 'error')
-            return redirect(url_for('views.settings'))
-        
-        if not current_user.subscription_id:
-            flash('No active subscription found.', 'error')
-            return redirect(url_for('views.settings'))
-        
-        # Get the new price ID
-        new_price_id = None
-        if new_cycle == 'month':
-            new_price_id = STRIPE_PRODUCTS['premium_monthly']
-        elif new_cycle == 'year':
-            new_price_id = STRIPE_PRODUCTS['premium_yearly']
-        
-        if not new_price_id:
-            flash('Unable to process billing cycle change.', 'error')
-            return redirect(url_for('views.settings'))
-        
-        # Update the subscription in Stripe
-        subscription = stripe.Subscription.retrieve(current_user.subscription_id)
-        
-        # Update the subscription with new price
-        stripe.Subscription.modify(
-            current_user.subscription_id,
-            items=[{
-                'id': subscription['items']['data'][0]['id'],
-                'price': new_price_id,
-            }],
-            proration_behavior='create_prorations'
-        )
-        
-        # Update user's billing cycle in database
-        current_user.subscription_cycle = new_cycle
-        db.session.commit()
-        
-        flash(f'Billing cycle changed to {new_cycle.title()} successfully!', 'success')
-        
-    except Exception as e:
-        print(f"Error changing billing cycle: {str(e)}")
-        flash('Failed to change billing cycle. Please try again.', 'error')
-        db.session.rollback()
-    
-    return redirect(url_for('views.settings'))
+    return create_customer_portal()
 
 @stripe_bp.route('/cancel-subscription', methods=['POST'])
 @login_required
 def cancel_subscription():
-    """Cancel user's subscription"""
-    try:
-        cancel_reason = request.form.get('cancel_reason', '')
-        cancel_feedback = request.form.get('cancel_feedback', '')
-        
-        if not current_user.subscription_id:
-            flash('No active subscription found.', 'error')
-            return redirect(url_for('views.settings'))
-        
-        # Cancel the subscription in Stripe (at period end)
-        stripe.Subscription.modify(
-            current_user.subscription_id,
-            cancel_at_period_end=True
-        )
-        
-        # Update user's subscription status
-        current_user.subscription_cancel_at_period_end = True
-        db.session.commit()
-        
-        # Log cancellation reason for analytics
-        print(f"Subscription cancelled for user {current_user.email}")
-        print(f"Reason: {cancel_reason}")
-        print(f"Feedback: {cancel_feedback}")
-        
-        flash('Your subscription has been cancelled. You\'ll keep access until your next billing date.', 'success')
-        
-    except Exception as e:
-        print(f"Error cancelling subscription: {str(e)}")
-        flash('Failed to cancel subscription. Please contact support.', 'error')
-        db.session.rollback()
-    
-    return redirect(url_for('views.settings'))
+    return create_customer_portal()
 
 @stripe_bp.route('/reactivate-subscription', methods=['POST'])
 @login_required
 def reactivate_subscription():
-    """Reactivate a cancelled subscription"""
-    try:
-        if not current_user.subscription_id:
-            flash('No subscription found.', 'error')
-            return redirect(url_for('views.settings'))
-        
-        # Reactivate the subscription in Stripe
-        stripe.Subscription.modify(
-            current_user.subscription_id,
-            cancel_at_period_end=False
-        )
-        
-        # Update user's subscription status
-        current_user.subscription_cancel_at_period_end = False
-        db.session.commit()
-        
-        flash('Your subscription has been reactivated!', 'success')
-        
-    except Exception as e:
-        print(f"Error reactivating subscription: {str(e)}")
-        flash('Failed to reactivate subscription. Please contact support.', 'error')
-        db.session.rollback()
-    
-    return redirect(url_for('views.settings'))
+    return create_customer_portal()

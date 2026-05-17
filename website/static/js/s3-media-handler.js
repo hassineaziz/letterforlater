@@ -7,6 +7,7 @@ class S3MediaUploader {
     constructor() {
         this.uploadQueue = [];
         this.activeUploads = new Map();
+        this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     }
 
     /**
@@ -43,13 +44,45 @@ class S3MediaUploader {
             formData.append('file', fileWithCorrectType);
 
             // Upload to S3
-            const uploadResponse = await fetch(upload_url, {
-                method: 'POST',
-                body: formData
-            });
+            let uploadResponse;
+            try {
+                uploadResponse = await fetch(upload_url, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'cors'
+                });
+            } catch (err) {
+                console.warn('S3 upload fetch reported error (likely CORS), attempting auto-healing confirmation...', err);
+                // Healing: Even if the browser blocks the S3 response (CORS), the upload often succeeds.
+                // We try to confirm with our backend. If the backend finds the file in S3, we consider it a success.
+                try {
+                    const confirmResponse = await this.confirmUpload(media_id, file.size);
+                    if (confirmResponse && confirmResponse.success) {
+                        return {
+                            success: true,
+                            media_id: media_id,
+                            file_name: file.name,
+                            file_type: mediaType,
+                            file_size: file.size,
+                            s3_key: s3_key
+                        };
+                    }
+                } catch (confirmErr) {
+                    console.error('Auto-healing confirmation failed:', confirmErr);
+                }
+                throw new Error(`Connection to storage failed: ${err.message}. Please check your S3 CORS settings.`);
+            }
 
             if (!uploadResponse.ok) {
-                throw new Error(`S3 upload failed: ${uploadResponse.status}`);
+                // If S3 explicitly rejected us, try to confirm anyway just in case (sometimes S3 returns 200/204 but fetch thinks it failed)
+                const confirmResponse = await this.confirmUpload(media_id, file.size).catch(() => null);
+                if (confirmResponse && confirmResponse.success) {
+                    return { success: true, media_id, file_name: file.name, file_type: mediaType, file_size: file.size, s3_key };
+                }
+                
+                const errorText = await uploadResponse.text().catch(() => 'No error detail');
+                console.error('S3 upload rejected:', uploadResponse.status, errorText);
+                throw new Error(`Storage rejected upload (Status ${uploadResponse.status})`);
             }
 
             // Step 3: Confirm upload with backend
@@ -85,6 +118,7 @@ class S3MediaUploader {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken
             },
             credentials: 'include',
             body: JSON.stringify({
@@ -114,6 +148,7 @@ class S3MediaUploader {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken || this.uploader?.csrfToken
             },
             credentials: 'include',
             body: JSON.stringify({
@@ -198,6 +233,9 @@ class S3MediaUploader {
     async deleteMedia(mediaId) {
         const response = await fetch(`/delete-media/${mediaId}`, {
             method: 'POST',
+            headers: {
+                'X-CSRFToken': this.csrfToken
+            },
             credentials: 'include'
         });
 
@@ -249,6 +287,7 @@ class BlogImageUploader {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken || this.uploader?.csrfToken
             },
             credentials: 'include',
             body: JSON.stringify({

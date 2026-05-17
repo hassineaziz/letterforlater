@@ -4,16 +4,16 @@ from .models import User, db
 from .stripe_config import stripe
 
 def sync_user_subscription(user_id):
-    """Sync user's subscription data from Stripe"""
+    """
+    Sync user's subscription data from Stripe.
+    This is the core synchronization logic that ensures our DB matches Stripe.
+    """
     user = User.query.get(user_id)
     if not user or not user.stripe_customer_id:
         return False
     
     try:
-        # Get customer from Stripe
-        customer = stripe.Customer.retrieve(user.stripe_customer_id)
-        
-        # Get active subscriptions
+        # Get active subscriptions for this customer
         subscriptions = stripe.Subscription.list(
             customer=user.stripe_customer_id,
             status='all',
@@ -23,59 +23,50 @@ def sync_user_subscription(user_id):
         if subscriptions.data:
             subscription = subscriptions.data[0]
             
-            # Update user with subscription data
+            # Basic info
             user.subscription_id = subscription.id
             user.subscription_status = subscription.status
+            user.plan = 'premium' # If they have an active sub, they are premium
             
-            # Get subscription data as dict to access nested fields
-            sub_dict = subscription.to_dict()
+            # Handle cancellation status
+            user.subscription_cancel_at_period_end = subscription.cancel_at_period_end
             
-            # Get current period end from subscription items (new Stripe API structure)
-            current_period_end = None
-            if 'items' in sub_dict and sub_dict['items'] and sub_dict['items'].get('data'):
-                current_period_end = sub_dict['items']['data'][0].get('current_period_end')
+            if subscription.cancel_at:
+                user.subscription_cancel_at = datetime.fromtimestamp(subscription.cancel_at, tz=timezone.utc)
+            else:
+                user.subscription_cancel_at = None
+
+            # Period dates
+            user.subscription_end_date = datetime.fromtimestamp(subscription.current_period_end, tz=timezone.utc)
             
-            # Convert timestamps to datetime objects
-            if current_period_end:
-                user.subscription_end_date = datetime.fromtimestamp(
-                    current_period_end, tz=timezone.utc
-                )
+            if subscription.trial_end:
+                user.subscription_trial_end = datetime.fromtimestamp(subscription.trial_end, tz=timezone.utc)
+            else:
+                user.subscription_trial_end = None
+
+            # Cycle detection
+            price = subscription['items']['data'][0]['price']
+            user.subscription_cycle = price['recurring']['interval'] # 'month' or 'year'
             
-            if hasattr(subscription, 'canceled_at') and subscription.canceled_at:
-                user.subscription_cancel_at = datetime.fromtimestamp(
-                    subscription.canceled_at, tz=timezone.utc
-                )
-            
-            user.subscription_cancel_at_period_end = getattr(subscription, 'cancel_at_period_end', False)
-            
-            if hasattr(subscription, 'trial_end') and subscription.trial_end:
-                user.subscription_trial_end = datetime.fromtimestamp(
-                    subscription.trial_end, tz=timezone.utc
-                )
-            
-            # Get latest invoice for payment info
-            if subscription.latest_invoice:
-                invoice = stripe.Invoice.retrieve(subscription.latest_invoice)
-                if invoice.status == 'paid' and invoice.status_transitions.paid_at:
-                    user.last_payment_date = datetime.fromtimestamp(
-                        invoice.status_transitions.paid_at, tz=timezone.utc
-                    )
-            
-            # Calculate next payment date
-            if subscription.status == 'active' and current_period_end:
-                user.next_payment_date = datetime.fromtimestamp(
-                    current_period_end, tz=timezone.utc
-                )
-            
+            # Next payment date
+            if subscription.status == 'active' and not subscription.cancel_at_period_end:
+                user.next_payment_date = datetime.fromtimestamp(subscription.current_period_end, tz=timezone.utc)
+            else:
+                user.next_payment_date = None
+
             db.session.commit()
             return True
             
         else:
-            # No active subscription - user should be on free plan
-            user.plan = 'free'
-            user.subscription_status = 'cancelled'
-            user.subscription_id = None
-            db.session.commit()
+            # No subscription found in Stripe. 
+            # If they are 'lifetime', we don't touch them.
+            if user.plan != 'lifetime':
+                user.plan = 'free'
+                user.subscription_status = None
+                user.subscription_id = None
+                user.subscription_cycle = None
+                user.next_payment_date = None
+                db.session.commit()
             return True
             
     except Exception as e:
@@ -83,79 +74,51 @@ def sync_user_subscription(user_id):
         return False
 
 def is_subscription_active(user):
-    """Check if user has an active subscription"""
-    if not user or user.plan == 'free':
+    """Check if user has an active premium or lifetime plan"""
+    if not user or not user.is_authenticated:
         return False
     
     if user.plan == 'lifetime':
         return True
     
-    if user.subscription_status == 'active':
-        # Check if subscription hasn't expired
-        if user.subscription_end_date and user.subscription_end_date > datetime.now(timezone.utc):
-            return True
+    if user.plan == 'premium' and user.subscription_status in ['active', 'trialing']:
+        return True
     
+    # Grace period check for cancelled subscriptions that haven't reached period end
+    if user.subscription_status == 'cancelled' and user.subscription_end_date:
+        if user.subscription_end_date > datetime.now(timezone.utc):
+            return True
+            
     return False
 
 def get_subscription_status(user):
-    """Get detailed subscription status for user"""
+    """Get human-readable subscription status for the UI"""
     if not user:
-        return {'status': 'no_user', 'message': 'No user provided'}
-    
-    if user.plan == 'free':
-        return {'status': 'free', 'message': 'Free plan user'}
+        return {'status': 'none', 'label': 'No account'}
     
     if user.plan == 'lifetime':
-        return {'status': 'lifetime', 'message': 'Lifetime plan - permanent access'}
+        return {'status': 'lifetime', 'label': 'Lifetime Heritage'}
     
-    if not user.stripe_customer_id:
-        return {'status': 'error', 'message': 'No Stripe customer ID'}
+    if user.plan == 'free':
+        return {'status': 'free', 'label': 'Free Plan'}
     
-    # Sync latest data from Stripe
-    sync_user_subscription(user.id)
+    status_map = {
+        'active': 'Premium (Active)',
+        'trialing': 'Premium (Trial)',
+        'past_due': 'Premium (Payment Overdue)',
+        'unpaid': 'Premium (Unpaid)',
+        'cancelled': 'Premium (Cancelled)',
+        'incomplete': 'Premium (Pending Setup)'
+    }
     
-    if user.subscription_status == 'active':
-        if user.subscription_end_date and user.subscription_end_date > datetime.now(timezone.utc):
-            return {
-                'status': 'active',
-                'message': 'Subscription active',
-                'next_payment': user.next_payment_date,
-                'end_date': user.subscription_end_date
-            }
-        else:
-            return {'status': 'expired', 'message': 'Subscription expired'}
+    label = status_map.get(user.subscription_status, f"Premium ({user.subscription_status})")
     
-    elif user.subscription_status == 'cancelled':
-        if user.subscription_cancel_at_period_end and user.subscription_end_date:
-            if user.subscription_end_date > datetime.now(timezone.utc):
-                return {
-                    'status': 'cancelled_at_period_end',
-                    'message': 'Cancelled but active until period end',
-                    'end_date': user.subscription_end_date
-                }
-            else:
-                return {'status': 'cancelled', 'message': 'Subscription cancelled and expired'}
-        else:
-            return {'status': 'cancelled', 'message': 'Subscription cancelled immediately'}
-    
-    elif user.subscription_status == 'past_due':
-        return {'status': 'past_due', 'message': 'Payment failed - subscription past due'}
-    
-    else:
-        return {'status': 'unknown', 'message': f'Unknown status: {user.subscription_status}'}
-
-def sync_all_subscriptions():
-    """Sync all premium users' subscription data"""
-    premium_users = User.query.filter(User.plan.in_(['premium', 'lifetime'])).all()
-    results = []
-    
-    for user in premium_users:
-        if user.stripe_customer_id:
-            success = sync_user_subscription(user.id)
-            results.append({
-                'user_id': user.id,
-                'email': user.email,
-                'success': success
-            })
-    
-    return results
+    if user.subscription_cancel_at_period_end:
+        label += " - Ending soon"
+        
+    return {
+        'status': user.subscription_status,
+        'label': label,
+        'end_date': user.subscription_end_date,
+        'next_payment': user.next_payment_date
+    }

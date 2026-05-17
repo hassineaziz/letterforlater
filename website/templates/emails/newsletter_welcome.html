@@ -3,172 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Our Newsletter!</title>
+    <title>Welcome to the Collective - LetterForLater</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif:italic,wght@400;700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f9fafb;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f9fafb;
+            padding-bottom: 60px;
+        }
+        .main {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
         }
         .header {
+            padding: 60px 40px 40px;
             text-align: center;
-            margin-bottom: 30px;
         }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2563eb;
-            margin-bottom: 10px;
-        }
-        .title {
+        .brand {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-style: italic;
             font-size: 24px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            font-size: 16px;
-            color: #6b7280;
-            margin-bottom: 20px;
+            color: #0f172a;
+            text-decoration: none;
+            letter-spacing: -0.02em;
         }
         .content {
-            margin-bottom: 30px;
+            padding: 0 40px 60px;
         }
-        .highlight-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 8px;
-            margin: 25px 0;
+        .hero-title {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #0f172a;
+            margin: 0 0 24px;
             text-align: center;
         }
-        .highlight-box h3 {
-            margin: 0 0 15px 0;
-            font-size: 20px;
-        }
-        .highlight-box p {
-            margin: 0;
+        .body-text {
             font-size: 16px;
-            opacity: 0.9;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 32px;
+            text-align: center;
         }
-        .benefits {
-            background: #f8fafc;
-            padding: 25px;
-            border-radius: 8px;
-            margin: 25px 0;
+        .secondary-section {
+            padding: 32px;
+            background-color: #f8fafc;
+            border-radius: 24px;
+            margin-bottom: 32px;
         }
-        .benefits h3 {
-            color: #1f2937;
-            margin-bottom: 15px;
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: block;
         }
-        .benefits ul {
-            margin: 0;
-            padding-left: 20px;
+        .note-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #64748b;
         }
-        .benefits li {
-            margin-bottom: 8px;
-            color: #4b5563;
+        .cta-container {
+            text-align: center;
+            margin: 40px 0;
         }
-        .cta-button {
+        .button {
             display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 15px 30px;
+            background-color: #6366f1;
+            color: #ffffff !important;
+            padding: 18px 36px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            margin: 20px 0;
-            transition: background-color 0.3s;
-        }
-        .cta-button:hover {
-            background: #1d4ed8;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
         }
         .footer {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 20px;
-            margin-top: 30px;
+            padding: 40px;
             text-align: center;
-            color: #6b7280;
-            font-size: 14px;
+            font-size: 12px;
+            color: #94a3b8;
         }
-        .pdf-attachment {
-            background: #f0f9ff;
-            border: 2px dashed #3b82f6;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 25px 0;
+        .footer-links {
+            margin-bottom: 16px;
         }
-        .pdf-attachment h4 {
-            color: #1e40af;
-            margin: 0 0 10px 0;
+        .footer-link {
+            color: #64748b;
+            text-decoration: none;
+            margin: 0 12px;
         }
-        .pdf-attachment p {
-            margin: 0;
-            color: #1e40af;
-            font-size: 14px;
+        @media screen and (max-width: 600px) {
+            .content { padding: 0 24px 48px; }
+            .header { padding: 48px 24px 32px; }
+            .hero-title { font-size: 28px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">LetterForLater</div>
-            <h1 class="title">Welcome to Our Newsletter! 🎉</h1>
-            <p class="subtitle">Thanks for subscribing to our blog</p>
-        </div>
+    <div class="wrapper">
+        <table class="main">
+            <tr>
+                <td class="header">
+                    <a href="https://letterforlater.com" class="brand">LetterForLater</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <h1 class="hero-title">Welcome to the Collective</h1>
+                    <p class="body-text">
+                        Thank you for joining our community of intentional thinkers. You are now part of a movement dedicated to preserving what matters most: our voices, our wisdom, and our love.
+                    </p>
+                    
+                    <div class="secondary-section">
+                        <span class="section-label">A Gift for You</span>
+                        <p class="note-text">
+                            As a new subscriber, we've prepared a special guide: <strong>"The Art of the Legacy Letter."</strong> It contains prompts and frameworks to help you find your voice.
+                        </p>
+                        <div style="margin-top: 16px;">
+                            <a href="https://letterforlater.com/download/legacy-template" style="color: #6366f1; font-weight: 600; text-decoration: none; font-size: 14px;">Download the Guide &rarr;</a>
+                        </div>
+                    </div>
 
-        <div class="content">
-            <p>We're thrilled you've joined our community! You've just taken the first step toward creating a meaningful legacy that will touch the lives of your loved ones for generations to come.</p>
-
-            <div class="highlight-box">
-                <h3>🎁 Special Welcome Gift!</h3>
-                <p>As a thank you for subscribing, we're giving you free access to our professional legacy letter template and comprehensive guide to help you get started on your legacy journey.</p>
-            </div>
-
-            <div class="pdf-attachment">
-                <h4>📄 Download Your Free Template!</h4>
-                <p>Click the button below to download our professional legacy letter template - it contains everything you need to begin creating meaningful legacy letters.</p>
-                <div style="text-align: center; margin: 20px 0;">
-                    <a href="https://letterforlater.com/download/legacy-template" class="cta-button">Download Free Template</a>
-                </div>
-            </div>
-
-            <div class="benefits">
-                <h3>What You'll Receive:</h3>
-                <ul>
-                    <li>📚 Weekly blog posts with actionable advice on legacy planning</li>
-                    <li>✍️ Writing prompts and templates to help you get started</li>
-                    <li>💡 Expert tips on creating meaningful, lasting messages</li>
-                    <li>🎯 Exclusive content and early access to new features</li>
-                    <li>📧 Personal stories and inspiration from our community</li>
-                </ul>
-            </div>
-
-            <p>Our mission is to help you preserve your most important thoughts, memories, and wisdom for the people who matter most. Whether you want to share life lessons, express love and gratitude, or simply ensure your voice is heard in the future, we're here to support you every step of the way.</p>
-
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="https://letterforlater.com" class="cta-button">Start Your Legacy Journey</a>
-            </div>
-
-            <p><strong>Ready to get started?</strong> Visit our platform to create your first legacy letter using our intuitive editor and professional templates. The process is simple, secure, and designed to help you express yourself authentically.</p>
-        </div>
-
-        <div class="footer">
-            <p>This email was sent because you subscribed to our newsletter at letterforlater.com</p>
-            <p>If you no longer wish to receive these emails, you can <a href="{{ unsubscribe_url }}">unsubscribe here</a></p>
-            <p>© 2024 LetterForLater. All rights reserved.</p>
-        </div>
+                    <div class="cta-container">
+                        <a href="https://letterforlater.com" class="button">Start Your Vault</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <div class="footer-links">
+                        <a href="https://letterforlater.com/blog" class="footer-link">Read the Blog</a>
+                        <a href="{{ unsubscribe_url }}" class="footer-link">Unsubscribe</a>
+                    </div>
+                    <p>&copy; LetterForLater. Preserving moments, intentionally.</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

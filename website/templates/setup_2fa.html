@@ -72,6 +72,7 @@
                     </p>
                     
                     <form method="POST" action="{{ url_for('auth.verify_2fa') }}" class="verification-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <div class="mb-6">
                             <label for="code" class="block text-lg font-semibold text-primary mb-4 text-center">
                                 <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,14 +133,7 @@
                 </div>
                 
                 <div class="text-center">
-                    <button type="button" 
-                            class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                            onclick="window.print()">
-                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                        </svg>
-                        Print Backup Codes
-                    </button>
+                    <p class="text-xs text-gray-400">Save these codes in a secure digital vault or written location.</p>
                 </div>
             </div>
             
@@ -151,6 +145,7 @@
                         Click the button below to begin setting up two-factor authentication for your account.
                     </p>
                     <form method="POST" class="inline-block">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <button type="submit" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg hover:shadow-xl">
                             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

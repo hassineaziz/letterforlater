@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Reactivate Account{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-20 px-4">
+    <div class="w-full max-w-xl">
+        <div class="bg-surface-container-lowest rounded-[3rem] border border-surface-container-highest p-10 md:p-16 shadow-2xl relative overflow-hidden text-center">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full -ml-32 -mb-32 blur-3xl"></div>
+
+            <div class="relative">
+                <div class="w-20 h-20 rounded-3xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-8 animate-bounce-subtle">
+                    <span class="material-symbols-outlined text-4xl">restart_alt</span>
+                </div>
+
+                <h1 class="font-headline text-4xl font-bold text-on-surface mb-6 tracking-tight">Welcome Back</h1>
+                
+                <div class="p-6 bg-surface-container rounded-2xl border border-surface-container-highest mb-10 text-left">
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Hello, <span class="text-on-surface font-bold">{{ user.first_name }}</span>. Your account is currently in <strong>Deactivation Protocol</strong>. 
+                        Your legacy letters, vault media, and trusted connections have been preserved and are ready to be restored.
+                    </p>
+                </div>
+
+                <p class="text-sm text-on-surface-variant mb-10 font-medium">
+                    By proceeding, you will reactivate your account and regain immediate access to your digital estate.
+                </p>
+
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{{ url_for('auth.login') }}" 
+                           class="px-10 py-5 rounded-2xl text-xs font-bold uppercase tracking-widest border border-surface-container-highest text-on-surface-variant hover:bg-surface-container transition-all">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="px-12 py-5 rounded-2xl bg-primary text-on-primary text-xs font-bold uppercase tracking-widest shadow-2xl shadow-primary/20 hover:bg-primary-container transition-all">
+                            Reactivate Digital Estate
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <p class="text-center mt-8 text-xs text-on-surface-variant/60 font-medium tracking-widest uppercase">
+            Secured by Legacy Letter Protocol
+        </p>
+    </div>
+</div>
+
+<style>
+@keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.animate-bounce-subtle {
+    animation: bounce-subtle 3s ease-in-out infinite;
+}
+</style>
+{% endblock %}

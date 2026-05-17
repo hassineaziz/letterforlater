@@ -7,7 +7,7 @@ Thank you for joining LetterForLater! You've taken the first step toward creatin
 
 WHAT MAKES US SPECIAL:
 ---------------------
-🔒 Bank-Level Security - Your letters are encrypted and stored securely
+🔒 End-to-End Encryption - Your letters are encrypted and stored securely
 👥 Trusted Contacts - Choose who can verify and deliver your letters  
 📅 Scheduled Delivery - Set specific dates or conditions for delivery
 📱 Easy Management - Create, edit, and manage your letters anytime
@@ -24,7 +24,7 @@ HOW IT WORKS:
    Decide when your letters should be delivered - on specific dates, after a certain period, or when trusted contacts verify important events.
 
 4. Rest Easy
-   Your letters are safely stored with bank-level encryption. You can update, edit, or add new letters anytime. Your legacy is secure and ready.
+   Your letters are safely stored with end-to-end encryption. You can update, edit, or add new letters anytime. Your legacy is secure and ready.
 
 GET STARTED:
 -----------

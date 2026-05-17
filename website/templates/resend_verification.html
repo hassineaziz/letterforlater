@@ -102,24 +102,17 @@ function onTurnstileError(error) {
     if (submitBtn) submitBtn.disabled = true;
 }
 
-// Disable submit button until Turnstile is completed (only if Turnstile is configured)
+// Enable submit button by default to prevent blocking users
 document.addEventListener('DOMContentLoaded', function() {
     const turnstileWidget = document.querySelector('.cf-turnstile');
     const submitBtn = document.getElementById('submit-btn');
     
-    // Only disable submit button if Turnstile is configured
+    // We no longer disable the button by default
     if (turnstileWidget && submitBtn) {
-        submitBtn.disabled = true;
-        
-        // Prevent form submission if Turnstile token is missing
         const form = document.querySelector('form[method="POST"]');
         if (form) {
             form.addEventListener('submit', function(e) {
-                if (!turnstileToken || turnstileToken === '') {
-                    e.preventDefault();
-                    alert('Please complete the security verification.');
-                    return false;
-                }
+                // Client-side validation can go here
             });
         }
     }

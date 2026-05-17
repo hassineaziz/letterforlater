@@ -18,8 +18,8 @@ EMAIL_RATE_LIMIT = {
 
 # Per-user email limits (for password_reset and confirmation only)
 PER_USER_EMAIL_LIMIT = {
-    'password_reset': 3,  # Max 3 password reset emails per user per hour
-    'confirmation': 3,    # Max 3 confirmation emails per user per hour
+    'password_reset': 5,  # Max 5 password reset emails per user per hour
+    'confirmation': 5,    # Max 5 confirmation emails per user per hour
 }
 
 # Track email sending times (global - for monitoring only)
@@ -186,29 +186,7 @@ def safe_send_email(msg, email_type='unknown', max_retries=2):
     if msg.recipients:
         recipient_email = msg.recipients[0] if isinstance(msg.recipients, list) else msg.recipients
     
-    # EMERGENCY: Check if recipient email is from spam account
-    if recipient_email:
-        from .models import User
-        user = User.query.filter_by(email=recipient_email).first()
-        if user and user.registration_ip:
-            # Check if this IP is spam
-            from datetime import datetime, timedelta, timezone
-            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-            spam_count = User.query.filter(
-                User.registration_ip == user.registration_ip,
-                User.created_date >= five_minutes_ago
-            ).count()
-            
-            if spam_count >= 3:
-                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - spam IP {user.registration_ip}")
-                return False
-            
-            # Check if IP is blocked
-            from .blocking import is_ip_blocked
-            ip_blocked, _ = is_ip_blocked(user.registration_ip)
-            if ip_blocked:
-                print(f"[EMAIL BLOCK] Skipping email to {recipient_email} - blocked IP")
-                return False
+
     
     # Check per-user email limit (only for password_reset and confirmation)
     if recipient_email and email_type in PER_USER_EMAIL_LIMIT:

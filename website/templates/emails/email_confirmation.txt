@@ -22,7 +22,7 @@ IMPORTANT:
 WHAT'S WAITING FOR YOU:
 -----------------------
 ✓ Create unlimited legacy letters
-✓ Bank-level encryption and security
+✓ End-to-end encryption and security
 ✓ Trusted contact verification system
 ✓ Scheduled delivery options
 ✓ Rich text formatting

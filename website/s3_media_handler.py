@@ -155,9 +155,18 @@ class S3MediaHandler:
             # Update file size
             media.file_size = file_size
             
-            # Verify file exists in S3
-            if not s3_config.file_exists(media.file_path):
-                return jsonify({'success': False, 'error': 'File not found in S3'}), 404
+            # Verify file exists in S3 (with a small retry for eventual consistency)
+            import time
+            exists = False
+            for _ in range(3):
+                if s3_config.file_exists(media.file_path):
+                    exists = True
+                    break
+                time.sleep(0.5)
+            
+            if not exists:
+                print(f"ERROR: File {media.file_path} not found in S3 after 3 retries")
+                return jsonify({'success': False, 'error': 'File not found in S3 - please try again in a moment'}), 404
             
             # Get additional metadata from S3
             s3_metadata = s3_config.get_file_metadata(media.file_path)

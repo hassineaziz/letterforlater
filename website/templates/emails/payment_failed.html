@@ -3,239 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Failed - LetterForLater</title>
+    <title>Payment Attention Required - LetterForLater</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif:italic,wght@400;700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f9fafb;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f9fafb;
+            padding-bottom: 60px;
+        }
+        .main {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
         }
         .header {
+            padding: 60px 40px 40px;
             text-align: center;
-            margin-bottom: 30px;
         }
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
+        .brand {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-style: italic;
+            font-size: 24px;
+            color: #0f172a;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .content {
+            padding: 0 40px 60px;
+        }
+        .hero-title {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #0f172a;
+            margin: 0 0 24px;
+            text-align: center;
+        }
+        .body-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .status-box {
+            padding: 32px;
+            background-color: #fef2f2;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            text-align: center;
+            border: 1px solid #fee2e2;
+        }
+        .box-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #991b1b;
+            margin-bottom: 12px;
             display: block;
         }
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .warning-icon {
-            width: 80px;
-            height: 80px;
-            background: #F59E0B;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-        }
-        h1 {
-            color: #1F2937;
-            font-size: 28px;
-            margin: 0;
-            font-weight: 700;
-        }
-        .subtitle {
-            color: #6B7280;
-            font-size: 16px;
-            margin: 10px 0 0 0;
-        }
-        .alert-box {
-            background: #FEF3C7;
-            border: 1px solid #F59E0B;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-        }
-        .alert-title {
-            color: #92400E;
-            font-weight: 600;
-            font-size: 16px;
-            margin: 0 0 8px 0;
-        }
-        .alert-text {
-            color: #92400E;
+        .box-text {
             font-size: 14px;
-            margin: 0;
+            line-height: 1.5;
+            color: #991b1b;
         }
-        .steps-section {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 24px;
-            margin: 30px 0;
+        .cta-container {
+            text-align: center;
+            margin: 40px 0;
         }
-        .steps-title {
-            color: #1F2937;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 20px 0;
-        }
-        .step {
-            display: flex;
-            align-items: center;
-            margin: 16px 0;
-        }
-        .step-number {
-            background: #3B82F6;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            margin-right: 12px;
-        }
-        .step-text {
-            color: #374151;
-            font-size: 14px;
-        }
-        .cta-button {
+        .button {
             display: inline-block;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            color: white;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .cta-button:hover {
-            background: linear-gradient(135deg, #2563EB, #7C3AED);
-        }
-        .help-section {
-            background: #F0F9FF;
-            border: 1px solid #BAE6FD;
-            border-radius: 8px;
-            padding: 24px;
-            margin: 30px 0;
-            text-align: center;
-        }
-        .help-title {
-            color: #0C4A6E;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-        }
-        .help-text {
-            color: #0369A1;
+            background-color: #6366f1;
+            color: #ffffff !important;
+            padding: 18px 36px;
             font-size: 14px;
-            margin: 0 0 16px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
         }
         .footer {
+            padding: 40px;
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-            color: #6B7280;
-            font-size: 14px;
+            font-size: 12px;
+            color: #94a3b8;
         }
-        .footer a {
-            color: #3B82F6;
+        .footer-links {
+            margin-bottom: 16px;
+        }
+        .footer-link {
+            color: #64748b;
             text-decoration: none;
+            margin: 0 12px;
         }
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            .cta-button {
-                display: block;
-                width: 100%;
-                text-align: center;
-                box-sizing: border-box;
-                margin: 10px 0;
-            }
-            h1 {
-                font-size: 24px;
-            }
-            .steps-section {
-                padding: 20px;
-            }
-            .help-section {
-                padding: 20px;
-            }
+        @media screen and (max-width: 600px) {
+            .content { padding: 0 24px 48px; }
+            .header { padding: 48px 24px 32px; }
+            .hero-title { font-size: 28px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="https://letterforlater.com/static/logo.png" alt="LetterForLater" />
-            </div>
-            <div class="warning-icon">⚠️</div>
-            <h1>Payment Failed</h1>
-            <p class="subtitle">We couldn't process your payment</p>
-        </div>
+    <div class="wrapper">
+        <table class="main">
+            <tr>
+                <td class="header">
+                    <a href="https://letterforlater.com" class="brand">LetterForLater</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <h1 class="hero-title">Payment Attention Required</h1>
+                    <p class="body-text">
+                        Hi {{ user_name }},<br>
+                        We were unable to process your recent subscription payment. To ensure your vault remains active and your legacy is protected, please review your billing details.
+                    </p>
+                    
+                    <div class="status-box">
+                        <span class="box-label">Status: Unsuccessful</span>
+                        <p class="box-text">
+                            Your recent transaction could not be completed. Your access to premium features may be temporarily limited until resolved.
+                        </p>
+                    </div>
 
-        <div class="alert-box">
-            <div class="alert-title">Action Required</div>
-            <div class="alert-text">We were unable to process your payment for your LetterForLater subscription. Please update your payment method to continue enjoying premium features.</div>
-        </div>
-
-        <div class="steps-section">
-            <h3 class="steps-title">How to Fix This</h3>
-            
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-text">Log in to your LetterForLater account</div>
-            </div>
-            
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-text">Go to Settings → Billing</div>
-            </div>
-            
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-text">Update your payment method</div>
-            </div>
-            
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-text">Your subscription will be reactivated automatically</div>
-            </div>
-        </div>
-
-        <div style="text-align: center;">
-            <a href="{{ dashboard_url }}/settings" class="cta-button">Update Payment Method</a>
-        </div>
-
-        <div class="help-section">
-            <h3 class="help-title">Need Help?</h3>
-            <p class="help-text">Our support team is here to help you resolve any payment issues quickly.</p>
-            <p style="margin: 0;">
-                <a href="mailto:support@letterforlater.com" style="color: #3B82F6; text-decoration: none;">Contact Support</a>
-            </p>
-        </div>
-
-        <div class="footer">
-            <p>This email was sent to {{ user_email }}. If you didn't make this payment, please contact us immediately.</p>
-            <p>LetterForLater - Preserve Your Legacy</p>
-        </div>
+                    <div class="cta-container">
+                        <a href="{{ dashboard_url }}/settings" class="button">Update Payment Method</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <div class="footer-links">
+                        <a href="{{ dashboard_url }}/settings" class="footer-link">Billing</a>
+                        <a href="https://letterforlater.com/privacy" class="footer-link">Privacy</a>
+                        <a href="mailto:support@letterforlater.com" class="footer-link">Support</a>
+                    </div>
+                    <p>&copy; LetterForLater. Preserving moments, intentionally.</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

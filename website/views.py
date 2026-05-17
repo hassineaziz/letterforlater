@@ -875,22 +875,13 @@ def blog_feed_preview():
 @login_required
 def add_letter():
     """Add new letter page - also supports editing when letter_id is provided"""
-    # Record form start time for spam prevention
-    if request.method == 'GET':
-        from .spam_prevention import record_form_start
-        record_form_start('add_letter')
+
     
     # Check if this is an AJAX request
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
     if request.method == 'POST':
-        # Spam prevention checks (skip for AJAX to avoid breaking the UI)
-        if not is_ajax:
-            from .spam_prevention import validate_form_submission
-            is_valid, error = validate_form_submission('add_letter', 'letter_creation', check_honeypot_fields=True, check_timing=True)
-            if not is_valid:
-                flash(error, 'error')
-                return redirect(url_for('views.add_letter'))
+
         # If editing an existing letter
         letter_id = request.form.get('letter_id')
         if letter_id:
@@ -899,14 +890,14 @@ def add_letter():
                 if is_ajax:
                     return jsonify({'success': False, 'error': 'You do not have permission to edit this letter.'}), 403
                 flash('You do not have permission to edit this letter.', 'error')
-                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.my_archives'))
             
             # Prevent editing send-to-myself letters that are not drafts
             if letter.is_send_to_myself and letter.status != 'draft':
                 if is_ajax:
                     return jsonify({'success': False, 'error': 'This letter is scheduled to be sent to you. You can only edit it while it is a draft.'}), 403
                 flash('This letter is scheduled to be sent to you. You can only edit it while it is a draft.', 'info')
-                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.my_archives'))
             
             # Update fields - decrypt first if encrypted, then encrypt new values
             if letter.is_encrypted:
@@ -989,6 +980,17 @@ def add_letter():
                             return jsonify({'success': False, 'error': error_msg}), 400
                         flash(error_msg, 'error')
                         return redirect(url_for('views.add_letter', letter_id=letter.id if letter_id else None))
+                    
+                    # Validate 6-month limit for free users
+                    if not is_premium:
+                        max_free_date = datetime.now(timezone.utc) + timedelta(days=186)
+                        if scheduled_datetime > max_free_date:
+                            error_msg = 'Free plan accounts can only schedule letters up to 6 months in the future. Please upgrade to Premium to schedule further.'
+                            if is_ajax:
+                                db.session.rollback()
+                                return jsonify({'success': False, 'error': error_msg}), 400
+                            flash(error_msg, 'error')
+                            return redirect(url_for('views.add_letter', letter_id=letter.id))
                     
                     letter.delivery_date = scheduled_datetime
                     letter.delivery_status = 'pending'
@@ -1089,12 +1091,12 @@ def add_letter():
             try:
                 db.session.commit()
                 if is_ajax:
-                    redirect_url = url_for('views.view_letters', user_id=current_user.id)
+                    redirect_url = url_for('views.my_archives')
                     response = jsonify({'success': True, 'message': 'Letter updated successfully!', 'redirect': redirect_url})
                     response.headers['Content-Type'] = 'application/json'
                     return response
                 flash('Letter updated successfully!', 'success')
-                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.my_archives'))
             except Exception as e:
                 db.session.rollback()
                 error_msg = f'An error occurred while updating the letter: {str(e)}'
@@ -1102,7 +1104,7 @@ def add_letter():
                 if is_ajax:
                     return jsonify({'success': False, 'error': error_msg}), 500
                 flash('An error occurred while updating the letter.', 'error')
-                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.my_archives'))
 
         # Otherwise, create a new letter
         title = request.form.get('title')
@@ -1208,6 +1210,18 @@ def add_letter():
                 db.session.rollback()
                 return redirect(url_for('views.add_letter'))
             
+            # Validate 6-month limit for free users
+            if not is_premium:
+                max_free_date = datetime.now(timezone.utc) + timedelta(days=186)
+                if scheduled_datetime > max_free_date:
+                    error_msg = 'Free plan accounts can only schedule letters up to 6 months in the future. Please upgrade to Premium to schedule further.'
+                    if is_ajax:
+                        db.session.rollback()
+                        return jsonify({'success': False, 'error': error_msg}), 400
+                    flash(error_msg, 'error')
+                    db.session.rollback()
+                    return redirect(url_for('views.add_letter'))
+            
             # Set delivery time to 8 PM (20:00) UTC
             new_letter.delivery_date = scheduled_datetime
             new_letter.delivery_status = 'pending'
@@ -1298,12 +1312,12 @@ def add_letter():
                 db.session.commit()
             
             if is_ajax:
-                redirect_url = url_for('views.view_letters', user_id=current_user.id)
+                redirect_url = url_for('views.my_archives')
                 response = jsonify({'success': True, 'message': 'Letter created successfully!', 'redirect': redirect_url})
                 response.headers['Content-Type'] = 'application/json'
                 return response
             flash('Letter created successfully!', 'success')
-            return redirect(url_for('views.view_letters', user_id=current_user.id))
+            return redirect(url_for('views.my_archives'))
         except Exception as e:
             db.session.rollback()
             error_msg = f'An error occurred while creating the letter: {str(e)}'
@@ -1327,12 +1341,12 @@ def add_letter():
             letter_to_edit = Letter.query.get(letter_id)
             if not letter_to_edit or letter_to_edit.user_id != current_user.id:
                 flash('You do not have permission to edit this letter.', 'error')
-                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.my_archives'))
             
             # Prevent editing send-to-myself letters that are not drafts
             if letter_to_edit.is_send_to_myself and letter_to_edit.status != 'draft':
                 flash('This letter is scheduled to be sent to you. You can only edit it while it is a draft.', 'info')
-                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                return redirect(url_for('views.my_archives'))
             try:
                 media_attachments = MediaAttachment.query.filter_by(letter_id=letter_to_edit.id).all()
             except Exception as e:
@@ -1343,7 +1357,7 @@ def add_letter():
             db.session.rollback()
             print(f"Error loading letter: {e}")
             flash('Error loading letter. Please try again.', 'error')
-            return redirect(url_for('views.view_letters', user_id=current_user.id))
+            return redirect(url_for('views.my_archives'))
 
     try:
         confirmed_contacts = current_user.trusted_contacts_list.filter_by(is_confirmed=True).all()
@@ -1364,6 +1378,46 @@ def add_letter():
         media_attachments=media_attachments,
         is_premium=is_premium
     )
+
+@views.route('/adjust-letter-date', methods=['POST'])
+@login_required
+def adjust_letter_date():
+    """Adjust a letter's scheduled date to exactly 6 months from today for free users"""
+    try:
+        data = request.get_json()
+        letter_id = data.get('letter_id')
+        if not letter_id:
+            return jsonify({'success': False, 'error': 'No letter ID provided.'}), 400
+            
+        letter = Letter.query.get(letter_id)
+        if not letter or letter.user_id != current_user.id:
+            return jsonify({'success': False, 'error': 'You do not have permission to modify this letter.'}), 403
+            
+        # Calculate exactly 6 months from now (183 days)
+        six_months_later = datetime.now(timezone.utc) + timedelta(days=183)
+        # Set hour to 20:00 UTC
+        six_months_later = six_months_later.replace(hour=20, minute=0, second=0)
+        
+        # Make sure fields are decrypted, then set new date
+        if letter.is_encrypted:
+            letter.decrypt_fields()
+        letter.delivery_date = six_months_later
+        letter.delivery_status = 'pending'
+        letter.status = 'scheduled'
+        
+        # Re-encrypt before saving
+        letter.encrypt_fields()
+        db.session.commit()
+        
+        return jsonify({
+            'success': True, 
+            'new_date': six_months_later.strftime('%Y-%m-%d'),
+            'redirect': url_for('views.add_letter', letter_id=letter.id)
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error adjusting letter date: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @views.route('/verify-death', methods=['GET', 'POST'])
 @login_required
@@ -1749,9 +1803,9 @@ def delete_letter():
     letter = Letter.query.get(letterId)
     if letter:
         if letter.user_id == current_user.id:
-            # Prevent deleting send-to-myself letters that are not drafts
-            if letter.is_send_to_myself and letter.status != 'draft':
-                return jsonify({'success': False, 'error': 'This letter is scheduled to be sent to you. You can only delete it while it is a draft.'}), 403
+            # Prevent deleting send-to-myself letters that are not drafts or delivered
+            if letter.is_send_to_myself and letter.status not in ['draft', 'delivered']:
+                return jsonify({'success': False, 'error': 'This letter is scheduled to be sent to you. You can only delete it while it is a draft or after it has been delivered.'}), 403
             
             # Delete associated media files from S3 and database
             try:
@@ -1855,14 +1909,14 @@ def edit_letter():
                                 letter.delay_after_verification = days
                             else:
                                 flash('Custom delay must be between 1 and 365 days.', 'error')
-                                return redirect(url_for('views.view_letters', user_id=current_user.id))
+                                return redirect(url_for('views.my_archives'))
                         else:
                             flash('Please enter a valid number of days for custom delay.', 'error')
-                            return redirect(url_for('views.view_letters', user_id=current_user.id))
+                            return redirect(url_for('views.my_archives'))
             
             db.session.commit()
             flash('Letter updated successfully!', 'success')
-        return redirect(url_for('views.view_letters', user_id=current_user.id))
+        return redirect(url_for('views.my_archives'))
 
 @views.route('/update-letter-status', methods=['POST'])
 @login_required
@@ -1892,7 +1946,7 @@ def update_letter_status():
                     scheduled_datetime = datetime.strptime(scheduled_date, '%Y-%m-%d').replace(hour=20, minute=0, second=0, tzinfo=timezone.utc)
                     if scheduled_datetime < datetime.now(timezone.utc):
                         flash('Cannot schedule letters in the past. Please select a future date.', 'error')
-                        return redirect(url_for('views.view_letters', user_id=current_user.id))
+                        return redirect(url_for('views.my_archives'))
                     
                     # Set delivery time to 8 PM (20:00) UTC
                     letter.delivery_date = scheduled_datetime
@@ -1908,14 +1962,12 @@ def update_letter_status():
                 letter.delivery_status = None
             db.session.commit()
             flash('Delivery type updated successfully!', 'success')
-        return redirect(url_for('views.view_letters', user_id=current_user.id))
+        return redirect(url_for('views.my_archives'))
 
 @views.route('/trusted-contacts', methods=['GET'])
 @login_required
 def trusted_contacts():
-    # Record form start time for spam prevention
-    from .spam_prevention import record_form_start
-    record_form_start('add_trusted_contact')
+
     
     # Premium feature only
     from .plan_utils import is_premium_user
@@ -1948,12 +2000,7 @@ def add_trusted_contact():
         flash('Trusted contacts are a premium feature. Please upgrade to access this feature.', 'error')
         return redirect(url_for('views.home'))
     
-    # Spam prevention checks
-    from .spam_prevention import validate_form_submission
-    is_valid, error = validate_form_submission('add_trusted_contact', 'trusted_contact', check_honeypot_fields=True, check_timing=False)
-    if not is_valid:
-        flash(error, 'error')
-        return redirect(url_for('views.trusted_contacts'))
+
     
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
@@ -2187,32 +2234,36 @@ def edit_trusted_contact():
         flash('You do not have permission to edit this contact!', category='error')
     return redirect(url_for('views.trusted_contacts'))
 
-@views.route('/view-letters/<int:user_id>')
+@views.route('/my-archives')
 @login_required
-def view_letters(user_id):
+def my_archives():
     # Get status filter from query parameters
     status_filter = request.args.get('status', None)
     
-    # Allow main user to view only their own letters
-    if current_user.id == user_id:
-        letters_query = Letter.query.filter_by(user_id=user_id)
-        
-        # Apply status filter if provided
-        if status_filter:
-            letters_query = letters_query.filter_by(status=status_filter)
-            
-        letters = letters_query.all()
-        # Decrypt letters before displaying (creates copies, doesn't modify originals)
-        # Templates will use decrypted_title and decrypted_content properties
-        return render_template('view_letters.html', user=current_user, letters=letters, contact=None, is_owner=True, now=datetime.now(timezone.utc), status_filter=status_filter)
+    letters_query = Letter.query.filter_by(user_id=current_user.id)
     
-    # Otherwise, check if current user is a trusted contact for this user
+    # Apply status filter if provided
+    if status_filter:
+        letters_query = letters_query.filter_by(status=status_filter)
+        
+    letters = letters_query.all()
+    # Templates will use decrypted_title and decrypted_content properties
+    return render_template('view_letters.html', user=current_user, letters=letters, contact=None, is_owner=True, now=datetime.now(timezone.utc), status_filter=status_filter)
+
+@views.route('/heritage-vault/<int:user_id>')
+@login_required
+def heritage_vault(user_id):
+    # Get status filter from query parameters
+    status_filter = request.args.get('status', None)
+    
+    # Check if current user is a trusted contact for this user
     contact = TrustedContact.query.filter_by(
         user_id=user_id,
         email=current_user.email
     ).first()
+    
     if not contact or not contact.can_view_letters():
-        flash('You do not have permission to view these letters.', category='error')
+        flash('You do not have permission to view these archives.', category='error')
         return redirect(url_for('views.home'))
     
     letters_query = Letter.query.filter_by(user_id=user_id)
@@ -2222,7 +2273,6 @@ def view_letters(user_id):
         letters_query = letters_query.filter_by(status=status_filter)
         
     letters = letters_query.all()
-    # Decrypt letters before displaying (templates use decrypted_title and decrypted_content properties)
     return render_template('view_letters.html', user=current_user, letters=letters, contact=contact, is_owner=False, now=datetime.now(timezone.utc), status_filter=status_filter)
 
 @views.route('/view-letter/<int:letter_id>')
@@ -2233,10 +2283,10 @@ def view_letter(letter_id):
     
     # Check if current user is the owner of the letter
     if current_user.id == letter.user_id:
-        # If this is a "send to myself" letter and it's not a draft, prevent viewing
-        if letter.is_send_to_myself and letter.status != 'draft':
+        # If this is a "send to myself" letter and it's not a draft or delivered, prevent viewing
+        if letter.is_send_to_myself and letter.status not in ['draft', 'delivered']:
             flash('This letter is scheduled to be sent to you on the delivery date. You cannot view it until it is delivered.', category='info')
-            return redirect(url_for('views.view_letters', user_id=current_user.id))
+            return redirect(url_for('views.my_archives'))
         # Templates will use decrypted_title and decrypted_content properties
         return render_template('view_letter.html', letter=letter, is_owner=True)
     
@@ -2275,6 +2325,12 @@ def settings():
         db.session.commit()
         flash('Account settings updated successfully!', 'success')
         return redirect(url_for('views.settings'))
+    # Auto-sync subscription data if it's missing or stale
+    if current_user.plan == 'premium' and current_user.stripe_customer_id:
+        if not current_user.next_payment_date or not current_user.subscription_status:
+            from .subscription_utils import sync_user_subscription
+            sync_user_subscription(current_user.id)
+
     return render_template('settings.html', user=current_user)
 
 @views.route('/change-password', methods=['POST'])
@@ -2379,8 +2435,8 @@ def delete_account():
         flash('All fields are required.', 'error')
         return redirect(url_for('views.settings'))
     
-    if confirmation != 'DELETE':
-        flash('Please type "DELETE" exactly to confirm account deletion.', 'error')
+    if confirmation != 'DEACTIVATE':
+        flash('Please type "DEACTIVATE" exactly to confirm account deactivation.', 'error')
         return redirect(url_for('views.settings'))
     
     # Verify password
@@ -2388,31 +2444,21 @@ def delete_account():
         flash('Password is incorrect.', 'error')
         return redirect(url_for('views.settings'))
     
-    # Delete account and all associated data
+    # Deactivate account instead of deleting
     try:
-        # Delete all user's letters
-        Letter.query.filter_by(user_id=current_user.id).delete()
-        
-        # Delete all trusted contacts
-        TrustedContact.query.filter_by(user_id=current_user.id).delete()
-        
-        # Delete all notifications
-        Notification.query.filter_by(user_id=current_user.id).delete()
-        
-        # Delete all media attachments
-        MediaAttachment.query.filter_by(user_id=current_user.id).delete()
-        
-        # Delete user account
-        db.session.delete(current_user)
+        current_user.is_active = False
         db.session.commit()
         
-        flash('Your account has been permanently deleted.', 'success')
+        from flask_login import logout_user
+        logout_user()
+        
+        flash('Your account has been deactivated. Your data has been preserved, but you can no longer log in.', 'success')
         return redirect(url_for('auth.login'))
         
     except Exception as e:
         db.session.rollback()
-        flash('An error occurred while deleting your account. Please try again.', 'error')
-        print(f"Error deleting account: {str(e)}")
+        flash('An error occurred while deactivating your account. Please try again.', 'error')
+        print(f"Error deactivating account: {str(e)}")
         return redirect(url_for('views.settings'))
 
 @views.route('/logout-all-devices', methods=['POST'])
@@ -3660,10 +3706,7 @@ def google_callback():
         last_name = user_info.get('family_name', '')
         profile_picture = user_info.get('picture', '')
         
-        # Check IP blocking BEFORE allowing new signups
-        from .blocking import get_client_ip, is_ip_blocked
         client_ip = get_client_ip()
-        ip_blocked, block_record = is_ip_blocked(client_ip)
         
         # Check if user already exists
         user = User.query.filter_by(email=email).first()
@@ -3676,86 +3719,7 @@ def google_callback():
                 user.is_google_user = True
                 db.session.commit()
         else:
-            # BLOCK NEW SIGNUPS FROM BLOCKED IPs
-            if ip_blocked:
-                print(f"[BLOCK] Google OAuth signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
-                flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
-                return redirect(url_for('auth.login'))
-            
-            # ADVANCED SPAM DETECTION for Google OAuth
-            from .spam_detection import detect_spam_pattern, check_recent_spam_activity, is_random_email, is_random_name
-            
-            # Check for spam patterns in email/names from Google
-            is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
-            
-            if is_spam:
-                print(f"[SPAM DETECTION] BLOCKED Google OAuth signup: {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Spam pattern detected (Google OAuth): {spam_reason}", blocked_by_user_id=None)
-                flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-                return redirect(url_for('auth.login'))
-            
-            # Check if this IP has recent spam activity
-            is_spam_ip, spam_count, activity_reason = check_recent_spam_activity(client_ip)
-            if is_spam_ip:
-                print(f"[SPAM DETECTION] BLOCKED Google OAuth signup from spam IP: {client_ip} - {activity_reason}")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Recent spam activity (Google OAuth): {activity_reason}", blocked_by_user_id=None)
-                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-                return redirect(url_for('auth.login'))
-            
-            # Check signup rate limit (prevent spam signups via Google OAuth)
-            from datetime import timedelta
-            from .blocking import block_ip
-            
-            # Check last 5 minutes (rapid spam detection)
-            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-            rapid_signups = User.query.filter(
-                User.registration_ip == client_ip,
-                User.created_date >= five_minutes_ago
-            ).count()
-            
-            # AUTO-BLOCK if 5+ signups already (catch them at attempt #6, so only 5 get through)
-            if rapid_signups >= 5:
-                print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Spam signups (Google OAuth): {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
-                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-                return redirect(url_for('auth.login'))
-            
-            # Also check last 30 seconds for VERY rapid spam
-            thirty_seconds_ago = datetime.now(timezone.utc) - timedelta(seconds=30)
-            very_rapid_signups = User.query.filter(
-                User.registration_ip == client_ip,
-                User.created_date >= thirty_seconds_ago
-            ).count()
-            
-            # AUTO-BLOCK if 4+ signups in 30 seconds (definitely spam!)
-            if very_rapid_signups >= 4:
-                print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Critical spam (Google OAuth): {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
-                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-                return redirect(url_for('auth.login'))
-            
-            # Check last hour (general rate limit)
-            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-            recent_signups = User.query.filter(
-                User.registration_ip == client_ip,
-                User.created_date >= one_hour_ago
-            ).count()
-            
-            if recent_signups >= 20:  # Max 20 signups per hour from same IP
-                print(f"[SIGNUP RATE LIMIT] Blocked Google OAuth signup from IP {client_ip}: {recent_signups} signups in last hour")
-                # Auto-block if they hit the limit
-                if recent_signups >= 30:
-                    print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet (Google OAuth): {recent_signups} signups in 1 hour - SPAM DETECTED!")
-                    from .blocking import block_ip_subnet
-                    block_ip_subnet(client_ip, reason=f"Spam signups (Google OAuth): {recent_signups} signups in 1 hour", blocked_by_user_id=None)
-                    flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-                else:
-                    flash('Too many signup attempts from this IP address. Please try again later or contact support.', 'error')
-                return redirect(url_for('auth.login'))
+
             
             # Create new user
             user = User(

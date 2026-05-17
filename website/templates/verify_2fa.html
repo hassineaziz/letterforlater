@@ -36,6 +36,7 @@
             
             <!-- Authenticator App Code Form -->
             <form method="POST" class="mb-8">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <div class="mb-6">
                     <label for="code" class="block text-lg font-semibold text-gray-900 mb-3 flex items-center">
                         <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center mr-3">
@@ -72,6 +73,7 @@
             
             <!-- Backup Code Form -->
             <form method="POST" class="mb-8">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <div class="mb-6">
                     <label for="backup_code" class="block text-lg font-semibold text-gray-900 mb-3 flex items-center">
                         <div class="w-8 h-8 bg-gradient-to-r from-gray-500 to-gray-600 rounded-lg flex items-center justify-center mr-3">

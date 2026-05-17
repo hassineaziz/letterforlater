@@ -2,168 +2,135 @@
 {% block title %}Create Account - LetterForLater{% endblock %}
 {% block content %}
 
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full space-y-8">
-    <div>
-      <div class="mx-auto h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-        </svg>
+<div class="bg-surface min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-6">
+    <div class="text-center">
+      <div
+        class="mx-auto h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-2xl">mail</span>
       </div>
-      <h2 class="mt-6 text-center text-3xl font-bold text-gray-900">
-        Create Your Account
+      <h2 class="mt-4 font-headline text-3xl sm:text-4xl font-bold text-on-surface tracking-tight">
+        You've been invited
       </h2>
-      <p class="mt-2 text-center text-sm text-gray-600">
-        You've received a special letter from <strong>{{ invite.letter.author.first_name }} {{ invite.letter.author.last_name }}</strong>
+      <p class="mt-2 text-sm sm:text-base text-on-surface-variant font-body">
+        You've received a special letter from <strong class="text-on-surface">{{ invite.letter.author.first_name }} {{
+          invite.letter.author.last_name }}</strong>.
       </p>
     </div>
-    
-    <form class="mt-8 space-y-6" method="POST">
-      <!-- Device fingerprint (will be populated by JavaScript) -->
-      <input type="hidden" name="device_fingerprint" id="device_fingerprint" value="" />
-      
-      <!-- Honeypot fields for spam prevention -->
-      {{ add_honeypot_fields()|safe }}
-      
-      <div class="rounded-md shadow-sm -space-y-px">
-        <div>
-          <label for="email" class="sr-only">Email address</label>
-          <input id="email" name="email" type="email" autocomplete="email" required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                 placeholder="Email address" value="{{ invite.recipient_email }}" readonly>
-        </div>
-        <div>
-          <label for="firstName" class="sr-only">First name</label>
-          <input id="firstName" name="firstName" type="text" autocomplete="given-name" required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                 placeholder="First name" value="{{ invite.recipient_name.split()[0] if invite.recipient_name else '' }}">
-        </div>
-        <div>
-          <label for="lastName" class="sr-only">Last name (optional)</label>
-          <input id="lastName" name="lastName" type="text" autocomplete="family-name" 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                 placeholder="Last name (optional)" value="{{ invite.recipient_name.split()[-1] if invite.recipient_name and ' ' in invite.recipient_name else '' }}">
-        </div>
-        <div>
-          <label for="password1" class="sr-only">Password</label>
-          <input id="password1" name="password1" type="password" autocomplete="new-password" required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                 placeholder="Password">
-        </div>
-      </div>
 
-      <div>
-        <button type="submit" 
-                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5">
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <svg class="h-5 w-5 text-blue-300 group-hover:text-blue-200" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-            </svg>
-          </span>
-          Create Account & Read Letter
-        </button>
-      </div>
-      
-      <div class="text-center">
-        <p class="text-sm text-gray-600">
-          Already have an account? 
-          <a href="{{ url_for('auth.login') }}" class="font-medium text-blue-600 hover:text-blue-500">
-            Sign in
+    <div
+      class="bg-surface-container-lowest rounded-[2rem] shadow-[0_32px_64px_rgba(147,51,234,0.05)] border border-surface-container-highest p-6 sm:p-8">
+      <form class="space-y-5" method="POST">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        <div class="space-y-4">
+          <div>
+            <label for="email"
+              class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Email
+              Address</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <span class="material-symbols-outlined text-on-surface-variant/50 text-xl">mail</span>
+              </div>
+              <input id="email" name="email" type="email" autocomplete="email" required
+                class="w-full pl-12 pr-4 py-3 bg-surface-container border border-surface-container-highest rounded-xl outline-none text-on-surface opacity-70 cursor-not-allowed shadow-sm"
+                placeholder="Email address" value="{{ invite.recipient_email }}" readonly>
+            </div>
+            <p class="text-xs text-primary font-medium mt-2 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">verified</span>
+              Email verified by invitation.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="firstName"
+                class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">First name</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span class="material-symbols-outlined text-on-surface-variant/50 text-xl">person</span>
+                </div>
+                <input id="firstName" name="firstName" type="text" autocomplete="given-name" required
+                  class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-surface-container-highest rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-on-surface placeholder-on-surface-variant/40 shadow-sm"
+                  placeholder="First name"
+                  value="{{ invite.recipient_name.split()[0] if invite.recipient_name else '' }}">
+              </div>
+            </div>
+            <div>
+              <label for="lastName"
+                class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Last name <span
+                  class="text-on-surface-variant/40 font-normal lowercase tracking-normal">(optional)</span></label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span class="material-symbols-outlined text-on-surface-variant/50 text-xl">person</span>
+                </div>
+                <input id="lastName" name="lastName" type="text" autocomplete="family-name"
+                  class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-surface-container-highest rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-on-surface placeholder-on-surface-variant/40 shadow-sm"
+                  placeholder="Last name"
+                  value="{{ invite.recipient_name.split()[-1] if invite.recipient_name and ' ' in invite.recipient_name else '' }}">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label for="password1"
+                class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Password</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span class="material-symbols-outlined text-on-surface-variant/50 text-xl">lock</span>
+                </div>
+                <input id="password1" name="password1" type="password" autocomplete="new-password" required
+                  class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-surface-container-highest rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-on-surface placeholder-on-surface-variant/40 shadow-sm"
+                  placeholder="Create a strong password">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <button type="submit"
+            class="w-full bg-primary hover:bg-primary-container text-on-primary font-bold tracking-wide uppercase text-sm py-3.5 px-4 rounded-xl transition-all duration-200 shadow-[0_8px_16px_rgba(147,51,234,0.2)] hover:shadow-[0_12px_24px_rgba(147,51,234,0.3)] hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-2">
+            <span class="material-symbols-outlined text-lg">drafts</span>
+            Create Account & Read Letter
+          </button>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-surface-container-highest text-center">
+          <p class="text-on-surface-variant text-sm mb-2">Already preserving memories?</p>
+          <a href="{{ url_for('auth.login') }}"
+            class="inline-flex items-center text-primary hover:text-primary-container font-bold transition-colors gap-2">
+            Sign in to your archive
+            <span class="material-symbols-outlined text-sm">login</span>
           </a>
+        </div>
+      </form>
+
+      <!-- Letter Preview -->
+      <div
+        class="mt-6 bg-surface-container-low rounded-2xl border border-surface-container-highest p-5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-12 -mt-12 pointer-events-none">
+        </div>
+        <h3 class="font-headline font-bold text-on-surface text-base mb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-xl">visibility</span>
+          Letter Preview
+        </h3>
+        <div class="space-y-2 text-sm text-on-surface-variant mb-4 bg-white/50 p-3 rounded-xl">
+          <p><strong class="text-on-surface font-semibold w-16 inline-block">From:</strong> {{
+            invite.letter.author.first_name }} {{ invite.letter.author.last_name }}</p>
+          <p><strong class="text-on-surface font-semibold w-16 inline-block">Title:</strong> {{
+            invite.letter.decrypted_title }}</p>
+          <p><strong class="text-on-surface font-semibold w-16 inline-block">Sent:</strong> {{
+            invite.letter.delivery_date.strftime('%B %d, %Y') if invite.letter.delivery_date else 'Recently' }}</p>
+        </div>
+        <p class="text-xs text-on-surface-variant/80 leading-relaxed italic border-l-2 border-primary/20 pl-3">
+          Once you create your account, you'll be able to read the full letter and access any photos, videos, or audio
+          recordings that were included.
         </p>
-      </div>
-    </form>
-    
-    <!-- Letter Preview -->
-    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Letter Preview</h3>
-      <div class="text-sm text-gray-600">
-        <p><strong>From:</strong> {{ invite.letter.author.first_name }} {{ invite.letter.author.last_name }}</p>
-        <p><strong>Title:</strong> {{ invite.letter.decrypted_title }}</p>
-        <p><strong>Sent:</strong> {{ invite.letter.delivery_date.strftime('%B %d, %Y') if invite.letter.delivery_date else 'Recently' }}</p>
-      </div>
-      <div class="mt-3 text-xs text-gray-500">
-        <p>Once you create your account, you'll be able to read the full letter and access any photos, videos, or audio recordings that were included.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Device Fingerprinting Script -->
-<script>
-// Simple device fingerprinting (no external library required)
-// Collects browser/device characteristics to create a unique fingerprint
-(function() {
-    function generateFingerprint() {
-        const components = [];
-        
-        // Screen properties
-        components.push('screen:' + (screen.width || '') + 'x' + (screen.height || ''));
-        components.push('color:' + (screen.colorDepth || ''));
-        components.push('avail:' + (screen.availWidth || '') + 'x' + (screen.availHeight || ''));
-        
-        // Browser properties
-        components.push('ua:' + (navigator.userAgent || ''));
-        components.push('lang:' + (navigator.language || ''));
-        components.push('platform:' + (navigator.platform || ''));
-        components.push('cookie:' + (navigator.cookieEnabled ? '1' : '0'));
-        components.push('doNotTrack:' + (navigator.doNotTrack || ''));
-        
-        // Timezone
-        try {
-            components.push('tz:' + Intl.DateTimeFormat().resolvedOptions().timeZone);
-        } catch(e) {}
-        
-        // Canvas fingerprint (simple version)
-        try {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = 'top';
-            ctx.font = '14px Arial';
-            ctx.fillText('Fingerprint', 2, 2);
-            components.push('canvas:' + canvas.toDataURL().substring(0, 50));
-        } catch(e) {}
-        
-        // WebGL fingerprint (simple version)
-        try {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            if (gl) {
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                if (debugInfo) {
-                    components.push('webgl:' + gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).substring(0, 20));
-                }
-            }
-        } catch(e) {}
-        
-        // Hash the components
-        const fingerprintString = components.join('|');
-        
-        // Simple hash function (djb2)
-        let hash = 5381;
-        for (let i = 0; i < fingerprintString.length; i++) {
-            hash = ((hash << 5) + hash) + fingerprintString.charCodeAt(i);
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        
-        // Convert to hex string (64 chars max)
-        return Math.abs(hash).toString(16).substring(0, 64);
-    }
-    
-    // Generate and set fingerprint when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        const fingerprintInput = document.getElementById('device_fingerprint');
-        if (fingerprintInput) {
-            try {
-                const fingerprint = generateFingerprint();
-                fingerprintInput.value = fingerprint;
-            } catch(e) {
-                console.error('Error generating fingerprint:', e);
-                // Set a fallback value if fingerprinting fails
-                fingerprintInput.value = 'error';
-            }
-        }
-    });
-})();
-</script>
 {% endblock %}

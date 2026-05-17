@@ -108,6 +108,7 @@
                                         
                                         {% if current < required %}
                                             <form method="POST" class="flex gap-3">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                                 <input type="hidden" name="verification_id" value="{{ item.verification.id }}">
                                                 <input type="hidden" name="trusted_contact_id" value="{{ item.trusted_contact.id }}">
                                                 <button type="submit" 

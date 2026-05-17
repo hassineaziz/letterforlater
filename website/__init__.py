@@ -90,7 +90,7 @@ def create_app():
     csrf.exempt(stripe_webhook)
     csrf.exempt(test_webhook)
 
-    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment, BlockedIP
+    from .models import User, Letter, DeathVerification, TrustedContact, Notification, MediaAttachment, BlogPost, RecipientInvite, DeathVerificationConfirmation, NewsletterSubscriber, Payment
     
     # Create database tables
     with app.app_context():
@@ -160,43 +160,7 @@ def create_app():
         
         return response
     
-    # GLOBAL IP BLOCKING - Block ALL requests from blocked IPs
-    @app.before_request
-    def block_ip_globally():
-        """Block ALL requests from blocked IPs before any route handler runs"""
-        from flask import request, abort
-        from .blocking import get_client_ip, is_ip_blocked
-        
-        # Skip blocking for static files (CSS, JS, images) to avoid breaking the page
-        # But still block API endpoints and page routes
-        if request.endpoint and 'static' in request.endpoint:
-            return  # Allow static files to load
-        
-        client_ip = get_client_ip()
-        ip_blocked, block_record = is_ip_blocked(client_ip)
-        
-        if ip_blocked:
-            reason = block_record.reason if block_record else 'No reason provided'
-            print(f"[BLOCK] BLOCKED IP {client_ip} attempted to access {request.path} (reason: {reason})")
-            # Return 403 Forbidden - they can't access ANYTHING
-            abort(403)
-    
-    # Custom 403 error handler for blocked IPs
-    @app.errorhandler(403)
-    def forbidden(error):
-        """Show a proper error page for blocked IPs"""
-        from flask import render_template
-        from .blocking import get_client_ip, is_ip_blocked
-        
-        client_ip = get_client_ip()
-        ip_blocked, block_record = is_ip_blocked(client_ip)
-        
-        if ip_blocked:
-            reason = block_record.reason if block_record else 'Your IP address has been blocked'
-            return render_template('blocked.html', reason=reason, ip=client_ip), 403
-        
-        # Generic 403 for other cases
-        return render_template('403.html'), 403
+
 
     @login_manager.user_loader
     def load_user(id):
@@ -205,15 +169,7 @@ def create_app():
         if user and not user.is_active:
             return None  # This will force re-login and show error
         
-        # Also check IP blocking if user is loaded (for security)
-        if user:
-            from flask import request
-            from .blocking import get_client_ip, is_ip_blocked
-            client_ip = get_client_ip()
-            ip_blocked, _ = is_ip_blocked(client_ip)
-            if ip_blocked:
-                print(f"[BLOCK] User {user.email} (ID: {id}) attempted access from blocked IP: {client_ip}")
-                return None  # Block access even if user exists
+
         
         return user
     
@@ -422,7 +378,7 @@ def create_app():
             get_storage_limit, get_plan_features, get_upgrade_message,
             get_plan_comparison, check_feature_access, get_upgrade_cta_text
         )
-        from website.spam_prevention import add_honeypot_fields_to_template
+
         return dict(
             get_user_plan=get_user_plan,
             is_premium_user=is_premium_user,
@@ -440,8 +396,7 @@ def create_app():
             get_upgrade_message=get_upgrade_message,
             get_plan_comparison=get_plan_comparison,
             check_feature_access=check_feature_access,
-            get_upgrade_cta_text=get_upgrade_cta_text,
-            add_honeypot_fields=add_honeypot_fields_to_template
+            get_upgrade_cta_text=get_upgrade_cta_text
         )
 
     return app

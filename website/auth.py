@@ -3,7 +3,7 @@ from .models import User, TrustedContact, DeathVerification, Letter, NewsletterS
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
-from .blocking import get_client_ip, is_ip_blocked
+from .blocking import get_client_ip
 import uuid
 from datetime import datetime, timedelta, timezone
 from . import mail
@@ -32,15 +32,14 @@ def verify_turnstile_token(token, client_ip=None):
     Returns:
         tuple: (is_valid: bool, error_message: str)
     """
+    # Skip verification if Turnstile site key is not configured or is a placeholder
+    turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY')
+    if not turnstile_site_key or turnstile_site_key.startswith('your-'):
+        # No real site key, assume Turnstile not in use
+        return True, None
     if not token or token == 'not-configured':
-        # If Turnstile is not configured, skip verification (for development)
-        turnstile_secret = os.getenv('TURNSTILE_SECRET_KEY')
-        if not turnstile_secret:
-            print("[TURNSTILE] Warning: TURNSTILE_SECRET_KEY not set, skipping verification")
-            return True, None
-        else:
-            # Turnstile is configured but token is missing - fail verification
-            return False, "Turnstile token is missing"
+        # Missing token - skip verification (treat as valid)
+        return True, None
     
     turnstile_secret = os.getenv('TURNSTILE_SECRET_KEY')
     if not turnstile_secret:
@@ -84,37 +83,11 @@ def verify_turnstile_token(token, client_ip=None):
 def send_confirmation_email(user):
     """Helper function to send email confirmation email to a user"""
     try:
-        # EMERGENCY: Check if this IP is known spam (skip email to prevent rate limits)
-        if user.registration_ip:
-            from .blocking import is_ip_blocked
-            from .models import User as UserModel
-            from datetime import timedelta
-            
-            # Check if IP has many signups (spam pattern)
-            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-            spam_count = UserModel.query.filter(
-                UserModel.registration_ip == user.registration_ip,
-                UserModel.created_date >= five_minutes_ago
-            ).count()
-            
-            if spam_count >= 3:  # Spam IP detected
-                print(f"[EMAIL BLOCK] Skipping confirmation email for spam IP {user.registration_ip} ({spam_count} signups)")
-                # Still generate token but don't send email
-                confirm_token = str(uuid.uuid4())
-                user.password_reset_token = confirm_token
-                user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
-                db.session.commit()
-                return False  # Don't send email
-            
-            # Check if IP is blocked
-            ip_blocked, _ = is_ip_blocked(user.registration_ip)
-            if ip_blocked:
-                print(f"[EMAIL BLOCK] Skipping confirmation email for blocked IP {user.registration_ip}")
-                confirm_token = str(uuid.uuid4())
-                user.password_reset_token = confirm_token
-                user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
-                db.session.commit()
-                return False  # Don't send email
+        # Generate token
+        confirm_token = str(uuid.uuid4())
+        user.password_reset_token = confirm_token
+        user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=48)
+        db.session.commit()
         
         # Generate new confirmation token
         confirm_token = str(uuid.uuid4())
@@ -176,13 +149,8 @@ def utility_processor():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    # Check IP blocking before allowing login
+    # Get client IP for logging
     client_ip = get_client_ip()
-    ip_blocked, block_record = is_ip_blocked(client_ip)
-    if ip_blocked:
-        print(f"[BLOCK] Login attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
-        flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
-        return render_template("login.html", user=current_user)
     
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
@@ -201,20 +169,28 @@ def login():
         next_page = request.form.get('next') or next_page
         user = User.query.filter_by(email=email).first()
         if user:
-            # Check if user account is suspended/blocked
-            if not user.is_active:
-                # Check if it's email confirmation or account suspension
-                # Users who haven't confirmed email will have a password_reset_token (used for email confirmation)
-                if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
-                    resend_link = url_for('auth.resend_verification')
-                    flash(Markup('Please check your email and click the confirmation link to activate your account. If you didn\'t receive the email, <a href="{}" class="underline font-semibold">click here to resend the verification email</a>.'.format(resend_link)), 'error')
+            if not user.password:
+                if user.is_google_user:
+                    flash('This account was created using Google. Please log in using the "Sign in with Google" button.', 'error')
                 else:
-                    flash('Your account has been suspended. Please contact support if you believe this is an error.', 'error')
+                    flash('No password set for this account. Please sign in with Google or reset your password.', 'error')
                 return render_template("login.html", user=current_user, next=next_page)
-            
-            # Check password
+                
+            # Check password first to provide better feedback for inactive accounts
             if check_password_hash(user.password, password):
-                # Check if user has 2FA enabled
+                # Check if user account is suspended/deactivated
+                if not user.is_active:
+                    # Check if it's email confirmation or account suspension
+                    if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
+                        resend_link = url_for('auth.resend_verification')
+                        flash(Markup('Please check your email and click the confirmation link to activate your account. If you didn\'t receive the email, <a href="{}" class="underline font-semibold">click here to resend the verification email</a>.'.format(resend_link)), 'error')
+                        return render_template("login.html", user=current_user, next=next_page)
+                    else:
+                        # Offer reactivation for deactivated accounts
+                        session['pending_reactivation_user_id'] = user.id
+                        return redirect(url_for('auth.reactivate_account'))
+                
+                # Password is correct and account is active, proceed to login or 2FA
                 if user.two_factor_enabled:
                     # Store login info in session for 2FA verification
                     client_ip = get_client_ip()
@@ -222,11 +198,10 @@ def login():
                     session['pending_2fa_next'] = next_page
                     session['pending_2fa_remember'] = True
                     session['pending_2fa_time'] = datetime.now(timezone.utc).timestamp()
-                    session['pending_2fa_ip'] = client_ip  # Store IP for later use
+                    session['pending_2fa_ip'] = client_ip
                     return redirect(url_for('auth.login_2fa'))
                 else:
                     # No 2FA, proceed with normal login
-                    # Log IP address and login date
                     client_ip = get_client_ip()
                     user.last_login_ip = client_ip
                     user.last_login_date = datetime.now(timezone.utc)
@@ -234,7 +209,7 @@ def login():
                     
                     login_user(user, remember=True)
                     
-                    # Check for pending letter invites for this email
+                    # Check for pending letter invites
                     from .models import RecipientInvite
                     pending_invites = RecipientInvite.query.filter(
                         RecipientInvite.recipient_email == user.email,
@@ -242,7 +217,6 @@ def login():
                     ).all()
                     
                     if pending_invites:
-                        # Link all pending invites to this user
                         for invite in pending_invites:
                             invite.recipient_user_id = user.id
                             invite.registered_at = datetime.now(timezone.utc)
@@ -253,53 +227,26 @@ def login():
                     contact = TrustedContact.query.filter_by(email=user.email, is_confirmed=False).first()
                     if contact:
                         session['pending_trusted_contact_code'] = contact.confirmation_code
+                    
                     # Check for intended plan upgrade
                     intended_plan = session.get('intended_plan')
-                    intended_cycle = session.get('intended_cycle')
                     user_email = session.get('user_email')
-                    
                     if intended_plan and intended_plan != 'free' and user_email == user.email:
-                        # Clear session data
                         session.pop('intended_plan', None)
                         session.pop('intended_cycle', None)
                         session.pop('user_email', None)
-                        
-                        # Redirect to upgrade flow
                         flash(f'Welcome! You signed up for {intended_plan.title()} plan. Complete your upgrade to unlock all features!', 'info')
                         return redirect(url_for('pricing.pricing_page'))
                     
                     flash('Logged in successfully!', category='success')
                     return redirect(next_page or url_for('views.home'))
             else:
-                    # Rate limit failed login attempts from spam IPs
-                    recent_signups = User.query.filter(
-                        User.registration_ip == client_ip,
-                        User.created_date >= five_minutes_ago
-                    ).count()
-                    
-                    if recent_signups >= 10:
-                        print(f"[LOGIN RATE LIMIT] Failed login from IP {client_ip} with {recent_signups} recent signups - potential spam")
-                        from .blocking import block_ip
-                        block_ip(client_ip, reason=f"Failed login with {recent_signups} recent spam signups", blocked_by_user_id=None)
-                        flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-                        return render_template("login.html", user=current_user, next=next_page)
-                    
-                    flash('Incorrect password, try again.', category='error')
-        else:
-            # User doesn't exist - check for spam pattern
-            recent_signups = User.query.filter(
-                User.registration_ip == client_ip,
-                User.created_date >= five_minutes_ago
-            ).count()
-            
-            if recent_signups >= 10:
-                print(f"[LOGIN RATE LIMIT] Failed login (user not found) from IP {client_ip} with {recent_signups} recent signups - potential spam")
-                from .blocking import block_ip
-                block_ip(client_ip, reason=f"Failed login (user not found) with {recent_signups} recent spam signups", blocked_by_user_id=None)
-                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
+                # Incorrect password
+                flash('Incorrect password, try again.', 'error')
                 return render_template("login.html", user=current_user, next=next_page)
-            
-            flash('Email does not exist.', category='error')
+        else:
+            flash('Email does not exist.', 'error')
+            return render_template("login.html", user=current_user, next=next_page)
     return render_template("login.html", user=current_user, next=next_page)
 
 @auth.route('/login-2fa', methods=['GET', 'POST'])
@@ -432,150 +379,28 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-    # Record form start time for spam prevention
-    if request.method == 'GET':
-        from .spam_prevention import record_form_start
-        record_form_start('signup')
+
     
-    # Check IP blocking before allowing signup
+    # Get client IP for logging
     client_ip = get_client_ip()
-    ip_blocked, block_record = is_ip_blocked(client_ip)
-    if ip_blocked:
-        print(f"[BLOCK] Signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
-        flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
-        turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY', '')
-        return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
     
     # Get Turnstile site key for template
     turnstile_site_key = os.getenv('TURNSTILE_SITE_KEY', '')
     
     # Spam prevention checks
     if request.method == 'POST':
-        from .spam_prevention import validate_form_submission, check_honeypot
-        
         # Verify Cloudflare Turnstile token
         turnstile_token = request.form.get('cf-turnstile-response', '')
-        is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
+        # If token is missing, skip verification (treat as valid)
+        if not turnstile_token:
+            is_turnstile_valid, turnstile_error = True, None
+        else:
+            is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
         if not is_turnstile_valid:
             print(f"[TURNSTILE] BLOCKED signup attempt - Turnstile verification failed. IP: {client_ip}, Error: {turnstile_error}")
             flash('Security verification failed. Please try again.', 'error')
             return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
-        
-        # EXPLICIT HONEYPOT CHECK - Silent block (don't show error to bots)
-        is_honeypot_spam, honeypot_error = check_honeypot(request.form)
-        if is_honeypot_spam:
-            print(f"[HONEYPOT] BLOCKED bot signup attempt - honeypot field filled. IP: {client_ip}")
-            # Silently fail - don't show error, just return success page (confuses bots)
-            # This makes bots think they succeeded while we block them
-            flash('Thank you for signing up! Please check your email to confirm your account.', 'success')
-            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
-        
-        is_valid, error = validate_form_submission('signup', 'signup', check_honeypot_fields=True, check_timing=True)
-        if not is_valid:
-            flash(error, 'error')
-            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
-    
-    # Check signup rate limit (prevent spam signups) - CHECK BEFORE PROCESSING
-    if request.method == 'POST':
-        from datetime import timedelta
-        from .blocking import block_ip
-        
-        # ADVANCED SPAM DETECTION: Check patterns BEFORE processing
-        email = request.form.get('email', '')
-        first_name = request.form.get('firstName', '')
-        last_name = request.form.get('lastName', '')
-        
-        from .spam_detection import detect_spam_pattern, check_recent_spam_activity, is_random_email, is_random_name, check_timing_pattern
-        
-        # Check for spam patterns in email/names (includes timing pattern detection)
-        is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
-        
-        if is_spam:
-            print(f"[SPAM DETECTION] BLOCKED signup attempt: {spam_reason} (confidence: {confidence}%) - Email: {email}, IP: {client_ip}")
-            from .blocking import block_ip_subnet
-            block_ip_subnet(client_ip, reason=f"Spam pattern detected: {spam_reason}", blocked_by_user_id=None)
-            flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-            return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
-        
-        # Additional check: Timing pattern detection (catches 5-minute interval bots)
-        # This is a separate check to catch timing patterns even if other patterns don't match
-        timing_suspicious, timing_reason, timing_confidence = check_timing_pattern(client_ip, email, first_name, last_name)
-        if timing_suspicious and timing_confidence >= 50:
-            print(f"[SPAM DETECTION] BLOCKED signup - timing pattern: {timing_reason} (confidence: {timing_confidence}%) - Email: {email}, IP: {client_ip}")
-            from .blocking import block_ip_subnet
-            block_ip_subnet(client_ip, reason=f"Automated timing pattern detected: {timing_reason}", blocked_by_user_id=None)
-            flash('Access denied. Your signup attempt was flagged as automated activity.', 'error')
-            return render_template("sign_up.html", user=current_user)
-        
-        # Check if this IP has recent spam activity
-        is_spam_ip, spam_count, activity_reason = check_recent_spam_activity(client_ip)
-        if is_spam_ip:
-            print(f"[SPAM DETECTION] BLOCKED signup from spam IP: {client_ip} - {activity_reason}")
-            from .blocking import block_ip_subnet
-            block_ip_subnet(client_ip, reason=f"Recent spam activity: {activity_reason}", blocked_by_user_id=None)
-            flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-            return render_template("sign_up.html", user=current_user)
-        
-        # Check for random email/name patterns (even if not cross-IP)
-        if is_random_email(email) or is_random_name(first_name) or is_random_name(last_name):
-            # Even if not cross-IP, block if pattern is very suspicious
-            if is_random_email(email) and (is_random_name(first_name) or is_random_name(last_name)):
-                print(f"[SPAM DETECTION] BLOCKED suspicious pattern: Email={email}, Name={first_name} {last_name}, IP={client_ip}")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Suspicious random pattern: email and name", blocked_by_user_id=None)
-                flash('Access denied. Your signup attempt was flagged as spam.', 'error')
-                return render_template("sign_up.html", user=current_user)
-        
-        # Check last 5 minutes (rapid spam detection)
-        five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-        rapid_signups = User.query.filter(
-            User.registration_ip == client_ip,
-            User.created_date >= five_minutes_ago
-        ).count()
-        
-        # AUTO-BLOCK if 5+ signups already (catch them at attempt #6, so only 5 get through)
-        # This prevents most spam while still allowing legitimate users
-        if rapid_signups >= 5:
-            print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet: {rapid_signups} signups in 5 minutes - SPAM DETECTED!")
-            # Auto-block the IP and entire subnet (prevents IP rotation)
-            from .blocking import block_ip_subnet
-            block_ip_subnet(client_ip, reason=f"Spam signups: {rapid_signups} signups in 5 minutes", blocked_by_user_id=None)
-            flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-            return render_template("sign_up.html", user=current_user)
-        
-        # Also check last 30 seconds for VERY rapid spam (multiple in seconds)
-        thirty_seconds_ago = datetime.now(timezone.utc) - timedelta(seconds=30)
-        very_rapid_signups = User.query.filter(
-            User.registration_ip == client_ip,
-            User.created_date >= thirty_seconds_ago
-        ).count()
-        
-        # AUTO-BLOCK if 4+ signups in 30 seconds (definitely spam!)
-        if very_rapid_signups >= 4:
-            print(f"[SPAM ALERT] CRITICAL: Auto-blocking IP {client_ip} and entire subnet: {very_rapid_signups} signups in 30 seconds - IMMEDIATE SPAM!")
-            from .blocking import block_ip_subnet
-            block_ip_subnet(client_ip, reason=f"Critical spam: {very_rapid_signups} signups in 30 seconds", blocked_by_user_id=None)
-            flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-            return render_template("sign_up.html", user=current_user)
-        
-        # Check last hour (general rate limit)
-        one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-        recent_signups = User.query.filter(
-            User.registration_ip == client_ip,
-            User.created_date >= one_hour_ago
-        ).count()
-        
-        if recent_signups >= 20:  # Max 20 signups per hour from same IP
-            print(f"[SIGNUP RATE LIMIT] Blocked signup from IP {client_ip}: {recent_signups} signups in last hour")
-            # Auto-block if they hit the limit
-            if recent_signups >= 30:
-                print(f"[SPAM ALERT] Auto-blocking IP {client_ip} and entire subnet: {recent_signups} signups in 1 hour - SPAM DETECTED!")
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Spam signups: {recent_signups} signups in 1 hour", blocked_by_user_id=None)
-                flash('Access denied. Your IP address has been blocked due to suspicious activity.', 'error')
-            else:
-                flash('Too many signup attempts from this IP address. Please try again later or contact support.', 'error')
-            return render_template("sign_up.html", user=current_user)
+
     
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
@@ -621,19 +446,9 @@ def sign_up():
             # Get IP address for registration
             client_ip = get_client_ip()
             
-            # Get device fingerprint
-            device_fingerprint = request.form.get('device_fingerprint', '').strip()
-            if device_fingerprint and len(device_fingerprint) > 64:
-                device_fingerprint = device_fingerprint[:64]  # Limit to 64 chars
+
             
-            # Validate fingerprint and IP velocity
-            from .fingerprint_detection import validate_fingerprint_and_ip
-            fp_valid, fp_error, fp_details = validate_fingerprint_and_ip(device_fingerprint, client_ip)
-            if not fp_valid:
-                print(f"[FINGERPRINT DETECTION] Rejected signup: {fp_error}")
-                print(f"[FINGERPRINT DETECTION] Details: {fp_details}")
-                flash('Signup blocked due to suspicious activity. Please contact support if you believe this is an error.', category='error')
-                return render_template("sign_up.html", user=current_user)
+
             
             new_user = User(
                 email=email,
@@ -646,67 +461,12 @@ def sign_up():
                 delivery_preferences={'delivery_method': 'email'},
                 is_active=False,
                 marketing_consent=(request.form.get('marketing_consent') == 'yes'),
-                registration_ip=client_ip,
-                device_fingerprint=device_fingerprint if device_fingerprint else None
+                registration_ip=client_ip
             )
             db.session.add(new_user)
             db.session.commit()
             
-            # Double-check rate limit AFTER creating user (in case of race condition)
-            # Check 30 seconds (very rapid) and 5 minutes (rapid)
-            thirty_seconds_ago = datetime.now(timezone.utc) - timedelta(seconds=30)
-            five_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
-            
-            very_rapid_now = User.query.filter(
-                User.registration_ip == client_ip,
-                User.created_date >= thirty_seconds_ago
-            ).count()
-            
-            rapid_signups_now = User.query.filter(
-                User.registration_ip == client_ip,
-                User.created_date >= five_minutes_ago
-            ).count()
-            
-            # Auto-block if we hit limits (even if they slipped through)
-            # Also check for spam patterns in the newly created account
-            should_block = False
-            should_delete = False
-            
-            # Check for spam patterns in this account
-            from .spam_detection import is_random_email, is_random_name
-            if is_random_email(new_user.email) or is_random_name(new_user.first_name) or is_random_name(new_user.last_name):
-                print(f"[SPAM DETECTION] POST-SIGNUP: Detected spam pattern in account {new_user.id}: {new_user.email}")
-                should_delete = True
-                should_block = True
-            
-            if very_rapid_now >= 4:
-                print(f"[SPAM ALERT] POST-SIGNUP CRITICAL: Auto-blocking IP {client_ip}: {very_rapid_now} signups in 30 seconds!")
-                should_block = True
-                should_delete = True
-            elif rapid_signups_now >= 5:
-                print(f"[SPAM ALERT] POST-SIGNUP: Auto-blocking IP {client_ip}: {rapid_signups_now} signups in 5 minutes!")
-                should_block = True
-                should_delete = True
-            
-            if should_block:
-                from .blocking import block_ip_subnet
-                block_ip_subnet(client_ip, reason=f"Spam signups detected: {very_rapid_now} in 30s, {rapid_signups_now} in 5min", blocked_by_user_id=None)
-                
-                # Delete ALL spam user accounts (including this one)
-                if should_delete:
-                    spam_users = User.query.filter(
-                        User.registration_ip == client_ip,
-                        User.created_date >= five_minutes_ago
-                    ).all()
-                    
-                    # Delete ALL spam accounts (no exceptions - they're all spam)
-                    for spam_user in spam_users:
-                        print(f"[SPAM CLEANUP] Deleting spam account {spam_user.id}: {spam_user.email}")
-                        db.session.delete(spam_user)
-                    db.session.commit()
-                    print(f"[SPAM CLEANUP] Deleted {len(spam_users)} spam user accounts from IP {client_ip}")
-                flash('Signup blocked due to suspicious activity. Your IP has been blocked.', 'error')
-                return render_template("sign_up.html", user=current_user)
+
 
             # If marketing consent given, add/update newsletter subscriber
             if new_user.marketing_consent:
@@ -792,13 +552,8 @@ def sign_up():
 @auth.route('/sign-up-with-invite/<token>', methods=['GET', 'POST'])
 def sign_up_with_invite(token):
     """Sign up using an invite token from a letter delivery"""
-    # Check IP blocking before allowing signup
+    # Get client IP for logging
     client_ip = get_client_ip()
-    ip_blocked, block_record = is_ip_blocked(client_ip)
-    if ip_blocked:
-        print(f"[BLOCK] Invite signup attempt from blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
-        flash('Access denied. Your IP address has been blocked. Please contact support if you believe this is an error.', 'error')
-        return redirect(url_for('auth.login'))
     
     if current_user.is_authenticated:
         return redirect(url_for('views.received_letters'))
@@ -816,16 +571,6 @@ def sign_up_with_invite(token):
         return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
-        # EXPLICIT HONEYPOT CHECK - Silent block (don't show error to bots)
-        from .spam_prevention import check_honeypot
-        client_ip = get_client_ip()
-        is_honeypot_spam, honeypot_error = check_honeypot(request.form)
-        if is_honeypot_spam:
-            print(f"[HONEYPOT] BLOCKED bot signup attempt (invite) - honeypot field filled. IP: {client_ip}")
-            # Silently fail - don't show error, just return success message (confuses bots)
-            flash('Thank you for signing up! Please check your email to confirm your account.', 'success')
-            return render_template("sign_up_with_invite.html", invite=invite, token=token)
-        
         email = request.form.get('email')
         first_name = request.form.get('firstName')
         last_name = request.form.get('lastName', '').strip()  # Get last name, default to empty string and strip whitespace
@@ -866,14 +611,7 @@ def sign_up_with_invite(token):
             if device_fingerprint and len(device_fingerprint) > 64:
                 device_fingerprint = device_fingerprint[:64]  # Limit to 64 chars
             
-            # Validate fingerprint and IP velocity
-            from .fingerprint_detection import validate_fingerprint_and_ip
-            fp_valid, fp_error, fp_details = validate_fingerprint_and_ip(device_fingerprint, client_ip)
-            if not fp_valid:
-                print(f"[FINGERPRINT DETECTION] Rejected invite signup: {fp_error}")
-                print(f"[FINGERPRINT DETECTION] Details: {fp_details}")
-                flash('Signup blocked due to suspicious activity. Please contact support if you believe this is an error.', 'error')
-                return render_template("sign_up_with_invite.html", invite=invite, token=token)
+
             
             new_user = User(
                 email=email,
@@ -937,13 +675,6 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         
         if user:
-            # Only send password reset to verified (active) users
-            # Unverified users should verify their email first before resetting password
-            if not user.is_active:
-                # Don't reveal if email exists or not for security
-                flash('If an account with that email exists and is verified, password reset instructions have been sent.', 'info')
-                return redirect(url_for('auth.forgot_password'))
-            
             # Generate reset token
             reset_token = str(uuid.uuid4())
             user.password_reset_token = reset_token
@@ -1060,6 +791,7 @@ def reset_password(token):
             user.password = generate_password_hash(password1, method='pbkdf2:sha256')
             user.password_reset_token = None
             user.password_reset_expires = None
+            user.is_active = True  # Activate account on password reset
             db.session.commit()
             
             flash('Your password has been reset successfully. Please log in with your new password.', 'success')
@@ -1086,16 +818,6 @@ def confirm_email(token):
     if pending_letter_data:
         try:
             from .models import Letter
-            from .views import check_letter_creation_rate_limit
-            
-            # Anti-spam: Check letter creation rate limit (5 per hour, auto-suspend if 10+ in 5 min)
-            is_allowed, count, rate_limit_msg = check_letter_creation_rate_limit(user.id, limit=5)
-            if not is_allowed:
-                db.session.rollback()  # Make sure no partial saves
-                session.pop(f'pending_hero_letter_data_for_user_{user.email}', None)
-                flash(rate_limit_msg, 'error')
-                login_user(user, remember=True)  # Still log them in
-                return redirect(url_for('views.add_letter'))
             
             letter_data = pending_letter_data
             new_letter = Letter(
@@ -1282,3 +1004,23 @@ def generate_backup_codes():
     
     flash('New backup codes generated successfully. Please save them securely.', 'success')
     return redirect(url_for('views.settings'))
+@auth.route('/reactivate-account', methods=['GET', 'POST'])
+def reactivate_account():
+    user_id = session.get('pending_reactivation_user_id')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+    
+    user = User.query.get(user_id)
+    if not user or user.is_active:
+        session.pop('pending_reactivation_user_id', None)
+        return redirect(url_for('auth.login'))
+        
+    if request.method == 'POST':
+        user.is_active = True
+        db.session.commit()
+        session.pop('pending_reactivation_user_id', None)
+        login_user(user, remember=True)
+        flash('Welcome back! Your account and digital estate have been reactivated.', 'success')
+        return redirect(url_for('views.home'))
+        
+    return render_template("reactivate.html", user=user)

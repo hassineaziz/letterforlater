@@ -5,12 +5,12 @@ Hi {{ user_name }},
 We're excited to offer you an exclusive 50% OFF deal! You can get 50% off all our subscriptions - the best way to preserve your legacy forever.
 
 PRICING:
-Lifetime: $99.99 -> $49.99
-Monthly: $2.99 -> $1.49
-Yearly: $19.99 -> $9.99
-Use Code: 50OFF
+Lifetime: $19.99 -> $9.99
+Monthly: $1.38 -> $0.69
+Yearly: $5.98 -> $2.99
+Applied Automatically (No Promo Code Required!)
 
-Use code 50OFF at checkout to claim your 50% discount on any plan. Don't miss out on this incredible opportunity!
+The 50% discount has been applied automatically at checkout. Don't miss out on this incredible opportunity!
 
 WHAT'S INCLUDED IN LIFETIME:
 ✓ Everything in Premium - all features unlocked
@@ -26,7 +26,7 @@ This is the perfect time to upgrade and ensure your legacy letters are preserved
 
 CLAIM YOUR DISCOUNT:
 Visit: {{ pricing_url }}
-Use code: 50OFF at checkout
+Discount Applied Automatically
 
 Remember, you can always continue using the free plan with unlimited text letters. This offer is perfect if you want to add media attachments and advanced features to your legacy letters.
 

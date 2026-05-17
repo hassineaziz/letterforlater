@@ -22,7 +22,7 @@ def is_lifetime_user():
 
 def can_create_unlimited_letters():
     """Check if user can create unlimited letters"""
-    return is_premium_user()
+    return True
 
 def can_upload_media():
     """Check if user can upload photos, videos, audio"""
@@ -30,11 +30,11 @@ def can_upload_media():
 
 def can_schedule_letters():
     """Check if user can schedule letters for birthdays/milestones"""
-    return is_premium_user()
+    return True
 
 def can_use_scheduled_delivery():
-    """Check if user can use date-based scheduled delivery (premium only)"""
-    return is_premium_user()
+    """Check if user can use date-based scheduled delivery (premium/free can both use it, free is limited to 6 months)"""
+    return True
 
 def can_use_death_verification():
     """Check if user can use death verification delivery (premium only)"""
@@ -46,9 +46,7 @@ def can_add_unlimited_contacts():
 
 def get_max_letters():
     """Get maximum letters allowed for user's plan"""
-    if is_premium_user():
-        return float('inf')  # Unlimited
-    return 1
+    return float('inf')  # Unlimited for all plans now
 
 def get_max_contacts():
     """Get maximum trusted contacts allowed for user's plan - UNLIMITED FOR ALL"""
@@ -142,27 +140,28 @@ def get_plan_comparison():
             'features': [
                 'Unlimited letters',
                 'Text only (no media)',
-                'Unlimited trusted contacts',
-                'Death verification delivery',
+                'Schedule letters up to 6 months',
                 'Email support',
-                'Bank-level encryption',
+                'End-to-end encryption',
                 'Email delivery tracking'
             ],
             'limitations': [
                 'No media attachments',
-                'No scheduled delivery',
+                'Scheduling limited to 6 months',
+                'No death verification delivery',
                 'Standard support'
             ]
         },
         'premium': {
             'name': 'Premium',
-            'price': '$2.99',
+            'price': '$0.69',
             'period': 'per month',
             'features': [
                 'Unlimited letters',
                 'Photos, videos, and audio attachments',
                 'Unlimited trusted contacts',
-                'Schedule letters for birthdays & milestones',
+                'Schedule letters with no time limits',
+                'Death verification delivery',
                 'Priority support',
                 'All free features included'
             ],
@@ -175,7 +174,7 @@ def get_plan_comparison():
         },
         'lifetime': {
             'name': 'Lifetime',
-            'price': '$99.99',
+            'price': '$9.99',
             'period': 'one-time payment',
             'features': [
                 'Everything in Premium',
@@ -234,15 +233,15 @@ def get_upgrade_cta_text(plan=None):
         return {
             'primary': 'Upgrade to Premium',
             'secondary': 'Get Lifetime Access',
-            'price_primary': '$2.99/month',
-            'price_secondary': '$99.99 one-time',
-            'benefit': 'Save 20% on annual subscription!'
+            'price_primary': '$0.69/month',
+            'price_secondary': '$9.99 one-time',
+            'benefit': 'Save 64% on annual subscription!'
         }
     elif current_plan == 'premium':
         return {
             'primary': 'Upgrade to Lifetime',
             'secondary': 'Get Lifetime Access',
-            'price_primary': '$99.99 one-time',
+            'price_primary': '$9.99 one-time',
             'price_secondary': 'Pay once, use forever',
             'benefit': 'No more monthly payments!'
         }

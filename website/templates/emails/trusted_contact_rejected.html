@@ -3,334 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trusted Contact Invitation Declined - LetterForLater</title>
+    <title>Protocol Update - LetterForLater</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif:italic,wght@400;700&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8fafc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f9fafb;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
         }
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f9fafb;
+            padding-bottom: 60px;
+        }
+        .main {
             background-color: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
         }
         .header {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            padding: 40px 30px;
+            padding: 60px 40px 40px;
             text-align: center;
-            color: white;
         }
-        .logo {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 20px;
-            background-color: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .logo img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            margin: 10px 0 0;
-            font-size: 16px;
-            opacity: 0.9;
+        .brand {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-style: italic;
+            font-size: 24px;
+            color: #0f172a;
+            text-decoration: none;
+            letter-spacing: -0.02em;
         }
         .content {
-            padding: 40px 30px;
+            padding: 0 40px 60px;
         }
-        .rejection-box {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            border: 2px solid #d1d5db;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-            text-align: center;
-        }
-        .rejection-title {
-            font-size: 24px;
+        .hero-title {
+            font-family: 'Noto Serif', Georgia, serif;
+            font-size: 32px;
             font-weight: 700;
-            color: #374151;
-            margin: 0 0 15px;
-        }
-        .rejection-subtitle {
-            font-size: 16px;
-            color: #6b7280;
-            margin: 0 0 25px;
-        }
-        .contact-info {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 4px solid #6b7280;
-        }
-        .contact-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 0 0 5px;
-        }
-        .contact-email {
-            font-size: 14px;
-            color: #64748b;
-            margin: 0;
-        }
-        .understanding-note {
-            background-color: #f0f9ff;
-            border: 1px solid #0ea5e9;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-        }
-        .understanding-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #0c4a6e;
-            margin: 0 0 10px;
-            display: flex;
-            align-items: center;
-        }
-        .understanding-title::before {
-            content: "💙";
-            margin-right: 8px;
-        }
-        .understanding-text {
-            font-size: 14px;
-            color: #0c4a6e;
-            margin: 0;
-        }
-        .next-steps {
-            background-color: #f8fafc;
-            border-radius: 8px;
-            padding: 25px;
-            margin: 30px 0;
-        }
-        .next-steps-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 0 0 20px;
+            line-height: 1.2;
+            color: #0f172a;
+            margin: 0 0 24px;
             text-align: center;
         }
-        .step {
-            display: flex;
-            align-items: flex-start;
-            margin: 15px 0;
-            padding: 15px;
-            background-color: white;
-            border-radius: 6px;
-            border-left: 4px solid #6b7280;
-        }
-        .step-number {
-            background-color: #6b7280;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-        .step-content {
-            flex: 1;
-        }
-        .step-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 0 0 5px;
-        }
-        .step-desc {
-            font-size: 13px;
-            color: #64748b;
-            margin: 0;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-weight: 600;
+        .body-text {
             font-size: 16px;
-            margin: 20px 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 32px;
+            text-align: center;
         }
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+        .secondary-section {
+            padding: 32px;
+            background-color: #f8fafc;
+            border-radius: 24px;
+            margin-bottom: 32px;
+        }
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .note-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #64748b;
+        }
+        .cta-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #6366f1;
+            color: #ffffff !important;
+            padding: 18px 36px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
         }
         .footer {
-            background-color: #f8fafc;
-            padding: 30px;
+            padding: 40px;
             text-align: center;
-            border-top: 1px solid #e2e8f0;
-        }
-        .footer-text {
-            font-size: 14px;
-            color: #64748b;
-            margin: 0 0 10px;
-        }
-        .footer-links {
-            margin: 15px 0;
-        }
-        .footer-links a {
-            color: #6b7280;
-            text-decoration: none;
-            margin: 0 10px;
-            font-size: 14px;
-        }
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-        .unsubscribe {
             font-size: 12px;
             color: #94a3b8;
-            margin-top: 20px;
         }
-        .unsubscribe a {
-            color: #94a3b8;
+        .footer-links {
+            margin-bottom: 16px;
+        }
+        .footer-link {
+            color: #64748b;
             text-decoration: none;
+            margin: 0 12px;
         }
-        
-        /* Mobile Responsive */
-        @media (max-width: 600px) {
-            .email-container {
-                margin: 0;
-                border-radius: 0;
-            }
-            .header, .content, .footer {
-                padding: 30px 20px;
-            }
-            .rejection-box {
-                padding: 20px;
-            }
-            .header h1 {
-                font-size: 24px;
-            }
-            .rejection-title {
-                font-size: 20px;
-            }
-            .cta-button {
-                padding: 14px 28px;
-                font-size: 15px;
-            }
-            .step {
-                flex-direction: column;
-                text-align: center;
-            }
-            .step-number {
-                margin: 0 0 10px;
-            }
+        @media screen and (max-width: 600px) {
+            .content { padding: 0 24px 48px; }
+            .header { padding: 48px 24px 32px; }
+            .hero-title { font-size: 28px; }
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="header">
-            <div class="logo">
-                <img src="https://letterforlater.com/static/logo.png" alt="LetterForLater Logo">
-            </div>
-            <h1>Invitation Declined</h1>
-            <p>Trusted contact invitation was not accepted</p>
-        </div>
-        
-        <div class="content">
-            <div class="rejection-box">
-                <h2 class="rejection-title">Trusted Contact Invitation Declined</h2>
-                <p class="rejection-subtitle">Someone you invited has declined to be your trusted contact</p>
-                
-                <div class="contact-info">
-                    <div class="contact-name">{{ contact_name }}</div>
-                    <div class="contact-email">{{ contact_email }}</div>
-                </div>
-            </div>
-            
-            <div class="understanding-note">
-                <div class="understanding-title">We Understand</div>
-                <div class="understanding-text">
-                    Being a trusted contact is an important responsibility, and we respect their decision. This doesn't affect your ability to use LetterForLater or invite other trusted contacts.
-                </div>
-            </div>
-            
-            <div class="next-steps">
-                <h3 class="next-steps-title">What You Can Do Next</h3>
-                
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <div class="step-title">Invite Someone Else</div>
-                        <div class="step-desc">Consider inviting another trusted person to be your contact</div>
+    <div class="wrapper">
+        <table class="main">
+            <tr>
+                <td class="header">
+                    <a href="https://letterforlater.com" class="brand">LetterForLater</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <h1 class="hero-title">A Respectful Decline</h1>
+                    <p class="body-text">
+                        Hi {{ user_name }},<br>
+                        One of your invited contacts, <strong>{{ contact_name }}</strong>, has declined the request to be a Trusted Contact.
+                    </p>
+                    
+                    <div class="secondary-section">
+                        <span class="section-label">Understanding the Role</span>
+                        <p class="note-text">
+                            Being a Trusted Contact is a significant responsibility. We respect the personal choice of every invitee. This does not impact the security or integrity of your vault.
+                        </p>
                     </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <div class="step-title">Review Your Letters</div>
-                        <div class="step-desc">Make sure your letters have appropriate delivery settings</div>
+
+                    <div class="secondary-section">
+                        <span class="section-label">Next Steps</span>
+                        <p class="note-text">
+                            You may consider inviting another individual who you believe would be a suitable guardian for your verification protocol.
+                        </p>
                     </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <div class="step-title">Continue Writing</div>
-                        <div class="step-desc">Keep creating your legacy letters for your loved ones</div>
+
+                    <div class="cta-container">
+                        <a href="https://letterforlater.com/trusted-contacts" class="button">Manage Contacts</a>
                     </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="https://letterforlater.com/trusted-contacts" class="cta-button">Manage Trusted Contacts</a>
-            </div>
-            
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin: 30px 0 0;">
-                This notification was sent from LetterForLater.com<br>
-                If you need help, contact us at support@letterforlater.com
-            </p>
-        </div>
-        
-        <div class="footer">
-            <div class="footer-text">
-                <strong>LetterForLater</strong> - Preserve Your Legacy
-            </div>
-            <div class="footer-links">
-                <a href="https://letterforlater.com">Website</a>
-                <a href="https://letterforlater.com/privacy">Privacy</a>
-                <a href="https://letterforlater.com/terms">Terms</a>
-                <a href="mailto:support@letterforlater.com">Support</a>
-            </div>
-            <div class="unsubscribe">
-                This email was sent to {{ user_email }}<br>
-                <a href="https://letterforlater.com">LetterForLater.com</a>
-            </div>
-        </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <div class="footer-links">
+                        <a href="https://letterforlater.com" class="footer-link">The Vault</a>
+                        <a href="https://letterforlater.com/privacy" class="footer-link">Privacy</a>
+                        <a href="mailto:support@letterforlater.com" class="footer-link">Support</a>
+                    </div>
+                    <p>&copy; LetterForLater. Preserving moments, intentionally.</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

@@ -1,276 +1,264 @@
 {% extends "base.html" %}
-{% block title %}Trusted Contacts{% endblock %}
-{% block content %}
+{% block title %}Trusted Contacts | LetterForLater{% endblock %}
 
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
-    <!-- Page Header -->
-    <div class="text-center mb-12">
-        <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Your Trusted Contacts
-                </span>
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div class="max-w-2xl">
+            <h1 class="font-headline text-4xl md:text-5xl font-bold text-on-surface mb-4">
+                Trusted Contacts
             </h1>
-            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                These are the people who will help deliver your messages safely when the time is right.
+            <p class="text-on-surface-variant text-lg leading-relaxed">
+                Choose the individuals you trust to verify your passing and ensure your legacy reaches the right hands at the right time.
             </p>
+        </div>
+        
+        <div class="flex items-center gap-4 px-6 py-3 rounded-2xl bg-surface-container border border-surface-container-highest">
+            <span class="material-symbols-outlined text-primary">verified_user</span>
+            <div class="flex flex-col">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50 leading-none mb-1">Status</span>
+                <span class="text-xl font-bold text-on-surface leading-none">Security Network</span>
+            </div>
         </div>
     </div>
 
     <!-- Main Content Container -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-12">
 
         <!-- Add Trusted Contact Form -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8 mb-8">
-            <div class="flex items-center justify-center mb-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
+        <div class="bg-surface-container-lowest rounded-[2.5rem] border border-surface-container-highest p-8 md:p-10 shadow-xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div class="flex items-center gap-5">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">person_add</span>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Add New Trusted Contact</h2>
-                        <p class="text-sm text-gray-600">Add someone you trust to help deliver your messages</p>
+                        <h2 class="text-2xl font-bold text-on-surface mb-1">Add New Guardian</h2>
+                        <p class="text-sm text-on-surface-variant">Nominate someone you trust to protect your legacy.</p>
                     </div>
                 </div>
-                <button type="button" id="trusted-contact-info-main" class="ml-4 p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                <button type="button" id="trusted-contact-info-main" class="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-lg">info</span>
+                    How it works
                 </button>
             </div>
     
-    <form id="addContactForm" method="POST" action="{{ url_for('views.add_trusted_contact') }}{% if request.args.get('from_letter') == '1' %}?from_letter=1{% endif %}" novalidate>
-        <!-- CSRF Token -->
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <!-- Honeypot fields for spam prevention -->
-        {{ add_honeypot_fields()|safe }}
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                <input type="text" id="first_name" name="first_name" required 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                <small class="text-red-500 text-sm hidden" id="firstNameError">First name is required.</small>
-            </div>
-            
-            <div>
-                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                <input type="text" id="last_name" name="last_name" required 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                <small class="text-red-500 text-sm hidden" id="lastNameError">Last name is required.</small>
-            </div>
-            
-            <div class="md:col-span-2">
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                <input type="email" id="email" name="email" required 
-                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                <small class="text-red-500 text-sm hidden" id="emailError">Please enter a valid email address.</small>
-            </div>
-            
-            <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number (Optional)</label>
-                <input type="text" id="phone" name="phone" 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-            </div>
-            
-            <div>
-                <label for="relationship" class="block text-sm font-medium text-gray-700 mb-2">Relationship (Optional)</label>
-                <input type="text" id="relationship" name="relationship" 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-            </div>
-        </div>
-        
-            <div class="text-center mt-6">
-                <button type="submit" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Add Contact
-                </button>
-            </div>
-        </form>
+            <form id="addContactForm" method="POST" action="{{ url_for('views.add_trusted_contact') }}{% if request.args.get('from_letter') == '1' %}?from_letter=1{% endif %}" novalidate class="space-y-8">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label for="first_name" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">First Name</label>
+                        <input type="text" id="first_name" name="first_name" required 
+                               class="w-full px-6 py-4 bg-surface-container border border-surface-container-highest rounded-2xl focus:border-primary text-on-surface placeholder:text-on-surface-variant/30 transition-all outline-none"
+                               placeholder="John">
+                        <small class="text-red-500 text-xs mt-2 hidden" id="firstNameError">First name is required.</small>
+                    </div>
+                    
+                    <div>
+                        <label for="last_name" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" required 
+                               class="w-full px-6 py-4 bg-surface-container border border-surface-container-highest rounded-2xl focus:border-primary text-on-surface placeholder:text-on-surface-variant/30 transition-all outline-none"
+                               placeholder="Doe">
+                        <small class="text-red-500 text-xs mt-2 hidden" id="lastNameError">Last name is required.</small>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label for="email" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">Email Address</label>
+                        <input type="email" id="email" name="email" required 
+                               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                               class="w-full px-6 py-4 bg-surface-container border border-surface-container-highest rounded-2xl focus:border-primary text-on-surface placeholder:text-on-surface-variant/30 transition-all outline-none"
+                               placeholder="guardian@example.com">
+                        <small class="text-red-500 text-xs mt-2 hidden" id="emailError">Please enter a valid email address.</small>
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">Phone Number (Optional)</label>
+                        <input type="text" id="phone" name="phone" 
+                               class="w-full px-6 py-4 bg-surface-container border border-surface-container-highest rounded-2xl focus:border-primary text-on-surface placeholder:text-on-surface-variant/30 transition-all outline-none"
+                               placeholder="+1 (555) 000-0000">
+                    </div>
+                    
+                    <div>
+                        <label for="relationship" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">Relationship (Optional)</label>
+                        <input type="text" id="relationship" name="relationship" 
+                               class="w-full px-6 py-4 bg-surface-container border border-surface-container-highest rounded-2xl focus:border-primary text-on-surface placeholder:text-on-surface-variant/30 transition-all outline-none"
+                               placeholder="e.g. Spouse, Sibling, Legal Advisor">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-4">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 transition-all w-full md:w-auto justify-center">
+                        <span class="material-symbols-outlined text-lg">add</span>
+                        Add Contact
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- Trusted Contacts List -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8">
-            <div class="flex items-center mb-6">
-                <div class="flex items-center mr-4">
-                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-3">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
+        <div class="bg-surface-container-lowest rounded-[2.5rem] border border-surface-container-highest p-8 md:p-10 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-10">
+                <div class="flex items-center gap-5">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                        <span class="material-symbols-outlined text-2xl">group</span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">Your Trusted Contacts</h3>
-                        <p class="text-sm text-gray-600">Manage your trusted contacts</p>
+                        <h3 class="text-2xl font-bold text-on-surface mb-1">Your Guardian Network</h3>
+                        <p class="text-sm text-on-surface-variant">Those designated to secure your digital legacy.</p>
                     </div>
                 </div>
-                <input type="text" id="trustedContactSearch" placeholder="Search contacts by name or relationship..." 
-                       class="flex-1 max-w-md px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white/80 backdrop-blur-sm">
+                <div class="relative flex-grow max-w-md">
+                    <input type="text" id="trustedContactSearch" placeholder="Search guardians..." 
+                           class="w-full pl-14 pr-6 py-4 bg-surface-container border border-surface-container-highest rounded-2xl focus:border-primary text-on-surface outline-none transition-all">
+                    <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                </div>
             </div>
             
-            <div id="trustedContactCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="trustedContactCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Cards will be rendered here by JS -->
+            </div>
             
-            <p class="text-sm text-gray-500 mt-6 text-center">You can edit, delete, or resend confirmation for your trusted contacts at any time.</p>
+            <p class="text-sm text-on-surface-variant mt-12 text-center italic opacity-60">
+                You maintain full control. Guardians can be added or removed at any time.
+            </p>
         </div>
     </div>
 </div>
 
 <!-- Modal Backdrop -->
-<div id="modalBackdrop" class="modal-backdrop" style="display: none;"></div>
+<div id="modalBackdrop" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 transition-opacity duration-300" style="display: none;"></div>
 
 <!-- Edit Trusted Contact Modal -->
-<div id="editContactModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <form id="editContactForm" method="POST" action="{{ url_for('views.edit_trusted_contact') }}">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Trusted Contact</h5>
-                <button type="button" class="modal-close" data-modal="editContactModal">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
+<div id="editContactModal" class="fixed inset-0 flex items-center justify-center z-[60] px-4 pointer-events-none" style="display: none;">
+    <div class="bg-surface-container-lowest rounded-[3rem] border border-surface-container-highest w-full max-w-xl shadow-2xl pointer-events-auto transform transition-all duration-300 scale-95 opacity-0">
+        <form id="editContactForm" method="POST" action="{{ url_for('views.edit_trusted_contact') }}" class="p-10">
+            <div class="flex items-center justify-between mb-10">
+                <h5 class="font-headline text-3xl font-bold text-on-surface">Edit Guardian</h5>
+                <button type="button" class="modal-close p-2 hover:bg-surface-container rounded-full transition-colors" data-modal="editContactModal" onclick="closeEditModal()">
+                    <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <input type="hidden" id="editContactId" name="contact_id">
-                <div class="space-y-4">
+            
+            <input type="hidden" id="editContactId" name="contact_id">
+            <div class="space-y-8">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                        <label for="editFirstName" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-3">First Name</label>
                         <input type="text" id="editFirstName" name="first_name" required 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                        <small class="text-red-500 text-sm hidden" id="editFirstNameError">First name is required.</small>
+                               class="w-full px-5 py-3.5 bg-surface-container border border-surface-container-highest rounded-xl focus:border-primary text-on-surface outline-none transition-all">
                     </div>
                     <div>
-                        <label for="editLastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                        <label for="editLastName" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-3">Last Name</label>
                         <input type="text" id="editLastName" name="last_name" required 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                        <small class="text-red-500 text-sm hidden" id="editLastNameError">Last name is required.</small>
+                               class="w-full px-5 py-3.5 bg-surface-container border border-surface-container-highest rounded-xl focus:border-primary text-on-surface outline-none transition-all">
                     </div>
+                </div>
+                <div>
+                    <label for="editEmail" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-3">Email Address</label>
+                    <input type="email" id="editEmail" name="email" required 
+                           class="w-full px-5 py-3.5 bg-surface-container border border-surface-container-highest rounded-xl focus:border-primary text-on-surface outline-none transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label for="editEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                        <input type="email" id="editEmail" name="email" required 
-                               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                        <small class="text-red-500 text-sm hidden" id="editEmailError">Please enter a valid email address.</small>
-                    </div>
-                    <div>
-                        <label for="editPhone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number (Optional)</label>
+                        <label for="editPhone" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-3">Phone</label>
                         <input type="text" id="editPhone" name="phone" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                               class="w-full px-5 py-3.5 bg-surface-container border border-surface-container-highest rounded-xl focus:border-primary text-on-surface outline-none transition-all">
                     </div>
                     <div>
-                        <label for="editRelationship" class="block text-sm font-medium text-gray-700 mb-2">Relationship (Optional)</label>
+                        <label for="editRelationship" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-3">Relationship</label>
                         <input type="text" id="editRelationship" name="relationship" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                               class="w-full px-5 py-3.5 bg-surface-container border border-surface-container-highest rounded-xl focus:border-primary text-on-surface outline-none transition-all">
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-modal="editContactModal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+
+            <div class="flex items-center justify-end gap-4 mt-12">
+                <button type="button" class="px-8 py-3.5 rounded-2xl font-bold uppercase tracking-widest text-[10px] text-on-surface-variant hover:bg-surface-container transition-all" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary px-8 py-3.5 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 transition-all">Save Changes</button>
             </div>
         </form>
     </div>
 </div>
-</div>
-<!-- Info Modal Overlay -->
-<div id="trusted-contact-main-overlay" class="hidden fixed inset-0 bg-gray-900/50 z-50 transition-opacity duration-300 opacity-0"></div>
 
-<!-- Info Modal -->
-<div id="trusted-contact-main-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl border border-primary-light p-6 z-50 max-w-sm w-full mx-4 transition-all duration-300 scale-95 opacity-0">
-    <div class="text-gray-700">
-        <h3 class="text-lg font-semibold text-primary mb-3">A Trusted Contact is a person you choose</h3>
-        <p class="mb-4">who can confirm your passing when the time comes.</p>
+<!-- Info Modal Overlay -->
+<div id="trusted-contact-main-overlay" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[70] transition-opacity duration-300 opacity-0"></div>
+<div id="trusted-contact-main-popup" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-container-lowest rounded-[3rem] border border-surface-container-highest p-10 z-[80] max-w-md w-full mx-4 transition-all duration-300 scale-95 opacity-0 shadow-2xl">
+    <div class="text-on-surface">
+        <div class="w-16 h-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center text-primary mb-8">
+            <span class="material-symbols-outlined text-4xl">shield_with_heart</span>
+        </div>
+        <h3 class="font-headline text-3xl font-bold text-on-surface mb-4">Guardian Network</h3>
+        <p class="text-on-surface-variant leading-relaxed mb-6">A Trusted Contact is a designated guardian who can confirm your passing to ensure your legacy messages reach their recipients.</p>
         
-        <p class="mb-4">They help make sure your messages are only delivered when it's truly time.</p>
-        
-        <div class="mb-4">
-            <p class="font-medium text-gray-800 mb-2 flex items-center">
-                <span class="text-xl mr-2">🔒</span>
-                Your Trusted Contact:
-            </p>
-            <ul class="list-disc list-inside space-y-1 text-sm text-gray-600">
-                <li>Cannot read your messages</li>
-                <li>Cannot change or delete them</li>
-                <li>Only helps us know when to send what you've written</li>
-            </ul>
+        <div class="space-y-6 mb-8">
+            <div class="p-4 rounded-2xl bg-surface-container border border-surface-container-highest">
+                <h4 class="font-bold text-xs uppercase tracking-widest text-primary mb-3">Key Principles</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm">
+                        <span class="material-symbols-outlined text-emerald-500 text-lg">lock</span>
+                        <span>Cannot read your private messages.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm">
+                        <span class="material-symbols-outlined text-emerald-500 text-lg">edit_off</span>
+                        <span>Cannot modify or delete your letters.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm">
+                        <span class="material-symbols-outlined text-emerald-500 text-lg">send_and_archive</span>
+                        <span>Only triggers the delivery protocol you established.</span>
+                    </li>
+                </ul>
+            </div>
         </div>
         
-        <p class="text-sm text-gray-600">You can change or remove your Trusted Contact at any time.</p>
+        <p class="text-xs text-on-surface-variant italic opacity-70 mb-8">Guardians can be updated or revoked at any time from your dashboard.</p>
     </div>
     
-    <div class="text-center mt-6">
-        <button onclick="closeTrustedContactMainPopup()" 
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-            OK
-        </button>
-    </div>
+    <button onclick="closeTrustedContactMainPopup()" 
+            class="w-full bg-primary hover:bg-primary-container text-on-primary px-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg shadow-primary/20">
+        Understood
+    </button>
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteConfirmModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header bg-red-50">
-            <h5 class="modal-title text-red-900">Delete Trusted Contact</h5>
-            <button type="button" class="modal-close" onclick="closeDeleteModal()">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h3>
-                <p class="text-gray-600" id="deleteConfirmMessage">
-                    Are you sure you want to delete this trusted contact? This action cannot be undone.
-                </p>
+<div id="deleteConfirmModal" class="fixed inset-0 flex items-center justify-center z-[60] px-4 pointer-events-none" style="display: none;">
+    <div class="bg-surface-container-lowest rounded-[3rem] border border-surface-container-highest w-full max-w-md shadow-2xl pointer-events-auto transform transition-all duration-300 scale-95 opacity-0 p-10">
+        <div class="flex flex-col items-center text-center">
+            <div class="w-20 h-20 bg-error/10 rounded-[2rem] flex items-center justify-center text-error mb-8">
+                <span class="material-symbols-outlined text-5xl">person_remove</span>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                Delete Contact
-            </button>
-            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">
-                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-                Cancel
-            </button>
+            <h3 class="font-headline text-3xl font-bold text-on-surface mb-4">Revoke Guardian?</h3>
+            <p class="text-on-surface-variant leading-relaxed mb-10" id="deleteConfirmMessage">
+                Are you sure you want to remove this guardian? This will disable any delivery protocols relying on their verification.
+            </p>
+            
+            <div class="flex flex-col w-full gap-3">
+                <button type="button" id="confirmDeleteBtn" onclick="confirmDelete()"
+                    class="w-full bg-error hover:bg-error/90 text-on-error px-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all shadow-xl shadow-error/20">
+                    Revoke Access
+                </button>
+                <button type="button" class="w-full px-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] text-on-surface-variant hover:bg-surface-container transition-all" onclick="closeDeleteModal()">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
 </div>
 <script>
 function showTrustedContactMainPopup() {
-    // Show the custom info modal instead of using modalManager
     const overlay = document.getElementById('trusted-contact-main-overlay');
     const popup = document.getElementById('trusted-contact-main-popup');
     
     if (overlay && popup) {
         overlay.classList.remove('hidden');
         popup.classList.remove('hidden');
-        
-        // Add animation classes
         setTimeout(() => {
             overlay.classList.add('opacity-100');
             popup.classList.add('scale-100', 'opacity-100');
         }, 10);
-        
-        // Prevent body scroll
         document.body.style.overflow = 'hidden';
-    } else {
-        // Fallback for when modal system isn't loaded
-        showNotificationToast('ℹ️ Trusted contacts are people you trust to verify your death and access your letters. They can be family members, close friends, or legal representatives.', 'info');
     }
 }
 
@@ -279,41 +267,31 @@ function closeTrustedContactMainPopup() {
     const popup = document.getElementById('trusted-contact-main-popup');
     
     if (overlay && popup) {
-        // Remove animation classes
         overlay.classList.remove('opacity-100');
         popup.classList.remove('scale-100', 'opacity-100');
-        
-        // Hide after animation
         setTimeout(() => {
             overlay.classList.add('hidden');
             popup.classList.add('hidden');
-            // Restore body scroll
             document.body.style.overflow = '';
         }, 300);
     }
 }
 
-document.getElementById('trusted-contact-info-main').addEventListener('click', showTrustedContactMainPopup);
+document.getElementById('trusted-contact-info-main')?.addEventListener('click', showTrustedContactMainPopup);
 
-// Add event listeners for closing the modal
 document.addEventListener('DOMContentLoaded', function() {
-    // Close modal when clicking overlay
     const overlay = document.getElementById('trusted-contact-main-overlay');
     if (overlay) {
         overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) {
-                closeTrustedContactMainPopup();
-            }
+            if (e.target === overlay) closeTrustedContactMainPopup();
         });
     }
     
-    // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const popup = document.getElementById('trusted-contact-main-popup');
-            if (popup && !popup.classList.contains('hidden')) {
-                closeTrustedContactMainPopup();
-            }
+            closeTrustedContactMainPopup();
+            closeEditModal();
+            closeDeleteModal();
         }
     });
 });
@@ -323,30 +301,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {% block javascript %}
 <script type="text/javascript">
-    // Email validation function
     function isValidEmail(email) {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return emailRegex.test(email);
     }
     
-    // Add Contact Form validation
     document.getElementById('addContactForm').addEventListener('submit', function(e) {
         let valid = true;
-        // Hide all errors first
         document.getElementById('firstNameError').classList.add('hidden');
         document.getElementById('lastNameError').classList.add('hidden');
         document.getElementById('emailError').classList.add('hidden');
-        // Validate first name
+        
         if (!document.getElementById('first_name').value.trim()) {
             document.getElementById('firstNameError').classList.remove('hidden');
             valid = false;
         }
-        // Validate last name
         if (!document.getElementById('last_name').value.trim()) {
             document.getElementById('lastNameError').classList.remove('hidden');
             valid = false;
         }
-        // Validate email
+        
         const emailInput = document.getElementById('email');
         const emailValue = emailInput.value.trim();
         if (!emailValue) {
@@ -362,51 +336,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('emailError').classList.remove('hidden');
             valid = false;
         }
-        if (!valid) {
-            e.preventDefault();
-        }
+        if (!valid) e.preventDefault();
     });
     
-    // Real-time email validation
-    document.getElementById('email').addEventListener('input', function() {
-        const emailValue = this.value.trim();
-        const emailError = document.getElementById('emailError');
-        
-        if (!emailValue) {
-            emailError.textContent = 'Email address is required.';
-            emailError.classList.add('hidden');
-        } else if (!isValidEmail(emailValue)) {
-            emailError.textContent = 'Please enter a valid email address.';
-            emailError.classList.remove('hidden');
-        } else if (emailValue.toLowerCase() === '{{ current_user.email }}'.toLowerCase()) {
-            emailError.textContent = 'You cannot add yourself as a trusted contact.';
-            emailError.classList.remove('hidden');
-        } else {
-            emailError.classList.add('hidden');
-        }
-    });
-    // Real-time email validation for edit modal
-    document.getElementById('editEmail').addEventListener('input', function() {
-        const emailValue = this.value.trim();
-        const emailError = document.getElementById('editEmailError');
-        
-        if (!emailValue) {
-            emailError.textContent = 'Email address is required.';
-            emailError.classList.add('hidden');
-        } else if (!isValidEmail(emailValue)) {
-            emailError.textContent = 'Please enter a valid email address.';
-            emailError.classList.remove('hidden');
-        } else if (emailValue.toLowerCase() === '{{ current_user.email }}'.toLowerCase()) {
-            emailError.textContent = 'You cannot add yourself as a trusted contact.';
-            emailError.classList.remove('hidden');
-        } else {
-            emailError.classList.add('hidden');
-        }
-    });
-    
-    // Edit Contact Modal population
     function openEditModal(contactId, fullName, email, phone, relationship) {
-        // Populate the form fields
         document.getElementById('editContactId').value = contactId;
         const nameParts = fullName.split(' ');
         document.getElementById('editFirstName').value = nameParts[0] || '';
@@ -415,21 +348,37 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('editPhone').value = phone || '';
         document.getElementById('editRelationship').value = relationship || '';
         
-        // Show the modal
         const modal = document.getElementById('editContactModal');
         const backdrop = document.getElementById('modalBackdrop');
+        const content = modal.querySelector('div');
+        
         if (modal && backdrop) {
             modal.style.display = 'flex';
-            backdrop.style.display = 'flex';
-            // Add show class for animation
+            backdrop.style.display = 'block';
             setTimeout(() => {
-                modal.classList.add('show');
+                backdrop.classList.add('opacity-100');
+                content.classList.add('scale-100', 'opacity-100');
             }, 10);
-            // Prevent body scroll
             document.body.style.overflow = 'hidden';
         }
     }
-    // Modern Trusted Contact Card UI
+    
+    function closeEditModal() {
+        const modal = document.getElementById('editContactModal');
+        const backdrop = document.getElementById('modalBackdrop');
+        const content = modal.querySelector('div');
+        
+        if (modal && backdrop) {
+            backdrop.classList.remove('opacity-100');
+            content.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                backdrop.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
+
     const contactData = JSON.parse('{{ contacts|tojson|e }}');
     const resendConfirmationBaseUrl = "{{ url_for('views.resend_confirmation', contact_id=0)[:-1] }}";
     
@@ -442,58 +391,53 @@ document.addEventListener('DOMContentLoaded', function() {
             if (filter && !(contact.full_name.toLowerCase().includes(filter) || (contact.relationship && contact.relationship.toLowerCase().includes(filter)))) return;
             
             const card = document.createElement('div');
-            card.className = `bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 flex flex-col h-full ${contact.is_confirmed ? 'ring-2 ring-green-200' : 'ring-2 ring-yellow-200'}`;
-            card.setAttribute('data-id', contact.id);
+            card.className = "group relative bg-surface-container-lowest rounded-[2.5rem] border border-surface-container-highest p-8 flex flex-col hover:shadow-2xl transition-all duration-500 hover:-translate-y-1";
+            
+            const initials = contact.full_name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
             
             card.innerHTML = `
-                <div class="flex items-start mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                        ${getInitials(contact.full_name)}
+                <div class="flex items-start justify-between mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                            ${initials}
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-xl font-bold text-on-surface truncate max-w-[150px]">${contact.full_name}</h3>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">${contact.relationship || 'Guardian'}</p>
+                        </div>
                     </div>
-                    <div class="ml-4 flex-1 min-w-0">
-                        <h3 class="text-lg font-semibold text-gray-900 truncate" title="${contact.full_name}">${contact.full_name}</h3>
-                        <p class="text-sm text-gray-500 truncate" title="${contact.relationship || 'No relationship specified'}">${contact.relationship || 'No relationship specified'}</p>
-                    </div>
-                    <div class="flex items-center flex-shrink-0 ml-2">
-                        ${contact.is_confirmed ? 
-                            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Confirmed</span>' : 
-                            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>'
-                        }
-                    </div>
+                    ${contact.is_confirmed ? 
+                        '<span class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase tracking-widest"><span class="material-symbols-outlined text-sm">verified</span>Confirmed</span>' : 
+                        '<span class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 text-[10px] font-bold uppercase tracking-widest"><span class="material-symbols-outlined text-sm">pending</span>Pending</span>'
+                    }
                 </div>
                 
-                <div class="space-y-2 mb-4">
-                    <div class="flex items-center text-sm text-gray-600">
-                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                        ${contact.email}
+                <div class="space-y-4 mb-10 flex-grow">
+                    <div class="flex items-center gap-3 text-sm text-on-surface-variant">
+                        <span class="material-symbols-outlined text-lg opacity-40">mail</span>
+                        <span class="truncate">${contact.email}</span>
                     </div>
                     ${contact.phone ? `
-                    <div class="flex items-center text-sm text-gray-600">
-                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                        </svg>
-                        ${contact.phone}
+                    <div class="flex items-center gap-3 text-sm text-on-surface-variant">
+                        <span class="material-symbols-outlined text-lg opacity-40">phone</span>
+                        <span>${contact.phone}</span>
                     </div>
                     ` : ''}
                 </div>
                 
-                <div class="flex space-x-2 mt-auto">
-                    <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors" 
+                <div class="flex items-center gap-3 pt-6 border-t border-surface-container-highest">
+                    <button type="button" class="flex-1 bg-surface-container-highest hover:bg-surface-container-high text-on-surface px-4 py-3 rounded-xl font-bold uppercase tracking-widest text-[9px] transition-all" 
                             onclick="openEditModal('${contact.id}', '${contact.full_name}', '${contact.email}', '${contact.phone}', '${contact.relationship}')">
                         Edit
                     </button>
-                    <button type="button" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors" 
-                            onclick="showDeleteModal('${contact.id}', '${contact.full_name}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                    </button>
                     ${!contact.is_confirmed ? 
-                        `<a href="${resendConfirmationBaseUrl}${contact.id}" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors text-center block">Resend</a>` : 
-                        '<div class="flex-1"></div>'
+                        `<a href="${resendConfirmationBaseUrl}${contact.id}" class="flex-1 bg-primary/10 hover:bg-primary text-primary hover:text-on-primary px-4 py-3 rounded-xl font-bold uppercase tracking-widest text-[9px] transition-all text-center">Resend</a>` : 
+                        ''
                     }
+                    <button type="button" class="w-12 h-11 bg-surface-container-highest hover:bg-error/10 text-on-surface-variant hover:text-error rounded-xl flex items-center justify-center transition-all" 
+                            onclick="showDeleteModal('${contact.id}', '${contact.full_name}')">
+                        <span class="material-symbols-outlined text-xl">delete</span>
+                    </button>
                 </div>
             `;
             
@@ -502,49 +446,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showDeleteModal(contactId, contactName) {
-        // Update the modal message with the contact name
         document.getElementById('deleteConfirmMessage').textContent = 
-            `Are you sure you want to delete "${contactName}" from your trusted contacts?\n\nThis action cannot be undone.`;
+            `Nominated guardian "${contactName}" will be removed. They will no longer be able to verify your delivery protocols.`;
         
-        // Show the modal
         const modal = document.getElementById('deleteConfirmModal');
         const backdrop = document.getElementById('modalBackdrop');
+        const content = modal.querySelector('div');
+        
         if (modal && backdrop) {
             modal.style.display = 'flex';
-            backdrop.style.display = 'flex';
-            // Add show class for animation
+            backdrop.style.display = 'block';
             setTimeout(() => {
-                modal.classList.add('show');
+                backdrop.classList.add('opacity-100');
+                content.classList.add('scale-100', 'opacity-100');
             }, 10);
-            // Prevent body scroll
             document.body.style.overflow = 'hidden';
         }
-        
-        // Store the contact ID for deletion
         window.pendingDeleteContactId = contactId;
     }
     
     function closeDeleteModal() {
         const modal = document.getElementById('deleteConfirmModal');
         const backdrop = document.getElementById('modalBackdrop');
+        const content = modal.querySelector('div');
+        
         if (modal && backdrop) {
-            // Remove show class for animation
-            modal.classList.remove('show');
-            // Hide modal and backdrop after animation
+            backdrop.classList.remove('opacity-100');
+            content.classList.remove('scale-100', 'opacity-100');
             setTimeout(() => {
                 modal.style.display = 'none';
                 backdrop.style.display = 'none';
-                // Restore body scroll
                 document.body.style.overflow = '';
             }, 300);
         }
-        // Clear pending delete
         window.pendingDeleteContactId = null;
     }
     
     function confirmDelete() {
         if (window.pendingDeleteContactId) {
-            // Create and submit form
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ url_for("views.delete_trusted_contact") }}';
@@ -557,78 +496,11 @@ document.addEventListener('DOMContentLoaded', function() {
             form.submit();
         }
     }
-    function getInitials(name) {
-        return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
-    }
+
     document.getElementById('trustedContactSearch')?.addEventListener('input', function() {
         renderContactCards(this.value.toLowerCase());
     });
-    // Initial render
+    
     renderContactCards();
-    
-    // Add event listeners for modals
-    document.addEventListener('DOMContentLoaded', function() {
-        // Edit modal event listeners
-        const editCloseBtn = document.querySelector('#editContactModal .modal-close');
-        if (editCloseBtn) {
-            editCloseBtn.addEventListener('click', function() {
-                closeEditModal();
-            });
-        }
-        
-        const editCancelBtn = document.querySelector('#editContactModal .btn-secondary');
-        if (editCancelBtn) {
-            editCancelBtn.addEventListener('click', function() {
-                closeEditModal();
-            });
-        }
-        
-        // Delete modal event listeners
-        const deleteConfirmBtn = document.getElementById('confirmDeleteBtn');
-        if (deleteConfirmBtn) {
-            deleteConfirmBtn.addEventListener('click', function() {
-                confirmDelete();
-            });
-        }
-        
-        // Close modal when clicking backdrop
-        const backdrop = document.getElementById('modalBackdrop');
-        if (backdrop) {
-            backdrop.addEventListener('click', function() {
-                closeEditModal();
-                closeDeleteModal();
-            });
-        }
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const editModal = document.getElementById('editContactModal');
-                const deleteModal = document.getElementById('deleteConfirmModal');
-                if (editModal && editModal.style.display === 'flex') {
-                    closeEditModal();
-                } else if (deleteModal && deleteModal.style.display === 'flex') {
-                    closeDeleteModal();
-                }
-            }
-        });
-    });
-    
-    function closeEditModal() {
-        const modal = document.getElementById('editContactModal');
-        const backdrop = document.getElementById('modalBackdrop');
-        if (modal && backdrop) {
-            // Remove show class for animation
-            modal.classList.remove('show');
-            // Hide modal and backdrop after animation
-            setTimeout(() => {
-                modal.style.display = 'none';
-                backdrop.style.display = 'none';
-                // Restore body scroll
-                document.body.style.overflow = '';
-            }, 300);
-        }
-    }
-
 </script>
-{% endblock %} 
+{% endblock %}

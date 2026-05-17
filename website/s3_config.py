@@ -81,13 +81,17 @@ class S3Config:
             expires_in = self.signed_url_expiry
         
         try:
+            # Standard fields for the POST
+            fields = {'success_action_status': '201'}
+            
             response = self.s3_client.generate_presigned_post(
                 Bucket=self.s3_bucket,
                 Key=key,
-                Fields={},  # Remove Content-Type to avoid conflicts with FormData
+                Fields=fields,
                 Conditions=[
                     # Only enforce file size limits, let S3 detect content type from file
-                    ['content-length-range', 1, 100 * 1024 * 1024]  # 1 byte to 100MB
+                    ['content-length-range', 1, 100 * 1024 * 1024],  # 1 byte to 100MB
+                    {'success_action_status': '201'}
                 ],
                 ExpiresIn=expires_in
             )

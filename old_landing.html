@@ -1,0 +1,2073 @@
+{% extends "base.html" %}
+{% block title %}LetterForLater - Legacy Letters & Future Self Messages{% endblock %}
+
+{% block meta_description %}Create heartfelt legacy letters for loved ones and future self messages for birthdays &
+milestones. Secure digital letter service with scheduled delivery and trusted contact verification.{% endblock %}
+
+{% block meta_keywords %}legacy letters, future self letters, digital letters, family messages, memorial letters,
+birthday letters, milestone messages, scheduled delivery, trusted contacts, digital inheritance, family communication,
+capsule letters{% endblock %}
+
+{% block content %}
+
+
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "LetterForLater",
+  "description": "Create heartfelt legacy letters for loved ones and future self messages for birthdays & milestones. Secure digital letter service with scheduled delivery and trusted contact verification.",
+  "url": "{{ request.url_root }}",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Start free with unlimited letters"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "LetterForLater"
+  },
+  "featureList": [
+    "Legacy letters for loved ones",
+    "Future self messages for milestones",
+    "Scheduled delivery for birthdays",
+    "Trusted contact verification",
+    "Media attachments",
+    "Secure letter storage"
+  ]
+}
+
+</script>
+
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 lg:py-16 min-h-[520px] md:min-h-[560px]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header Text -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 leading-tight">
+                <span class="block font-serif text-gray-900">Letter For Later</span>
+                <span
+                    class="block font-sans font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Delivered
+                    When It Matters.</span>
+            </h1>
+            <p class="text-sm text-gray-500">Start free with unlimited letters • No credit card required</p>
+        </div>
+
+        <!-- Functional Letter Creation Form -->
+        <form id="heroLetterForm" method="POST" action="{{ url_for('views.add_letter') }}"
+            class="bg-white rounded-2xl shadow-2xl overflow-hidden mt-8 max-w-6xl mx-auto border border-gray-100">
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <!-- Honeypot fields for spam prevention -->
+            {{ add_honeypot_fields()|safe }}
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                <!-- Left: Letter Content Area -->
+                <div class="p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-white">
+                    <!-- Letter Title -->
+                    <div class="mb-4">
+                        <label for="hero_letter_title" class="block text-sm font-semibold text-gray-700 mb-2">Letter
+                            Title</label>
+                        <input type="text" id="hero_letter_title" name="title" placeholder="A Letter to My Future Self"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            required />
+                    </div>
+
+                    <!-- Letter Content -->
+                    <div class="mb-4">
+                        <label for="hero_letter_content" class="block text-sm font-semibold text-gray-700 mb-2">Your
+                            Message</label>
+                        <textarea id="hero_letter_content" name="content" rows="12"
+                            placeholder="Dear Me, I'm writing to capture this moment in time—your dreams, your values, and the love you have for family and friends."
+                            class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl bg-white text-gray-700 leading-relaxed font-serif text-base resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            required></textarea>
+                    </div>
+
+                    <!-- Media Attachments Info -->
+                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-700">Add Photos, Videos & Audio</p>
+                                <p class="text-xs text-gray-700">Premium feature - attach media to make your letter
+                                    truly personal</p>
+                            </div>
+                            <a href="{{ url_for('pricing.pricing_page') }}"
+                                class="text-xs text-blue-600 hover:text-blue-700 font-medium">Upgrade →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Settings Panel -->
+                <div
+                    class="p-6 lg:p-8 bg-gradient-to-br from-blue-50 via-blue-100 to-purple-50 text-gray-900 border-l border-blue-200">
+                    <div class="space-y-6">
+                        <!-- Send to Myself Feature - Always enabled for free users -->
+                        <input type="hidden" id="hero_send_to_myself" name="send_to_myself" value="on">
+                        <div class="bg-blue-200 rounded-xl p-4 border border-blue-200">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-sm text-gray-700">Letter will be sent to yourself</span>
+                            </div>
+                        </div>
+
+                        <!-- Recipient Information - Hidden for free users -->
+                        <div id="hero_recipient_fields" style="display: none;">
+                            <h3 class="text-base font-semibold mb-3 flex items-center gap-2 text-gray-900">
+                                <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Recipient Information
+                            </h3>
+                            <div class="space-y-3">
+                                <input type="text" id="hero_recipient_name" name="recipient_name"
+                                    placeholder="Recipient Name"
+                                    class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all" />
+                                <input type="email" id="hero_recipient_email" name="recipient_email"
+                                    placeholder="Recipient Email"
+                                    class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all" />
+                            </div>
+                        </div>
+
+                        <!-- Sign Up Section -->
+                        <div class="space-y-2">
+                            <p class="text-xs font-semibold text-gray-700 text-center mb-2">Make sure you get your
+                                letter</p>
+
+                            <!-- Email Input -->
+                            <form method="GET" action="{{ url_for('auth.sign_up') }}" class="w-full"
+                                id="heroEmailSignUpForm">
+                                <input type="email" name="email" id="hero_email_signup_input"
+                                    placeholder="your@email.com"
+                                    class="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all" />
+                            </form>
+
+                            <p class="text-xs text-gray-600 text-center mt-2">Or continue with Google</p>
+
+                            <!-- Google Sign Up Checkbox Button -->
+                            <button type="button" id="hero_google_signup_checkbox"
+                                data-google-auth-url="{{ url_for('views.google_auth') }}"
+                                class="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md border-2 border-gray-300 text-sm cursor-pointer">
+                                <label for="hero_use_google_auth" class="sr-only">Use Google to sign up</label>
+                                <input type="checkbox" id="hero_use_google_auth" name="use_google_auth"
+                                    aria-label="Use Google to sign up"
+                                    class="w-6 h-6 text-indigo-400 border-gray-300 rounded focus:ring-indigo-400 cursor-pointer" />
+                                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                                    <path fill="#4285F4"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                    <path fill="#34A853"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                    <path fill="#FBBC05"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                    <path fill="#EA4335"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                <span>Continue with Google</span>
+                            </button>
+                        </div>
+
+                        <!-- Delivery Type - Hidden for free users (always "date") -->
+                        <input type="hidden" id="hero_delivery_type" name="delivery_type" value="date">
+                        <div id="hero_delivery_type_container" style="display: none;">
+                            <h3 class="text-base font-semibold mb-3 flex items-center gap-2 text-gray-900">
+                                <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Delivery Type
+                            </h3>
+                            <select id="hero_delivery_type_select" name="delivery_type_select"
+                                class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all">
+                                <option value="">Select delivery type</option>
+                                <option value="date">On a Chosen Date</option>
+                                <option value="death_verification">When Verified by Trusted Contacts</option>
+                            </select>
+                            <p class="text-xs text-gray-600 mt-2">
+                                <a href="/pricing" class="text-blue-600 hover:underline font-semibold">Upgrade to
+                                    Premium</a> to use death verification delivery.
+                            </p>
+                        </div>
+
+                        <!-- Date Settings - Always visible for free users -->
+                        <div id="hero_date_settings">
+                            <h2 class="text-base font-semibold mb-3 text-gray-900">Scheduled Delivery Date</h2>
+                            <label for="hero_scheduled_date" class="sr-only">Scheduled Delivery Date</label>
+                            <input type="date" id="hero_scheduled_date" name="scheduled_date" min=""
+                                class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+                                required />
+                            <p class="text-xs text-gray-600 mt-2">Letter will be delivered on this date</p>
+                        </div>
+
+                        <!-- Verification Settings -->
+                        <div id="hero_verification_settings"
+                            class="hidden bg-blue-50 rounded-xl p-4 border border-blue-200">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-semibold text-gray-900 mb-2">How Trusted Contact Verification
+                                        Works:</p>
+                                    <p class="text-xs text-gray-700 leading-relaxed">
+                                        Your letter will be delivered only after your trusted contacts confirm that the
+                                        time is right. This ensures your most important messages reach their recipients
+                                        at the appropriate moment, providing peace of mind and an extra layer of
+                                        security.
+                                    </p>
+                                    <p class="text-xs text-gray-600 mt-2 italic">
+                                        You'll need at least one confirmed trusted contact to use this delivery method.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Submit Button -->
+                        <button type="submit" id="hero_create_letter_btn"
+                            class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            Create Your Letter Now
+                        </button>
+
+                        <p class="text-xs text-gray-600 text-center">Start free • No credit card required</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Send to Myself Info Modal -->
+        <div id="heroSendToMyselfInfoModal"
+            class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 transition-opacity duration-300 overflow-y-auto"
+            style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-3 sm:mx-4 my-auto transform transition-all duration-300 scale-95 opacity-0"
+                id="heroSendToMyselfInfoModalContent">
+                <div class="p-5 sm:p-6 md:p-8">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-5 sm:mb-6">
+                        <div class="flex items-center flex-1 min-w-0">
+                            <div
+                                class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 truncate">Send to Myself</h3>
+                        </div>
+                        <button type="button" id="heroCloseSendToMyselfModal"
+                            class="ml-2 text-gray-400 hover:text-gray-600 active:text-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1 sm:p-2 touch-manipulation flex-shrink-0"
+                            aria-label="Close">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="space-y-3 sm:space-y-4 text-gray-700">
+                        <p class="text-sm sm:text-base leading-relaxed">
+                            When you choose to send a letter to yourself, you're creating a <strong>future self
+                                message</strong> that will be delivered on the date you select.
+                        </p>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 rounded-r-lg">
+                            <div class="flex items-start">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                    </path>
+                                </svg>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-blue-900 mb-2 text-sm sm:text-base">Important Notice:
+                                    </p>
+                                    <ul class="space-y-2 text-xs sm:text-sm text-blue-800">
+                                        <li class="flex items-start">
+                                            <span class="mr-2 flex-shrink-0">•</span>
+                                            <span>Once you schedule this letter, <strong>you won't be able to edit or
+                                                    delete it</strong> after saving</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="mr-2 flex-shrink-0">•</span>
+                                            <span>You'll receive the letter on the selected delivery date</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="mr-2 flex-shrink-0">•</span>
+                                            <span>The letter will be sent to the email address associated with your
+                                                account</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-3 sm:p-4 border border-purple-200">
+                            <p class="text-xs sm:text-sm text-purple-900">
+                                <strong>Perfect for:</strong> Birthday reminders, milestone celebrations, goal
+                                reflections, or messages to your future self!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Footer Button -->
+                    <div class="mt-6">
+                        <button type="button" id="heroSendToMyselfModalOkBtn"
+                            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:from-blue-800 active:to-purple-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 touch-manipulation">
+                            Got it!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Buttons Below Preview -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+            <a href="{{ url_for('auth.sign_up') }}"
+                class="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-3xl hover:-translate-y-1">
+                Start Writing Letters
+            </a>
+
+            <a href="{{ url_for('views.google_auth') }}"
+                class="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-700 px-8 py-4 rounded-2xl text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 border-2 border-gray-200 hover:border-gray-300">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24">
+                    <path fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                Continue with Google
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Two Delivery Methods Section -->
+<div class="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-transparent to-blue-100/10"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-8 sm:mb-12 px-4">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+                <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Two Ways to
+                    Deliver Your Letters</span>
+            </h2>
+            <p class="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">Choose the delivery method
+                that fits your needs - schedule for specific dates or let trusted contacts decide when the time is right
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <!-- Scheduled Delivery -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="flex items-center mb-4 sm:mb-6">
+                    <div
+                        class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Scheduled Delivery</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">Perfect for birthdays, anniversaries, and milestones
+                        </p>
+                    </div>
+                </div>
+
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div
+                            class="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Set Specific Dates</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Choose exactly when your letter
+                                should be delivered - birthdays, graduations, weddings, or any special occasion</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div
+                            class="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Automatic Delivery</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Your letter is automatically
+                                sent on the chosen date - no manual intervention needed</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div
+                            class="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Perfect Timing</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Ideal for time-sensitive
+                                messages like birthday wishes, anniversary celebrations, or milestone congratulations
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg">
+                    <p class="text-xs sm:text-sm text-blue-800 font-medium leading-relaxed">💡 Great for: Birthday
+                        messages, anniversary letters, graduation congratulations, holiday wishes</p>
+                </div>
+            </div>
+
+            <!-- Trusted Contact Verification -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div class="flex items-center mb-2">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Trusted Contact Verification</h3>
+                        <p class="text-sm text-gray-600">Let family and friends decide when to deliver your message</p>
+                    </div>
+                </div>
+                <div class="mb-6 -mt-1">
+                    <span
+                        class="inline-block bg-purple-100 text-purple-800 text-[11px] sm:text-xs font-semibold px-2 py-1 rounded">Premium
+                        feature</span>
+                </div>
+
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div
+                            class="w-5 h-5 sm:w-6 sm:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Choose Trusted Contacts</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">Select family members and close
+                                friends who will verify when your letter should be delivered</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div
+                            class="w-5 h-5 sm:w-6 sm:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Majority Verification Required
+                            </h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">At least 50% of your trusted
+                                contacts must verify before delivery, preventing accidental or malicious triggers</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2 sm:gap-3">
+                        <div
+                            class="w-5 h-5 sm:w-6 sm:h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Built-in Delay Protection</h4>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">After verification, there's a
+                                delay period where you can decline false reports before letters are sent</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-purple-50 rounded-lg">
+                    <p class="text-xs sm:text-sm text-purple-800 font-medium leading-relaxed">💡 Great for: Legacy
+                        letters, final messages, important family communications, sensitive personal messages</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8 sm:mt-12">
+            <p class="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-4">Both methods ensure your letters are
+                delivered securely and at the right time</p>
+            <a href="{{ url_for('auth.sign_up') }}"
+                class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                    </path>
+                </svg>
+                Start Writing Your First Letter
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-100/20 via-transparent to-purple-100/20"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">How It
+                    Works</span>
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Create and deliver your letters in just 4 simple steps
+            </p>
+        </div>
+
+        <!-- Desktop: Compact horizontal flow -->
+        <div class="hidden lg:block">
+            <div class="grid grid-cols-4 gap-8 relative">
+                <!-- 3 dots between Step 1-2 -->
+                <div class="absolute top-10 left-1/4 transform -translate-x-1/2 flex space-x-1">
+                    <div class="w-1 h-1 bg-blue-400 rounded-full opacity-40"></div>
+                    <div class="w-1 h-1 bg-blue-500 rounded-full opacity-50"></div>
+                    <div class="w-1 h-1 bg-indigo-400 rounded-full opacity-40"></div>
+                </div>
+
+                <!-- 3 dots between Step 2-3 -->
+                <div class="absolute top-10 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                    <div class="w-1 h-1 bg-indigo-400 rounded-full opacity-40"></div>
+                    <div class="w-1 h-1 bg-purple-500 rounded-full opacity-50"></div>
+                    <div class="w-1 h-1 bg-purple-400 rounded-full opacity-40"></div>
+                </div>
+
+                <!-- 3 dots between Step 3-4 -->
+                <div class="absolute top-10 left-3/4 transform -translate-x-1/2 flex space-x-1">
+                    <div class="w-1 h-1 bg-purple-400 rounded-full opacity-40"></div>
+                    <div class="w-1 h-1 bg-pink-500 rounded-full opacity-50"></div>
+                    <div class="w-1 h-1 bg-pink-400 rounded-full opacity-40"></div>
+                </div>
+
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="relative z-10 w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <div
+                            class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-xs font-bold">
+                            1</div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">Write</h3>
+                        <p class="text-gray-600 text-xs mb-2">Create your letter with photos & videos</p>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>• Save as draft anytime</p>
+                            <p>• Edit until you're ready</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="relative z-10 w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <div
+                            class="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-xs font-bold">
+                            2</div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">Schedule</h3>
+                        <p class="text-gray-600 text-xs mb-2">Choose delivery date or verification</p>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>• Specific date delivery</p>
+                            <p>• Verification-based timing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="relative z-10 w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <div
+                            class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-xs font-bold">
+                            3</div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">Trust</h3>
+                        <p class="text-gray-600 text-xs mb-2">Add trusted contacts for verification</p>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>• Family & friends verify</p>
+                            <p>• Multiple backup contacts</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="relative z-10 w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <div
+                            class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-xs font-bold">
+                            4</div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">Deliver</h3>
+                        <p class="text-gray-600 text-xs mb-2">We deliver when the time is right</p>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>• Automatic delivery</p>
+                            <p>• Email notifications</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile: Vertical flow -->
+        <div class="lg:hidden space-y-8">
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                            1</div>
+                        <h3 class="text-lg font-bold text-gray-900">Write</h3>
+                    </div>
+                    <p class="text-gray-600 mb-2">Create your letter with photos & videos</p>
+                    <div class="text-sm text-gray-500 space-y-1">
+                        <p>• Save as draft anytime</p>
+                        <p>• Add unlimited media</p>
+                        <p>• Edit until you're ready</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                            2</div>
+                        <h3 class="text-lg font-bold text-gray-900">Schedule</h3>
+                    </div>
+                    <p class="text-gray-600 mb-2">Choose delivery date or verification</p>
+                    <div class="text-sm text-gray-500 space-y-1">
+                        <p>• Specific date delivery</p>
+                        <p>• Verification-based timing</p>
+                        <p>• Change schedule anytime</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                            3</div>
+                        <h3 class="text-lg font-bold text-gray-900">Trust</h3>
+                    </div>
+                    <p class="text-gray-600 mb-2">Add trusted contacts for verification</p>
+                    <div class="text-sm text-gray-500 space-y-1">
+                        <p>• Family & friends verify</p>
+                        <p>• Multiple backup contacts</p>
+                        <p>• Bank-level security</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                            4</div>
+                        <h3 class="text-lg font-bold text-gray-900">Deliver</h3>
+                    </div>
+                    <p class="text-gray-600 mb-2">We deliver when the time is right</p>
+                    <div class="text-sm text-gray-500 space-y-1">
+                        <p>• Automatic delivery</p>
+                        <p>• Email notifications</p>
+                        <p>• Delivery confirmation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Simple
+                    Pricing</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Write your first legacy letter for free and see how it
+                feels to leave a lasting message.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Free Plan -->
+            <div
+                class="group relative bg-white rounded-2xl border-2 border-gray-200 p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div class="relative z-10 h-full flex flex-col">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                        <div class="mb-4">
+                            <span class="text-5xl font-black text-gray-900">$0</span>
+                            <span class="text-gray-500 text-lg">/forever</span>
+                        </div>
+                        <p class="text-gray-600 font-medium">Start writing today—no payment needed</p>
+                    </div>
+
+                    <ul class="space-y-3.5 mb-8 flex-grow">
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Unlimited letters (text only)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Send letters to yourself only</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Scheduled delivery (date-based
+                                only)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Email delivery tracking</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Email support</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
+                                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-500 text-sm leading-relaxed">Media attachments</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
+                                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-500 text-sm leading-relaxed">Send to other recipients</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
+                                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-500 text-sm leading-relaxed">Trusted contacts</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
+                                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-500 text-sm leading-relaxed">Death verification delivery</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-auto">
+                        <a href="{{ url_for('auth.sign_up') }}?plan=free"
+                            class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Start
+                            Writing Free</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Plan -->
+            <div
+                class="group relative bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span
+                        class="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">
+                        Most Popular
+                    </span>
+                </div>
+
+                <div class="relative z-10 h-full flex flex-col">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Premium</h3>
+
+                        <!-- Pricing Display -->
+                        <div class="mb-6">
+                            <div class="text-center">
+                                <div class="mb-3">
+                                    <span class="text-5xl font-black text-gray-900">$2</span>
+                                    <span class="text-2xl font-bold text-gray-600">.99</span>
+                                    <span class="text-gray-500 text-lg">/month</span>
+                                </div>
+                                <div class="flex items-center justify-center gap-2 mb-2">
+                                    <span class="text-sm text-gray-600">OR</span>
+                                    <span class="text-sm text-gray-600 line-through">$35.88</span>
+                                    <span class="text-lg font-bold text-blue-700">$19.99/year</span>
+                                    <span
+                                        class="bg-blue-700 text-white text-[11px] font-bold px-2 py-1 rounded-full">Save
+                                        44%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-600 font-medium">Add photos, videos, and schedule deliveries</p>
+                    </div>
+
+                    <ul class="space-y-3.5 mb-8 flex-grow">
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Everything in Free</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Photos, videos, and audio
+                                recordings</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Send letters to other recipients</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Unlimited trusted contacts</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Death verification delivery</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Schedule letters for birthdays &
+                                milestones</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Email delivery tracking</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Priority support</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-auto">
+                        <a href="{{ url_for('auth.sign_up') }}?plan=premium"
+                            class="block w-full text-center bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-800">Get
+                            Premium Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifetime Plan -->
+            <div
+                class="group relative bg-white rounded-2xl border-2 border-purple-200 p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div class="absolute -top-4 right-4 z-20">
+                    <span
+                        class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50OFF
+                        Sale !</span>
+                </div>
+                <div class="absolute -top-4 left-4 z-20">
+                    <span
+                        class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        Best Value
+                    </span>
+                </div>
+
+                <div class="relative z-10 h-full flex flex-col">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Lifetime</h3>
+                        <div class="mb-1">
+                            <span
+                                class="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Limited
+                                time</span>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex items-center justify-center gap-2 mb-1">
+                                <span class="text-sm text-gray-400 line-through">$99.99</span>
+                                <span
+                                    class="inline-flex items-center bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-[11px] font-bold">50%
+                                    OFF</span>
+                            </div>
+                            <div class="flex items-center justify-center gap-2 mb-1">
+                                <span class="text-5xl font-black text-gray-900">$49</span>
+                                <span class="text-2xl font-bold text-gray-600">.99</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="text-gray-500 text-lg">/Lifetime</span>
+                                <p class="text-xs text-orange-600 font-semibold mt-1">Use code: <span
+                                        class="font-mono bg-orange-100 px-2 py-0.5 rounded">50OFF</span></p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 font-medium">Never pay again—yours forever</p>
+                    </div>
+
+                    <ul class="space-y-3.5 mb-8 flex-grow">
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Everything in Premium</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Photos, videos, and audio
+                                recordings</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Schedule letters for birthdays &
+                                milestones</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Lifetime updates & support</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 text-sm leading-relaxed">Pay once, use forever</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-auto">
+                        <a href="{{ url_for('auth.sign_up') }}?plan=lifetime"
+                            class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">Get
+                            Lifetime Access</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="py-16 bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Why Choose
+                    LetterForLater?</span>
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Advanced features designed to protect your legacy with
+                complete control and peace of mind</p>
+        </div>
+
+        <!-- Advanced Features Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <!-- Verification Delay Protection -->
+            <div
+                class="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div
+                    class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">Verification Delay Protection</h3>
+                <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+                    Built-in delay prevents accidental delivery. You can decline false death verification before the
+                    delay expires, ensuring letters are only sent when appropriate.
+                </p>
+            </div>
+
+            <!-- Majority Verification Required -->
+            <div
+                class="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div
+                    class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">Majority Verification Required
+                </h3>
+                <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+                    At least 50% of trusted contacts must verify before delivery. Prevents single-point failures and
+                    ensures consensus among family and friends.
+                </p>
+            </div>
+
+            <!-- Draft Letters -->
+            <div
+                class="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div
+                    class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">Save as Draft Anytime</h3>
+                <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+                    Work on letters at your own pace. Save drafts, edit multiple times, and only activate when you're
+                    completely satisfied. No pressure, complete control.
+                </p>
+            </div>
+
+            <!-- Flexible Delivery Types -->
+            <div
+                class="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div
+                    class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">Change Delivery Type</h3>
+                <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+                    Switch between specific date and verification-based delivery anytime. Life changes, and your
+                    delivery method can change with it. Complete flexibility.
+                </p>
+            </div>
+
+            <!-- Bank-Level Security -->
+            <div
+                class="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div
+                    class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">Enterprise-Grade Security</h3>
+                <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+                    Your letters are stored with enterprise-grade security and automatic backups. Multiple redundant
+                    systems ensure your data is always safe and accessible, with 99.9% uptime guarantee and bank-level
+                    encryption.
+                </p>
+            </div>
+
+            <!-- Media Attachments -->
+            <div
+                class="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
+                <div
+                    class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">Media Attachments</h3>
+                <p class="text-gray-600 text-xs md:text-sm leading-relaxed">
+                    Add photos, videos, and audio recordings to make your letters truly personal. Share your voice, your
+                    smile, and your memories with unlimited media.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- FAQ Section -->
+<div class="py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-100/10 via-transparent to-purple-100/10"></div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Frequently
+                    Asked Questions</span>
+            </h2>
+            <p class="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">Everything you need to know about preserving
+                your legacy</p>
+        </div>
+
+        <div class="space-y-3">
+            <!-- Verification Process -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <button
+                    class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
+                    onclick="toggleFAQ(this)">
+                    <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">How does
+                        the verification process work?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="px-4 pb-4 hidden">
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        At least 50% of your trusted contacts must verify before delivery. This prevents single-point
+                        failures and ensures consensus among your family and friends. There's also a built-in delay
+                        after verification that allows you to decline false death verification before letters are sent.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Security & Privacy -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <button
+                    class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
+                    onclick="toggleFAQ(this)">
+                    <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">How secure
+                        are my letters and personal data?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="px-4 pb-4 hidden">
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        Your letters are stored with enterprise-grade security and automatic backups. Multiple redundant
+                        systems ensure your data is always safe and accessible. We use bank-level encryption and never
+                        access your content. Your privacy is our top priority, and only your trusted contacts can verify
+                        delivery.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Draft System -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <button
+                    class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
+                    onclick="toggleFAQ(this)">
+                    <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Can I save
+                        my letters as drafts and edit them later?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="px-4 pb-4 hidden">
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        Absolutely! You can save drafts anytime and edit them multiple times. Work on your letters at
+                        your own pace with no pressure. Only activate them when you're completely satisfied. This gives
+                        you complete control over when your letters are ready.
+                    </p>
+                </div>
+            </div>
+
+            <!-- False Death Protection -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <button
+                    class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
+                    onclick="toggleFAQ(this)">
+                    <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">What
+                        happens if someone falsely reports my death?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="px-4 pb-4 hidden">
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        We have built-in protection against false death verification. There's a delay period after
+                        verification that allows you to decline false reports before letters are sent. Additionally, at
+                        least 50% of your trusted contacts must verify, preventing single-point failures and ensuring
+                        consensus.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Trusted Contacts -->
+            <div
+                class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <button
+                    class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
+                    onclick="toggleFAQ(this)">
+                    <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Who should
+                        I choose as trusted contacts?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="px-4 pb-4 hidden">
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        Choose family members and close friends who you trust to make decisions about when your letters
+                        should be delivered. Premium plans allow unlimited trusted contacts, while free plans include
+                        one. Consider people who understand your wishes and will act responsibly.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="py-12 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-700/90"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=" 60" height="60" viewBox="0 0 60 60"
+        xmlns="http://www.w3.org/2000/svg" %3E%3Cg fill="none" fill-rule="evenodd" %3E%3Cg fill="%23ffffff"
+        fill-opacity="0.05" %3E%3Ccircle cx="30" cy="30" r="2" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+            Ready to Send Letters for the Future?
+        </h2>
+        <p class="text-lg md:text-xl text-blue-100 mb-6 max-w-3xl mx-auto leading-relaxed">
+            Start writing meaningful letters that will be delivered at the perfect time.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <a href="{{ url_for('auth.sign_up') }}"
+                class="group bg-white hover:bg-gray-100 text-blue-600 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 transform">
+                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Start Writing Your Legacy
+            </a>
+
+            <a href="{{ url_for('views.google_auth') }}"
+                class="group bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 hover:border-white px-8 py-4 rounded-xl text-lg font-bold transition-all duration-300 backdrop-blur-sm">
+                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                    <path fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                Continue with Google
+            </a>
+
+            <a href="{{ url_for('auth.login') }}"
+                class="group bg-transparent hover:bg-white/20 text-white border-2 border-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 backdrop-blur-sm">
+                <svg class="w-5 h-5 inline mr-3 group-hover:scale-110 transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                    </path>
+                </svg>
+                Already Have an Account?
+            </a>
+        </div>
+
+        <div class="text-center">
+            <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-white font-semibold text-sm">Start free with unlimited letters</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-white font-semibold text-sm">Cancel anytime</span>
+                </div>
+            </div>
+            <p class="text-sm text-blue-200">Your letters are encrypted and stored securely. We never access your
+                content.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Final Trust Section -->
+<div class="py-12 bg-gradient-to-br from-purple-50 via-white to-blue-50 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-transparent to-blue-100/10"></div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+            <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Your Messages
+                Matter</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="group text-center">
+                <div
+                    class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">100% Secure</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Enterprise-grade security with automatic backups
+                    protects your most precious memories</p>
+            </div>
+
+            <div class="group text-center">
+                <div
+                    class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Simple Pricing</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Transparent plans with no hidden fees</p>
+            </div>
+
+            <div class="group text-center">
+                <div
+                    class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Made with Love</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Designed to help you preserve what matters most</p>
+            </div>
+        </div>
+
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Start Your First Letter Today</h3>
+            <p class="text-sm text-gray-600 mb-4 max-w-xl mx-auto">It takes just 5 minutes to create your first letter
+                and start sending messages for the future.</p>
+            <a href="{{ url_for('auth.sign_up') }}"
+                class="group inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Create Your First Letter
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pricing-toggle {
+        @apply px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300;
+        @apply text-gray-600 hover:text-gray-800 w-24 text-center;
+    }
+
+    .pricing-toggle.active {
+        @apply text-blue-600 font-bold;
+    }
+</style>
+
+<script>
+    function toggleFAQ(button) {
+        const content = button.nextElementSibling;
+        const icon = button.querySelector('svg');
+
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.classList.add('rotate-180');
+        } else {
+            content.classList.add('hidden');
+            icon.classList.remove('rotate-180');
+        }
+    }
+
+    // Function to save letter form data to sessionStorage
+    function saveHeroLetterFormData() {
+        const heroForm = document.getElementById('heroLetterForm');
+        if (!heroForm) return;
+
+        const formData = new FormData(heroForm);
+        const formObject = {};
+        for (let [key, value] of formData.entries()) {
+            if (key !== 'use_google_auth') { // Exclude the Google checkbox from stored data
+                formObject[key] = value;
+            }
+        }
+
+        // Only save if there's meaningful content
+        if (formObject.title || formObject.content || formObject.recipient_name || formObject.recipient_email) {
+            sessionStorage.setItem('heroLetterFormData', JSON.stringify(formObject));
+            sessionStorage.setItem('heroLetterFormTimestamp', Date.now().toString());
+        }
+    }
+
+    // Hero Letter Form Functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set minimum date to today (prevents past dates)
+        const dateInput = document.getElementById('hero_scheduled_date');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            // Validate on change
+            dateInput.addEventListener('change', function () {
+                if (this.value && this.value < today) {
+                    alert('Please select a future date. Past dates are not allowed.');
+                    this.value = '';
+                }
+            });
+        }
+
+        // "Send to Myself" is always on for free users (hidden checkbox)
+        // Recipient fields are hidden - free users can only send to themselves
+
+        // Handle delivery type changes (hidden for free users, but keep for premium logic)
+        const deliveryTypeSelect = document.getElementById('hero_delivery_type_select');
+        if (deliveryTypeSelect) {
+            deliveryTypeSelect.addEventListener('change', function () {
+                toggleHeroDeliverySettings(this.value);
+                saveHeroLetterFormData();
+            });
+        }
+
+        // Always show date settings for free users (forced to "date" delivery)
+        const dateSettings = document.getElementById('hero_date_settings');
+        if (dateSettings) {
+            dateSettings.classList.remove('hidden');
+        }
+
+        // Save form data on any input change
+        const heroFormForSave = document.getElementById('heroLetterForm');
+        if (heroFormForSave) {
+            const inputs = heroFormForSave.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', saveHeroLetterFormData);
+                input.addEventListener('change', saveHeroLetterFormData);
+            });
+        }
+
+        // Handle Google checkbox button click
+        const googleCheckboxBtn = document.getElementById('hero_google_signup_checkbox');
+        const googleCheckbox = document.getElementById('hero_use_google_auth');
+        const emailInput = document.getElementById('hero_email_signup_input');
+
+        if (googleCheckboxBtn && googleCheckbox) {
+            googleCheckboxBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // If unchecking, just toggle
+                if (googleCheckbox.checked) {
+                    googleCheckbox.checked = false;
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                } else {
+                    // If checking, clear email input first
+                    if (emailInput) {
+                        emailInput.value = '';
+                        emailInput.removeAttribute('required');
+                        emailInput.setAttribute('data-google-selected', 'true');
+                    }
+                    googleCheckbox.checked = true;
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, true);
+                }
+            });
+
+            // Prevent checkbox from being toggled when clicking the button
+            googleCheckbox.addEventListener('click', function (e) {
+                e.stopPropagation();
+                // Clear email if checking Google
+                if (this.checked && emailInput) {
+                    emailInput.value = '';
+                    emailInput.removeAttribute('required');
+                    emailInput.setAttribute('data-google-selected', 'true');
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, true);
+                } else if (!this.checked && emailInput) {
+                    emailInput.removeAttribute('data-google-selected');
+                    emailInput.setAttribute('required', 'required');
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                }
+            });
+        }
+
+        // Function to update Google button appearance
+        function updateGoogleButtonAppearance(button, checkbox, isChecked) {
+            if (isChecked) {
+                button.classList.add('bg-blue-200', 'border-blue-400');
+                button.classList.remove('bg-gray-100', 'border-gray-300');
+            } else {
+                button.classList.remove('bg-blue-200', 'border-blue-400');
+                button.classList.add('bg-gray-100', 'border-gray-300');
+            }
+        }
+
+        // Handle email input changes - uncheck Google if email is entered
+        if (emailInput) {
+            emailInput.addEventListener('input', function (e) {
+                if (this.value.trim() !== '' && googleCheckbox && googleCheckbox.checked) {
+                    googleCheckbox.checked = false;
+                    this.removeAttribute('data-google-selected');
+                    this.setAttribute('required', 'required');
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                }
+            });
+
+            emailInput.addEventListener('focus', function (e) {
+                if (googleCheckbox && googleCheckbox.checked) {
+                    googleCheckbox.checked = false;
+                    this.removeAttribute('data-google-selected');
+                    this.setAttribute('required', 'required');
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                }
+            });
+        }
+
+        // Handle form submission
+        const heroFormSubmit = document.getElementById('heroLetterForm');
+        if (heroFormSubmit) {
+            heroFormSubmit.addEventListener('submit', function (e) {
+                const useGoogleAuth = document.getElementById('hero_use_google_auth');
+                const emailSignUpInput = document.getElementById('hero_email_signup_input');
+
+                // Check if Google auth is selected (email input should not be required if Google is selected)
+                const useGoogle = useGoogleAuth && useGoogleAuth.checked;
+
+                // If Google auth is selected, redirect to Google auth
+                if (useGoogle) {
+                    // CRITICAL: Remove required attribute BEFORE preventDefault to avoid browser validation
+                    if (emailSignUpInput) {
+                        emailSignUpInput.removeAttribute('required');
+                        emailSignUpInput.setAttribute('data-google-selected', 'true');
+                    }
+
+                    e.preventDefault();
+
+                    // Save form data to Flask session via AJAX before redirecting
+                    const formData = new FormData(heroFormSubmit);
+                    const formObject = {};
+                    for (let [key, value] of formData.entries()) {
+                        if (key !== 'use_google_auth') {
+                            formObject[key] = value;
+                        }
+                    }
+
+                    // Store letter data in Flask session before Google redirect
+                    fetch('/store-hero-letter-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formObject)
+                    }).then(() => {
+                        // Get Google auth URL from button data attribute
+                        const googleAuthUrl = googleCheckboxBtn.getAttribute('data-google-auth-url');
+                        if (googleAuthUrl) {
+                            window.location.href = googleAuthUrl;
+                        }
+                    }).catch(err => {
+                        console.error('Error storing letter data:', err);
+                        // Still redirect to Google auth
+                        const googleAuthUrl = googleCheckboxBtn.getAttribute('data-google-auth-url');
+                        if (googleAuthUrl) {
+                            window.location.href = googleAuthUrl;
+                        }
+                    });
+                    return false;
+                }
+
+                // If Google is not selected, check if email is entered
+                const hasEmail = emailSignUpInput && emailSignUpInput.value.trim() !== '';
+
+                // If neither email nor Google is selected, show alert and prevent submission
+                if (!hasEmail && !useGoogle) {
+                    e.preventDefault();
+                    alert('Please enter your email or select "Continue with Google" to create your account.');
+                    return false;
+                }
+
+                // If email is entered (but not Google), prevent form submission and redirect to sign-up
+                if (hasEmail && !useGoogle) {
+                    e.preventDefault();
+
+                    // Store letter data in Flask session with email before redirecting
+                    const formData = new FormData(heroFormSubmit);
+                    const formObject = {};
+                    for (let [key, value] of formData.entries()) {
+                        if (key !== 'use_google_auth') {
+                            formObject[key] = value;
+                        }
+                    }
+
+                    // Store letter data with email in session, then redirect to sign-up
+                    fetch('/store-hero-letter-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ...formObject,
+                            _email: emailSignUpInput.value.trim()
+                        })
+                    }).then(() => {
+                        // Redirect to sign-up page with email as URL parameter
+                        const emailValue = encodeURIComponent(emailSignUpInput.value.trim());
+                        const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                        window.location.href = `${signUpUrl}?email=${emailValue}`;
+                    }).catch(err => {
+                        console.error('Error storing letter data:', err);
+                        // Still redirect even if storing failed
+                        const emailValue = encodeURIComponent(emailSignUpInput.value.trim());
+                        const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                        window.location.href = `${signUpUrl}?email=${emailValue}`;
+                    });
+                    return false;
+                }
+
+                // If user is logged in and neither email nor Google is selected, let form submit normally
+                // This should only happen if user is already authenticated
+            });
+        }
+
+        // Handle email sign up form submission
+        const emailSignUpForm = document.getElementById('heroEmailSignUpForm');
+        if (emailSignUpForm && emailInput) {
+            emailInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    // Uncheck Google if email is entered
+                    if (googleCheckbox && googleCheckbox.checked) {
+                        googleCheckbox.checked = false;
+                        this.removeAttribute('data-google-selected');
+                        this.setAttribute('required', 'required');
+                        updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                    }
+
+                    // Make email required and submit if email is entered
+                    if (this.value.trim() !== '') {
+                        this.setAttribute('required', 'required');
+                        // Don't prevent default - let the form submit naturally
+                    }
+                }
+            });
+
+            emailSignUpForm.addEventListener('submit', function (e) {
+                // Uncheck Google if email form is submitted
+                if (googleCheckbox && googleCheckbox.checked) {
+                    e.preventDefault();
+                    googleCheckbox.checked = false;
+                    emailInput.removeAttribute('data-google-selected');
+                    emailInput.setAttribute('required', 'required');
+                    updateGoogleButtonAppearance(googleCheckboxBtn, googleCheckbox, false);
+                    return false;
+                }
+
+                // Make sure email is filled before proceeding
+                if (!emailInput || emailInput.value.trim() === '') {
+                    e.preventDefault();
+                    emailInput.setAttribute('required', 'required');
+                    alert('Please enter your email address to continue.');
+                    return false;
+                }
+
+                // Before submitting email form, store letter data in Flask session with email
+                const heroFormForEmail = document.getElementById('heroLetterForm');
+                if (heroFormForEmail && emailInput.value.trim()) {
+                    const formData = new FormData(heroFormForEmail);
+                    const formObject = {};
+                    for (let [key, value] of formData.entries()) {
+                        if (key !== 'use_google_auth') {
+                            formObject[key] = value;
+                        }
+                    }
+
+                    // Store letter data with email in session - use sync fetch to ensure it completes
+                    // We'll prevent default, store data, then redirect manually
+                    e.preventDefault();
+
+                    fetch('/store-hero-letter-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ...formObject,
+                            _email: emailInput.value.trim()
+                        })
+                    }).then(() => {
+                        // Redirect to sign-up page with email as URL parameter
+                        const emailValue = encodeURIComponent(emailInput.value.trim());
+                        const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                        window.location.href = `${signUpUrl}?email=${emailValue}`;
+                    }).catch(err => {
+                        console.error('Error storing letter data:', err);
+                        // Still redirect even if storing failed
+                        const emailValue = encodeURIComponent(emailInput.value.trim());
+                        const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                        window.location.href = `${signUpUrl}?email=${emailValue}`;
+                    });
+                } else {
+                    // No letter data, just redirect to sign-up with email
+                    e.preventDefault();
+                    const emailValue = encodeURIComponent(emailInput.value.trim());
+                    const signUpUrl = '{{ url_for("auth.sign_up") }}';
+                    window.location.href = `${signUpUrl}?email=${emailValue}`;
+                }
+            });
+        }
+    });
+
+    function toggleHeroRecipientFields(checkbox) {
+        // Free users: recipient fields are always hidden, "send to myself" is always on
+        // This function is kept for potential premium users, but recipient fields stay hidden
+        const recipientFields = document.getElementById('hero_recipient_fields');
+        const deliveryTypeContainer = document.getElementById('hero_delivery_type_container');
+        const dateSettings = document.getElementById('hero_date_settings');
+        const verificationSettings = document.getElementById('hero_verification_settings');
+
+        // For free users, always keep recipient fields hidden and show date settings
+        if (recipientFields) recipientFields.style.display = 'none';
+        if (deliveryTypeContainer) deliveryTypeContainer.style.display = 'none';
+        if (dateSettings) dateSettings.classList.remove('hidden');
+        if (verificationSettings) verificationSettings.classList.add('hidden');
+    }
+
+    function toggleHeroDeliverySettings(deliveryType) {
+        // Free users: always use "date" delivery, always show date settings
+        const dateSettings = document.getElementById('hero_date_settings');
+        const verificationSettings = document.getElementById('hero_verification_settings');
+
+        // Always show date settings for free users (forced to "date" delivery)
+        if (dateSettings) {
+            dateSettings.classList.remove('hidden');
+            const scheduledDate = document.getElementById('hero_scheduled_date');
+            if (scheduledDate) scheduledDate.setAttribute('required', 'required');
+        }
+        if (verificationSettings) verificationSettings.classList.add('hidden');
+    }
+
+    // Send to Myself Info Modal Handler
+    function setupHeroSendToMyselfInfoModal() {
+        const infoBtn = document.getElementById('heroSendToMyselfInfoBtn');
+        const modal = document.getElementById('heroSendToMyselfInfoModal');
+        const modalContent = document.getElementById('heroSendToMyselfInfoModalContent');
+        const closeBtn = document.getElementById('heroCloseSendToMyselfModal');
+        const okBtn = document.getElementById('heroSendToMyselfModalOkBtn');
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        if (infoBtn) {
+            infoBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal();
+            });
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        if (okBtn) {
+            okBtn.addEventListener('click', closeModal);
+        }
+
+        // Close on overlay click
+        if (modal) {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    }
+
+    // Setup modal when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupHeroSendToMyselfInfoModal);
+    } else {
+        setupHeroSendToMyselfInfoModal();
+    }
+
+    // Subtle entrance animations for hero
+    window.addEventListener('load', () => {
+        const copy = document.getElementById('heroCopy');
+        if (copy) {
+            copy.classList.remove('opacity-0', 'translate-y-4');
+        }
+    });
+
+    // 50OFF Countdown Timer
+    // 50OFF Countdown Timer - Always active
+    (function () {
+        // No countdown needed for permanent offer
+        const countdownEl = document.getElementById('countdown-landing');
+        if (countdownEl) {
+            // Optional: Hide countdown element or set static text if it exists
+            countdownEl.innerHTML = '<span class="text-orange-500 font-bold">Offer Available Now</span>';
+        }
+    })();
+</script>
+
+{% endblock %}

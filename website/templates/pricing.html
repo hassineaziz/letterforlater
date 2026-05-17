@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Pricing Plans - LetterForLater | Legacy Letters & Future Self Messages{% endblock %}
-{% block meta_description %}Compare LetterForLater pricing plans for legacy letters and future self messages. Secure
-digital letter service with scheduled delivery, trusted contacts, and verified delivery. Start free today.{% endblock %}
-{% block meta_keywords %}letterforlater pricing, legacy letters pricing, future self letters pricing, digital legacy
-plans, premium plan, lifetime plan, free legacy letters, scheduled delivery, trusted contacts, verified delivery,
-digital inheritance, family letters, birthday letters, milestone messages{% endblock %}
+{% block meta_description %}Compare LetterForLater pricing plans. Free unlimited text letters, Premium with media &
+trusted contacts from $0.69/mo, or Lifetime access for $9.99. Start free today.{% endblock %}
+{% block meta_keywords %}letterforlater pricing, legacy letters pricing, future self letters plans, digital legacy,
+premium plan, lifetime plan, free letters, scheduled delivery, trusted contacts{% endblock %}
 
-{% block og_title %}LetterForLater Pricing - Legacy Letters & Future Self Messages{% endblock %}
-{% block og_description %}Choose the perfect plan for legacy letters and future self messages. Free plan offers
-unlimited letters (text only), Premium adds media attachments and scheduled delivery, Lifetime provides permanent
-access. All plans include trusted contact verification.{% endblock %}
+{% block og_title %}LetterForLater Pricing - Start Free, Upgrade Anytime{% endblock %}
+{% block og_description %}Choose the perfect plan for your legacy letters. Free unlimited text letters, Premium adds
+media & trusted contacts, Lifetime gives permanent access.{% endblock %}
 
-{% block twitter_title %}LetterForLater Pricing - Legacy Letters & Future Self Messages{% endblock %}
-{% block twitter_description %}Secure your family's future with LetterForLater. Free, Premium ($2.99/month), and
-Lifetime ($99.99) plans available. Create legacy letters and future self messages today.{% endblock %}
+{% block twitter_title %}LetterForLater Pricing - Start Free, Upgrade Anytime{% endblock %}
+{% block twitter_description %}Secure your family's future with LetterForLater. Free, Premium ($0.69/mo), and Lifetime
+($9.99) plans available.{% endblock %}
 
 {% block content %}
 
@@ -27,824 +25,336 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
   "url": "{{ request.url_root }}",
   "applicationCategory": "LifestyleApplication",
   "operatingSystem": "Web Browser",
-  "offers": [{
-    "@type": "Offer",
-    "name": "Free Plan",
-    "description": "Unlimited letters (text only) - Send to yourself only",
-    "price": "0",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "{{ url_for('auth.sign_up') }}?plan=free",
-    "validFrom": "{{ now() }}"
-  },{
-    "@type": "Offer",
-    "name": "Premium Monthly",
-    "description": "Unlimited letters with media attachments, send to others, trusted contacts, and death verification",
-    "price": "2.99",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "{{ url_for('auth.sign_up') }}?plan=premium",
-    "validFrom": "{{ now() }}"
-  },{
-    "@type": "Offer",
-    "name": "Premium Yearly",
-    "description": "Unlimited letters with media attachments - Save 44%",
-    "price": "19.99",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "{{ url_for('auth.sign_up') }}?plan=premium&cycle=year",
-    "validFrom": "{{ now() }}"
-  },{
-    "@type": "Offer",
-    "name": "Lifetime Plan",
-    "description": "One-time payment for permanent access",
-    "price": "99.99",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "{{ url_for('auth.sign_up') }}?plan=lifetime",
-    "validFrom": "{{ now() }}"
-  }],
-  "featureList": [
-    "Legacy letters for loved ones",
-    "Future self messages for milestones",
-    "Scheduled delivery for birthdays",
-    "Trusted contact verification",
-    "Bank-level encryption",
-    "Media attachments",
-    "Draft and edit capabilities",
-    "99.9% uptime guarantee"
-  ],
-  "creator": {
-    "@type": "Organization",
-    "name": "LetterForLater"
-  }
+  "offers": [{"@type": "Offer","name": "Free Plan","price": "0","priceCurrency": "USD","availability": "https://schema.org/InStock"},{"@type": "Offer","name": "Premium Monthly","price": "0.69","priceCurrency": "USD","availability": "https://schema.org/InStock"},{"@type": "Offer","name": "Premium Yearly","price": "2.99","priceCurrency": "USD","availability": "https://schema.org/InStock"},{"@type": "Offer","name": "Lifetime Plan","price": "9.99","priceCurrency": "USD","availability": "https://schema.org/InStock"}],
+  "featureList": ["Legacy letters for loved ones","Future self messages","Scheduled delivery","Trusted contact verification","End-to-End Encryption","Media attachments"],
+  "creator": {"@type": "Organization","name": "LetterForLater"}
 }
 </script>
 
-<!-- 50% OFF Promotion Banner -->
-<div
-  class="bg-gradient-to-r from-gray-900 via-gray-800 to-black py-4 border-b-4 border-orange-500 relative overflow-hidden">
-  <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=" 60" height="60" viewBox="0 0 60 60"
-    xmlns="http://www.w3.org/2000/svg" %3E%3Cg fill="none" fill-rule="evenodd" %3E%3Cg fill="%23ffffff"
-    fill-opacity="0.03" %3E%3Ccircle cx="30" cy="30" r="2" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-      <div class="flex flex-col sm:flex-row items-center gap-4 flex-1 text-center sm:text-left">
-        <div class="flex-shrink-0">
-          <span
-            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white uppercase tracking-wider animate-pulse">
-            🎉 50% OFF
-          </span>
-        </div>
-        <div class="flex-1">
-          <h3 class="text-white font-bold text-lg md:text-xl mb-1">
-            50OFF Sale !
-          </h3>
-          <p class="text-gray-300 text-sm">
-            Use code <span class="font-mono font-bold text-orange-400 bg-gray-800 px-2 py-0.5 rounded">50OFF</span>
-            at checkout
-          </p>
-        </div>
-      </div>
-      <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto justify-center lg:justify-end">
-
-        <a href="#lifetime-plan" onclick="checkout('lifetime')"
-          class="flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 whitespace-nowrap w-full sm:w-auto text-center">
-          Claim Deal →
-        </a>
-      </div>
+<!-- Plans Section — Pricing visible above the fold -->
+<section class="pt-6 pb-12 lg:pt-10 lg:pb-16 bg-surface-container-high mx-[-1rem] sm:mx-[-2rem] px-4 sm:px-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Compact Header -->
+    <div class="text-center mb-6 lg:mb-8">
+      <h1 class="font-headline text-2xl sm:text-3xl lg:text-4xl font-bold text-on-surface mb-2 tracking-tight">Choose
+        Your Legacy Tier</h1>
+      <p class="text-on-surface-variant text-sm max-w-lg mx-auto">Start free — upgrade only when you need more. No
+        hidden fees, cancel anytime.</p>
     </div>
-  </div>
-</div>
 
-<!-- Breadcrumb -->
-<div class="bg-gray-50 py-2">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <nav class="text-sm" aria-label="Breadcrumb">
-      <ol class="flex items-center space-x-2">
-        <li><a href="/" class="text-gray-500 hover:text-gray-700">Home</a></li>
-        <li class="text-gray-400">/</li>
-        <li class="text-gray-900 font-medium">Pricing</li>
-      </ol>
-    </nav>
-  </div>
-</div>
+    <!-- Mobile: horizontal scroll-snap · Desktop: 3-column grid -->
+    <style>
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none
+      }
 
-<!-- Hero -->
-<div class="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-16 lg:py-24">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-      <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Start Your Legacy
-        Today</span>
-    </h1>
-    <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-      Create unlimited letters for your loved ones—completely free. No credit card required. Start writing in seconds.
-    </p>
-    <a href="{{ url_for('auth.sign_up') }}?plan=free"
-      class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-      Start Writing Now — It's Free
-    </a>
-  </div>
-</div>
-
-<!-- (Toggle moved into Premium card) -->
-
-<!-- Plans Grid -->
-<div class="py-8 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none
+      }
+    </style>
+    <div
+      class="flex lg:grid lg:grid-cols-3 gap-4 lg:gap-6 items-stretch max-w-5xl mx-auto overflow-x-auto overflow-y-visible snap-x snap-mandatory pt-4 pb-4 lg:pt-0 lg:pb-0 -mx-4 px-[10vw] lg:mx-0 lg:px-0 lg:overflow-visible scrollbar-hide">
       <!-- Free Plan -->
       <div
-        class="group relative bg-white rounded-2xl border-2 border-gray-200 p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 order-1 lg:order-none">
-        <div class="relative z-10 h-full flex flex-col">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Free</h2>
-            <div class="mb-4">
-              <span class="text-5xl font-black text-gray-900">$0</span>
-              <span class="text-gray-500 text-lg">/forever</span>
-            </div>
-            <p class="text-gray-600 font-medium">Start writing today—no payment needed</p>
-          </div>
-          <ul class="space-y-3.5 mb-8 flex-grow">
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Unlimited letters (text only)</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Send letters to yourself only</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Scheduled delivery (date-based only)</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Email delivery tracking</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Email support</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div
-                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
-                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-500 text-sm leading-relaxed">Media attachments</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div
-                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
-                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-500 text-sm leading-relaxed">Send to other recipients</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div
-                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
-                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-500 text-sm leading-relaxed">Trusted contacts</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div
-                class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2 border-gray-300">
-                <svg class="w-2.5 h-2.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-500 text-sm leading-relaxed">Death verification delivery</span>
-            </li>
-          </ul>
-          <div class="mt-auto">
-            <button onclick="checkout('free')"
-              class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Start
-              Writing Free</button>
+        class="bg-surface p-5 sm:p-7 rounded-2xl flex flex-col border border-surface-container-highest w-[80vw] sm:w-[70vw] lg:w-auto snap-center flex-shrink-0 lg:flex-shrink">
+        <div class="mb-4">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Standard</h2>
+          <div class="flex items-baseline gap-1">
+            <span class="text-3xl sm:text-4xl font-headline font-bold">$0</span>
+            <span class="text-on-surface-variant text-xs">/forever</span>
           </div>
         </div>
+        <p class="text-on-surface-variant text-xs sm:text-sm mb-4 leading-relaxed">No credit card required.</p>
+        <ul class="space-y-2.5 mb-6 flex-grow">
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Unlimited Text Letters
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Deliver to Your Future Self
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Short-Term Scheduling (up to 6
+            months)</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> End-to-End Encryption
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm text-on-surface-variant/50"><span
+              class="material-symbols-outlined text-on-surface-variant/30 text-sm mt-0.5">close</span> No media attachments
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm text-on-surface-variant/50"><span
+              class="material-symbols-outlined text-on-surface-variant/30 text-sm mt-0.5">close</span> No recipient delivery (self only)
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm text-on-surface-variant/50"><span
+              class="material-symbols-outlined text-on-surface-variant/30 text-sm mt-0.5">close</span> No trusted contact verification
+          </li>
+        </ul>
+        <button onclick="checkout('free')"
+          class="w-full py-3 rounded-xl text-xs sm:text-sm font-bold border border-outline hover:bg-surface-container-low transition-all text-on-surface">Start
+          Writing Free</button>
       </div>
 
       <!-- Premium Plan -->
-      <div id="premium-card"
-        class="group relative bg-white rounded-2xl border-2 border-blue-500 p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 order-2 lg:order-none">
-        <div class="absolute -top-4 right-4 z-20">
-          <span
-            class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50OFF
-            Sale !
-          </span>
-        </div>
-        <div class="absolute -top-4 left-4 z-20">
-          <span
-            class="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">Most
-            Popular</span>
-        </div>
-        <div class="relative z-10 h-full flex flex-col">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Premium</h2>
-            <!-- In-card billing cycle toggle (animated pill) -->
-            <div class="flex items-center justify-center mb-3">
-              <div class="flex items-center gap-2">
-                <div
-                  class="relative inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full p-1 shadow ring-1 ring-blue-200"
-                  role="tablist" aria-label="Billing cycle">
-                  <span id="billing-thumb"
-                    class="absolute h-7 w-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow transition-transform duration-300 ease-out translate-x-0"></span>
-                  <button id="toggle-monthly" type="button" aria-pressed="true" role="tab" aria-selected="true"
-                    class="relative z-10 w-20 h-7 text-xs font-semibold text-white">Monthly</button>
-                  <button id="toggle-yearly" type="button" aria-pressed="false" role="tab" aria-selected="false"
-                    class="relative z-10 w-20 h-7 text-xs font-semibold text-gray-700">Yearly</button>
-                </div>
+      <div
+        class="bg-white p-5 sm:p-7 rounded-2xl flex flex-col relative shadow-2xl z-10 border-2 border-primary w-[80vw] sm:w-[70vw] lg:w-auto snap-center flex-shrink-0 lg:flex-shrink">
+        <div
+          class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
+          Most Popular</div>
+        <div class="mb-4">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Premium</h2>
+          <!-- Billing Toggle -->
+          <div class="flex items-center justify-start mb-2">
+            <div class="relative inline-flex items-center bg-surface-container-high rounded-full p-0.5" role="tablist"
+              aria-label="Billing cycle">
+              <span id="billing-thumb"
+                class="absolute h-6 w-16 bg-primary rounded-full shadow transition-transform duration-300 ease-out translate-x-0"></span>
+              <button id="toggle-monthly" type="button" aria-pressed="true" role="tab" aria-selected="true"
+                class="relative z-10 w-16 h-6 text-[10px] font-bold text-on-primary rounded-full">Monthly</button>
+              <button id="toggle-yearly" type="button" aria-pressed="false" role="tab" aria-selected="false"
+                class="relative z-10 w-16 h-6 text-[10px] font-bold text-on-surface-variant rounded-full">Yearly</button>
+            </div>
+          </div>
+          <div aria-live="polite">
+            <div id="price-monthly">
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl sm:text-4xl font-headline font-bold">$0.69</span>
+                <span class="text-on-surface-variant text-xs">/mo</span>
+              </div>
+              <p class="text-[10px] sm:text-xs text-on-surface-variant mt-0.5">or <button
+                  onclick="document.getElementById('toggle-yearly').click()"
+                  class="text-primary font-bold hover:underline">save 64% yearly</button></p>
+            </div>
+            <div id="price-yearly" class="hidden">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="text-xs text-on-surface-variant/50 line-through">$8.28</span>
+                <span class="bg-primary/10 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded-full">Save 64%</span>
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl sm:text-4xl font-headline font-bold">$2.99</span>
+                <span class="text-on-surface-variant text-xs">/yr</span>
               </div>
             </div>
-            <div class="mb-6">
-              <div class="text-center" aria-live="polite">
-                <div id="price-monthly" class="price-monthly">
-                  <div class="mb-3">
-                    <span class="text-5xl font-black text-gray-900">$2</span>
-                    <span class="text-2xl font-bold text-gray-600">.99</span>
-                    <span class="text-gray-500 text-lg">/month</span>
-                  </div>
-                  <div class="flex items-center justify-center gap-2 text-sm">
-                    <span class="text-gray-500">or</span>
-                    <span
-                      class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Save
-                      44%</span>
-                    <span class="text-gray-500">with yearly</span>
-                  </div>
-                </div>
-                <div id="price-yearly" class="price-yearly hidden">
-                  <div class="mb-3">
-                    <div class="flex items-center justify-center gap-2 mb-1">
-                      <span class="text-sm text-gray-400 line-through">$35.88</span>
-                      <span class="ml-0 bg-blue-100 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-full">Save
-                        44%</span>
-                    </div>
-                    <span class="text-5xl font-black text-gray-900">$19</span>
-                    <span class="text-2xl font-bold text-gray-600">.99</span>
-                    <span class="text-gray-500 text-lg">/year</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p class="text-gray-600 font-medium">Add photos, videos, and schedule deliveries</p>
-          </div>
-          <ul class="space-y-3.5 mb-8 flex-grow">
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Everything in Free</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Photos, videos, and audio recordings</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Send letters to other recipients</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Unlimited trusted contacts</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Death verification delivery</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Schedule letters for birthdays & milestones</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Email delivery tracking</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Priority support</span>
-            </li>
-          </ul>
-          <div class="mt-auto">
-            <button id="premium-cta" onclick="checkout('premium', 'month')"
-              class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Get
-              Premium Now</button>
           </div>
         </div>
+        <ul class="space-y-2.5 mb-6 flex-grow">
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-semibold"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Everything in Free</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-semibold"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Eternal Scheduling
+            (decades/lifetimes)</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-semibold"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Deliver to Loved Ones & Friends
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-semibold"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Photos, Video & Audio Vault
+          </li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-semibold"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Trusted Contacts & Death
+            Verification</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Priority Delivery Safeguards
+          </li>
+        </ul>
+        <button id="premium-cta" onclick="checkout('premium', 'month')"
+          class="w-full py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-bold bg-primary text-on-primary hover:bg-primary-container transition-all shadow-[0_8px_24px_rgba(147,51,234,0.25)] hover:shadow-[0_12px_32px_rgba(147,51,234,0.35)] hover:scale-[1.02]">Get
+          Premium</button>
       </div>
 
       <!-- Lifetime Plan -->
-      <div id="lifetime-plan"
-        class="group relative bg-white rounded-2xl border-2 border-purple-200 p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 order-3 lg:order-none">
-        <div class="absolute -top-4 right-4 z-20">
-          <span
-            class="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">50OFF
-            Sale !</span>
-        </div>
-        <div class="absolute -top-4 left-4 z-20">
-          <span
-            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">Best
-            Value</span>
-        </div>
-        <div class="relative z-10 h-full flex flex-col">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Lifetime</h2>
-            <div class="mb-1">
-              <span
-                class="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Limited
-                time</span>
-            </div>
-            <div class="mb-4">
-              <div class="flex items-center justify-center gap-2 mb-1">
-                <span class="text-sm text-gray-400 line-through">$99.99</span>
-                <span
-                  class="inline-flex items-center bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-[11px] font-bold">50%
-                  OFF</span>
-              </div>
-              <div class="flex items-center justify-center gap-2 mb-1">
-                <span class="text-5xl font-black text-gray-900">$49</span>
-                <span class="text-2xl font-bold text-gray-600">.99</span>
-              </div>
-              <div class="text-center">
-                <span class="text-gray-500 text-lg">/Lifetime</span>
-                <p class="text-xs text-orange-600 font-semibold mt-1">Use code: <span
-                    class="font-mono bg-orange-100 px-2 py-0.5 rounded">50OFF</span></p>
-              </div>
-            </div>
-            <p class="text-gray-600 font-medium">Never pay again—yours forever</p>
+      <div
+        class="bg-surface p-5 sm:p-7 rounded-2xl flex flex-col border border-surface-container-highest relative w-[80vw] sm:w-[70vw] lg:w-auto snap-center flex-shrink-0 lg:flex-shrink">
+        <div
+          class="absolute -top-3 right-5 bg-on-surface text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
+          Best Value</div>
+        <div class="mb-4">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Heritage</h2>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs text-on-surface-variant/40 line-through font-bold">$19.99</span>
+            <span class="bg-primary/10 text-primary text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter">-50%</span>
           </div>
-          <ul class="space-y-3.5 mb-8 flex-grow">
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Everything in Premium</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Photos, videos, and audio recordings</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Schedule letters for birthdays & milestones</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Lifetime updates & support</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-700 text-sm leading-relaxed">Pay once, use forever</span>
-            </li>
-          </ul>
-          <div class="mt-auto">
-            <button onclick="checkout('lifetime')"
-              class="block w-full text-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">Get
-              Lifetime Access</button>
+          <div class="flex items-baseline gap-1">
+            <span class="text-3xl sm:text-4xl font-headline font-bold">$9.99</span>
+            <span class="text-on-surface-variant text-xs">once</span>
           </div>
         </div>
+        <p class="text-on-surface-variant text-xs sm:text-sm mb-4 leading-relaxed">Pay once, yours forever.</p>
+        <ul class="space-y-2.5 mb-6 flex-grow">
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Everything in Premium</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-medium"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Lifetime updates</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm font-medium"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Unlimited storage</li>
+          <li class="flex items-start gap-2 text-xs sm:text-sm"><span
+              class="material-symbols-outlined text-primary text-sm mt-0.5">check</span> Dedicated support</li>
+        </ul>
+        <button onclick="checkout('lifetime')"
+          class="w-full py-3 rounded-xl text-xs sm:text-sm font-bold bg-on-surface text-white hover:bg-on-surface/90 transition-all shadow-lg hover:scale-[1.02]">One-Time
+          Purchase</button>
       </div>
     </div>
 
-    <!-- Trust + Guarantees -->
-    <div class="text-center mb-12">
-      <div class="inline-flex items-center gap-8 bg-white/80 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-lg">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-sm font-semibold text-gray-700">Enterprise security</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-sm font-semibold text-gray-700">Cancel anytime</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-sm font-semibold text-gray-700">Transparent pricing</span>
-        </div>
+    <!-- Trust Badges -->
+    <div class="flex flex-wrap items-center justify-center gap-6 lg:gap-10 mt-12 pt-8">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">End-to-End Encryption</span>
       </div>
-    </div>
-
-    <!-- Included in all plans -->
-    <div class="max-w-6xl mx-auto mb-12">
-      <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-lg border border-white/50">
-        <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center">Everything you need is included</h3>
-        <p class="text-gray-600 text-sm md:text-base text-center mb-6">All plans include enterprise-grade security and
-          trusted contact verification—even the free plan.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg
-                class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-              </svg></div>
-            <div>
-              <div class="font-semibold text-gray-900">Bank‑level encryption</div>
-              <div class="text-gray-600 text-sm">Secure storage with automatic backups</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><svg
-                class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-              </svg></div>
-            <div>
-              <div class="font-semibold text-gray-900">Trusted contacts</div>
-              <div class="text-gray-600 text-sm">Majority verification before delivery</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><svg
-                class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-              </svg></div>
-            <div>
-              <div class="font-semibold text-gray-900">Verification delay protection</div>
-              <div class="text-gray-600 text-sm">Decline false reports before delivery</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center"><svg
-                class="w-4 h-4 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-              </svg></div>
-            <div>
-              <div class="font-semibold text-gray-900">Drafts & edits</div>
-              <div class="text-gray-600 text-sm">Work at your pace; activate when ready</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center"><svg
-                class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-              </svg></div>
-            <div>
-              <div class="font-semibold text-gray-900">Email notifications</div>
-              <div class="text-gray-600 text-sm">Status updates for important steps</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center"><svg
-                class="w-4 h-4 text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-              </svg></div>
-            <div>
-              <div class="font-semibold text-gray-900">Uptime guarantee</div>
-              <div class="text-gray-600 text-sm">99.9% availability for your letters</div>
-            </div>
-          </div>
-        </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-xl">event_available</span>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Cancel anytime</span>
       </div>
-    </div>
-
-    <!-- FAQ (short) -->
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-6">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Frequently Asked
-            Questions</span>
-        </h2>
-        <p class="text-sm md:text-base text-gray-600">Everything you need to know about LetterForLater pricing and plans
-        </p>
-      </div>
-      <div class="space-y-3">
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Can I switch plans
-              later?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Yes. Start free and upgrade anytime. You can also switch
-              between monthly and yearly on Premium, or move to Lifetime when you’re ready.</p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">How is delivery
-              verified?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Letters are only released after at least 50% of your
-              trusted contacts confirm. Once that threshold is met, a safety delay begins. During this window you can
-              cancel if the report is wrong, ensuring letters are delivered only when they should be.</p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Is my content
-              private?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Yes. Letters are encrypted at rest and in transit. We never
-              read your letters; they’re only delivered to your recipients when verification requirements are met.</p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">How do you ensure
-              recipients actually receive the email?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Each recipient gets a secure invite link to view the
-              letter. If the email isn’t opened or the recipient hasn’t registered, we automatically send friendly
-              reminder emails until they open or access the letter.</p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Can I add or
-              remove trusted contacts?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Absolutely. You can manage trusted contacts anytime. For
-              delivery, at least half must confirm to proceed.</p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">What’s included in
-              Premium vs Lifetime?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Both include unlimited letters and advanced features.
-              Premium is subscription-based (monthly/yearly), while Lifetime is a single payment for permanent access.
-            </p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Can I change
-              delivery type later?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Yes. You can switch between a specific date and
-              verification-based delivery at any time.</p>
-          </div>
-        </div>
-        <div class="group bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/50 overflow-hidden">
-          <button
-            class="w-full px-4 py-4 text-left flex justify-between items-center hover:bg-white/50 transition-colors"
-            onclick="toggleFAQ(this)">
-            <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Do media
-              attachments count toward storage?</h3>
-            <svg class="w-5 h-5 text-gray-500 transform transition-transform group-hover:text-blue-600" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="px-4 pb-4 hidden">
-            <p class="text-gray-600 leading-relaxed text-sm">Premium supports photos, audio, and video. Lifetime
-              includes unlimited storage with no limits—attach as many photos, videos, and audio recordings as you need.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add bottom spacing for fixed banner -->
-    <div class="h-20 md:h-24"></div>
-
-
-
-    <!-- Mobile sticky CTA -->
-    <div class="fixed md:hidden bottom-0 inset-x-0 z-50">
-      <div class="mx-4 mb-4 rounded-2xl bg-white/90 backdrop-blur shadow-2xl border border-white/50 px-4 py-3"
-        style="padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);">
-        <div class="flex items-center gap-3">
-          <a href="{{ url_for('auth.sign_up') }}?plan=free"
-            class="flex-1 text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-md">Start
-            Free</a>
-          <a id="mobile-premium-cta" href="{{ url_for('auth.sign_up') }}?plan=premium"
-            class="flex-1 text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-md">Go
-            Premium</a>
-        </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-xl">visibility</span>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Transparent pricing</span>
       </div>
     </div>
   </div>
-</div>
+</section>
 
+<!-- Included in All Plans -->
+<section class="py-16 lg:py-20 bg-surface mx-[-1rem] sm:mx-[-2rem] px-4 sm:px-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="font-headline text-3xl lg:text-4xl mb-3">Included in Every Plan</h2>
+      <p class="text-on-surface-variant text-sm max-w-xl mx-auto">Enterprise-grade security and core features come
+        standard — even on the free plan.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-highest">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-xl">shield</span>
+        </div>
+        <h4 class="font-headline text-base mb-1">End-to-End Encryption</h4>
+        <p class="text-on-surface-variant text-xs leading-relaxed">Secure, fully encrypted letter storage with redundant offsite backups.</p>
+      </div>
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-highest">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-xl">contact_mail</span>
+        </div>
+        <h4 class="font-headline text-base mb-1">Send to Yourself</h4>
+        <p class="text-on-surface-variant text-xs leading-relaxed">Deliver scheduled notes directly to your own inbox at
+          any future milestone.</p>
+      </div>
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-highest">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
+        </div>
+        <h4 class="font-headline text-base mb-1">Future Self Scheduling</h4>
+        <p class="text-on-surface-variant text-xs leading-relaxed">Schedule dates up to 6 months for free, or unlimited
+          dates with premium tiers.</p>
+      </div>
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-highest">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-xl">edit_note</span>
+        </div>
+        <h4 class="font-headline text-base mb-1">Drafts & Edits</h4>
+        <p class="text-on-surface-variant text-xs leading-relaxed">Work at your own pace; activate letters when you're
+          ready.</p>
+      </div>
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-highest">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-xl">notifications_active</span>
+        </div>
+        <h4 class="font-headline text-base mb-1">Email Notifications</h4>
+        <p class="text-on-surface-variant text-xs leading-relaxed">Status updates and delivery confirmations at every
+          step.</p>
+      </div>
+      <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-highest">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-xl">cloud_done</span>
+        </div>
+        <h4 class="font-headline text-base mb-1">99.9% Uptime</h4>
+        <p class="text-on-surface-variant text-xs leading-relaxed">Your letters are always available and reliably
+          delivered on time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16 lg:py-20 bg-surface-container-low mx-[-1rem] sm:mx-[-2rem] px-4 sm:px-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="font-headline text-3xl lg:text-4xl mb-3">Frequently Asked Questions</h2>
+      <p class="text-on-surface-variant text-sm">Everything you need to know about LetterForLater.</p>
+    </div>
+    <div class="space-y-3" id="faq-list">
+      {% set faqs = [
+      ("Can I switch plans later?", "Yes. Start free and upgrade anytime. You can also switch between monthly and yearly
+      on Premium, or move to Lifetime when you're ready."),
+      ("How is delivery verified?", "Letters are only released after at least 50% of your trusted contacts confirm. A
+      safety delay then begins, during which you can cancel if the report is wrong."),
+      ("Is my content private?", "Yes. Letters are encrypted at rest and in transit. We never read your letters; they're
+      only delivered to your recipients when verification requirements are met."),
+      ("How do recipients receive the email?", "Each recipient gets a secure invite link to view the letter. If the
+      email isn't opened, we automatically send friendly reminders until they access it."),
+      ("Can I add or remove trusted contacts?", "Absolutely. You can manage trusted contacts anytime. For delivery, at
+      least half must confirm to proceed."),
+      ("What's included in Premium vs Lifetime?", "Both include unlimited letters and all advanced features. Premium is
+      subscription-based (monthly/yearly), while Lifetime is a single payment for permanent access."),
+      ("Do media attachments count toward storage?", "Premium supports photos, audio, and video. Lifetime includes
+      unlimited storage — attach as many files as you need.")
+      ] %}
+      {% for question, answer in faqs %}
+      <div class="bg-surface-container-lowest rounded-2xl border border-surface-container-highest overflow-hidden">
+        <button class="w-full px-6 py-5 text-left flex justify-between items-center group transition-colors"
+          onclick="toggleFAQ(this)">
+          <h3 class="text-sm font-bold text-on-surface group-hover:text-primary transition-colors pr-4">{{ question }}
+          </h3>
+          <span
+            class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary transition-all duration-300 faq-icon text-xl flex-shrink-0">expand_more</span>
+        </button>
+        <div class="px-6 pb-5 hidden faq-content">
+          <p class="text-on-surface-variant text-sm leading-relaxed">{{ answer }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="py-16 mx-[-1rem] sm:mx-[-2rem] px-4 sm:px-8">
+  <div
+    class="max-w-5xl mx-auto bg-gradient-to-br from-primary-container to-primary rounded-[3rem] p-10 md:p-16 text-center text-on-primary relative overflow-hidden shadow-2xl">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+    <div class="relative z-10">
+      <h2 class="font-headline text-3xl md:text-4xl lg:text-5xl mb-6 leading-tight">Your story is worth preserving.</h2>
+      <p class="text-lg md:text-xl opacity-90 mb-10 max-w-xl mx-auto">Join thousands who are writing letters to their
+        future selves and loved ones.</p>
+      <a href="{{ url_for('auth.sign_up') }}"
+        class="inline-block bg-white text-primary px-10 md:px-12 py-4 md:py-5 rounded-full font-label font-extrabold text-lg md:text-xl shadow-2xl hover:scale-105 transition-transform active:scale-95">
+        Start Writing for Free
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block javascript %}
 <script>
   // Stripe Checkout Function
   async function checkout(plan, cycle = 'month') {
     try {
-      // Check if user is logged in
       const userPlan = document.body.dataset.userPlan;
-      console.log('User plan:', userPlan);
-      console.log('Plan:', plan, 'Cycle:', cycle);
-
-      // Check if user is logged in - userPlan should be 'free', 'premium', 'lifetime', or empty/null
       const isLoggedIn = userPlan && userPlan !== '' && userPlan !== 'None' && userPlan !== 'null';
-      console.log('Is logged in:', isLoggedIn);
 
       if (!isLoggedIn) {
-        // Redirect to signup with plan parameter
-        const signupUrl = `/sign-up?plan=${plan}${cycle ? '&cycle=' + cycle : ''}`;
-        console.log('Redirecting to signup:', signupUrl);
-        window.location.href = signupUrl;
+        window.location.href = `/sign-up?plan=${plan}${cycle ? '&cycle=' + cycle : ''}`;
         return;
       }
 
-      // Check if user already has this plan
-      if (userPlan === plan) {
-        console.log('User already has this plan, redirecting to dashboard');
-        window.location.href = '/';
-        return;
-      }
-
-      console.log('Proceeding with Stripe checkout...');
       const response = await fetch('/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify({ plan, cycle })
       });
-
       const data = await response.json();
-      console.log('Stripe response:', data);
-
       if (data.checkout_url) {
         window.location.href = data.checkout_url;
       } else if (data.redirect) {
@@ -858,47 +368,15 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
     }
   }
 
-  // Update Premium CTA to use checkout function
-  document.addEventListener('DOMContentLoaded', function () {
-    // Debug user plan detection
-    const userPlan = document.body.dataset.userPlan;
-    console.log('DOM loaded - User plan:', userPlan);
-    console.log('Body dataset:', document.body.dataset);
-
-    // Disable fixed upgrade banner on pricing page
-    const existingBanner = document.querySelector('.fixed-upgrade-bar');
-    if (existingBanner) {
-      existingBanner.remove();
-    }
-
-    const premiumCta = document.getElementById('premium-cta');
-    const mobilePremiumCta = document.querySelector('.mobile-premium-cta');
-
-    if (premiumCta) {
-      premiumCta.onclick = function () { checkout('premium', 'month'); };
-    }
-    if (mobilePremiumCta) {
-      mobilePremiumCta.onclick = function () { checkout('premium', 'month'); };
-    }
-  });
-</script>
-
-<script>
-
-
+  // FAQ Toggle
   function toggleFAQ(button) {
     const content = button.nextElementSibling;
-    const icon = button.querySelector('svg');
-    if (content.classList.contains('hidden')) {
-      content.classList.remove('hidden');
-      icon.classList.add('rotate-180');
-    } else {
-      content.classList.add('hidden');
-      icon.classList.remove('rotate-180');
-    }
+    const icon = button.querySelector('.faq-icon');
+    content.classList.toggle('hidden');
+    icon.style.transform = content.classList.contains('hidden') ? '' : 'rotate(180deg)';
   }
 
-  // Pricing toggle logic
+  // Billing Toggle
   (function () {
     const btnMonthly = document.getElementById('toggle-monthly');
     const btnYearly = document.getElementById('toggle-yearly');
@@ -906,52 +384,27 @@ Lifetime ($99.99) plans available. Create legacy letters and future self message
     const yearly = document.getElementById('price-yearly');
     const premiumCta = document.getElementById('premium-cta');
     const thumb = document.getElementById('billing-thumb');
-    const mobilePremiumCta = document.getElementById('mobile-premium-cta');
-    // Find the premium card container to accent on yearly
-    const premiumCard = (function () {
-      var el = document.getElementById('price-monthly');
-      while (el && !el.classList.contains('group')) { el = el.parentElement; }
-      return el || null;
-    })();
     if (!btnMonthly || !btnYearly || !monthly || !yearly || !thumb) return;
+
     function setCycle(cycle) {
       const isYear = cycle === 'year';
-      if (isYear) {
-        yearly.classList.remove('hidden');
-        monthly.classList.add('hidden');
-        btnYearly.setAttribute('aria-pressed', 'true');
-        btnMonthly.setAttribute('aria-pressed', 'false');
-        btnYearly.setAttribute('aria-selected', 'true');
-        btnMonthly.setAttribute('aria-selected', 'false');
-        btnYearly.classList.add('text-white');
-        btnYearly.classList.remove('text-gray-700');
-        btnMonthly.classList.remove('text-white');
-        btnMonthly.classList.add('text-gray-700');
-        thumb.style.transform = 'translateX(5rem)'; // 20 * 0.25rem = 5rem
-        premiumCta && (premiumCta.onclick = function () { checkout('premium', 'year'); });
-        mobilePremiumCta && (mobilePremiumCta.onclick = function () { checkout('premium', 'year'); });
-        if (premiumCard) premiumCard.classList.add('ring-2', 'ring-blue-400');
-      } else {
-        monthly.classList.remove('hidden');
-        yearly.classList.add('hidden');
-        btnMonthly.setAttribute('aria-pressed', 'true');
-        btnYearly.setAttribute('aria-pressed', 'false');
-        btnMonthly.setAttribute('aria-selected', 'true');
-        btnYearly.setAttribute('aria-selected', 'false');
-        btnMonthly.classList.add('text-white');
-        btnMonthly.classList.remove('text-gray-700');
-        btnYearly.classList.remove('text-white');
-        btnYearly.classList.add('text-gray-700');
-        thumb.style.transform = 'translateX(0)';
-        premiumCta && (premiumCta.onclick = function () { checkout('premium', 'month'); });
-        mobilePremiumCta && (mobilePremiumCta.onclick = function () { checkout('premium', 'month'); });
-        if (premiumCard) premiumCard.classList.remove('ring-2', 'ring-blue-400');
-      }
+      monthly.classList.toggle('hidden', isYear);
+      yearly.classList.toggle('hidden', !isYear);
+      btnMonthly.className = `relative z-10 w-16 h-6 text-[10px] font-bold rounded-full ${isYear ? 'text-on-surface-variant' : 'text-on-primary'}`;
+      btnYearly.className = `relative z-10 w-16 h-6 text-[10px] font-bold rounded-full ${isYear ? 'text-on-primary' : 'text-on-surface-variant'}`;
+      thumb.style.transform = isYear ? 'translateX(4rem)' : 'translateX(0)';
+      if (premiumCta) premiumCta.onclick = function () { checkout('premium', cycle); };
     }
+
     btnMonthly.addEventListener('click', function () { setCycle('month'); });
     btnYearly.addEventListener('click', function () { setCycle('year'); });
     setCycle('month');
   })();
-</script>
 
+  // Remove fixed upgrade banner on pricing page
+  document.addEventListener('DOMContentLoaded', function () {
+    const banner = document.querySelector('.fixed-upgrade-bar');
+    if (banner) banner.remove();
+  });
+</script>
 {% endblock %}

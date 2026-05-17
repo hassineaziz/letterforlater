@@ -108,14 +108,16 @@ def send_confirmation_email(user):
         msg.html = render_template('emails/email_confirmation.html',
             user_name=user_name,
             user_email=user.email,
-            confirm_link=confirm_link
+            confirm_link=confirm_link,
+            confirm_url=confirm_link
         )
         
         # Render text template
         msg.body = render_template('emails/email_confirmation.txt',
             user_name=user_name,
             user_email=user.email,
-            confirm_link=confirm_link
+            confirm_link=confirm_link,
+            confirm_url=confirm_link
         )
         
         # Use rate-limited email sending
@@ -542,12 +544,16 @@ def sign_up():
     # If this is a trusted contact signup, pre-fill the email
     trusted_contact_code = session.get('trusted_contact_code')
     email = request.args.get('email')  # Get email from URL if coming from landing page
+    is_trusted_contact_signup = False
+    from_landing = request.args.get('from_landing') == 'true' or bool(email and not trusted_contact_code)
+    
     if trusted_contact_code:
         contact = TrustedContact.query.filter_by(confirmation_code=trusted_contact_code).first()
         if contact:
             email = contact.email
+            is_trusted_contact_signup = True
 
-    return render_template("sign_up.html", user=current_user, email=email, next=next_page, selected_plan=selected_plan, cycle=cycle, turnstile_site_key=turnstile_site_key)
+    return render_template("sign_up.html", user=current_user, email=email, next=next_page, selected_plan=selected_plan, cycle=cycle, turnstile_site_key=turnstile_site_key, is_trusted_contact_signup=is_trusted_contact_signup, from_landing=from_landing)
 
 @auth.route('/sign-up-with-invite/<token>', methods=['GET', 'POST'])
 def sign_up_with_invite(token):
@@ -692,14 +698,16 @@ def forgot_password():
             msg.html = render_template('emails/password_reset.html',
                 user_name=user_name,
                 user_email=user.email,
-                reset_link=reset_link
+                reset_link=reset_link,
+                reset_url=reset_link
             )
             
             # Render text template
             msg.body = render_template('emails/password_reset.txt',
                 user_name=user_name,
                 user_email=user.email,
-                reset_link=reset_link
+                reset_link=reset_link,
+                reset_url=reset_link
             )
             
             # Use rate-limited email sending (fails fast - no waiting to avoid timeout)

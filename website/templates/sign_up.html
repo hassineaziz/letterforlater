@@ -45,6 +45,19 @@ letters. Secure, private, and meaningful family communication.{% endblock %}
       {% endif %}
     </div>
 
+    {% if from_landing %}
+    <!-- Step 2 Indicator for Landing Page Draft Letter -->
+    <div class="bg-primary/5 border border-primary/20 rounded-[2rem] p-6 shadow-sm flex flex-col gap-3">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs">2</span>
+        <h3 class="font-headline font-bold text-on-surface text-lg">Step 2: Finish Securing Your Letter</h3>
+      </div>
+      <p class="text-xs text-on-surface-variant leading-relaxed">
+        Your legacy letter draft has been pre-locked. Complete this final step to register your account, secure your letter's privacy, and configure its scheduled delivery.
+      </p>
+    </div>
+    {% endif %}
+
     <!-- Sign Up Form -->
     <div
       class="bg-surface-container-lowest rounded-[2rem] shadow-[0_32px_64px_rgba(147,51,234,0.05)] border border-surface-container-highest p-6 sm:p-8">
@@ -121,13 +134,18 @@ letters. Secure, private, and meaningful family communication.{% endblock %}
                 <span class="material-symbols-outlined text-on-surface-variant/50 text-xl">mail</span>
               </div>
               <input type="email" id="email" name="email" placeholder="Enter your email address" autocomplete="email"
-                value="{{ email if email else '' }}" {% if email %}readonly{% endif %} required
-                class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-surface-container-highest rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-on-surface placeholder-on-surface-variant/40 shadow-sm {% if email %}bg-surface-container opacity-70 cursor-not-allowed{% endif %}" />
+                value="{{ email if email else '' }}" {% if is_trusted_contact_signup %}readonly{% endif %} required
+                class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-surface-container-highest rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-on-surface placeholder-on-surface-variant/40 shadow-sm {% if is_trusted_contact_signup %}bg-surface-container opacity-70 cursor-not-allowed{% endif %}" />
             </div>
-            {% if email %}
+            {% if is_trusted_contact_signup %}
             <p class="text-xs text-primary font-medium mt-2 flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">verified</span>
               This email is pre-filled as you are a trusted contact.
+            </p>
+            {% elif from_landing %}
+            <p class="text-xs text-primary font-medium mt-2 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">edit</span>
+              Prefilled from your letter draft. You can modify this if needed.
             </p>
             {% endif %}
           </div>

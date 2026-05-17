@@ -717,7 +717,7 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
                 if (useGoogle) {
                     window.location.href = "{{ url_for('views.google_auth') }}";
                 } else {
-                    window.location.href = "{{ url_for('auth.sign_up') }}?email=" + encodeURIComponent(emailInput.value);
+                    window.location.href = "{{ url_for('auth.sign_up') }}?email=" + encodeURIComponent(emailInput.value) + "&from_landing=true";
                 }
             });
         });

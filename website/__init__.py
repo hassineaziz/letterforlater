@@ -116,32 +116,33 @@ def create_app():
         
         # Strict Content Security Policy for login pages
         if is_auth_page:
-            # Very strict CSP for login pages - only allow same-origin resources
+            # Very strict CSP for login pages - only allow same-origin resources + Cloudflare Turnstile
             response.headers['Content-Security-Policy'] = (
                 "default-src 'self'; "
-                "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; "
+                "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://challenges.cloudflare.com; "
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; "
                 "font-src 'self' https://fonts.gstatic.com; "
                 "img-src 'self' data:; "
-                "connect-src 'self'; "
+                "connect-src 'self' https://challenges.cloudflare.com; "
+                "frame-src 'self' https://challenges.cloudflare.com; "
                 "frame-ancestors 'none'; "
                 "base-uri 'self'; "
                 "form-action 'self';"
             )
         else:
-            # More permissive CSP for other pages (allows tracking scripts)
+            # More permissive CSP for other pages (allows tracking scripts + Cloudflare Turnstile)
             response.headers['Content-Security-Policy'] = (
                 "default-src 'self'; "
                 "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.google-analytics.com "
                 "https://*.clarity.ms https://static.mywot.com https://cdn.tailwindcss.com "
-                "https://code.jquery.com https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com; "
+                "https://code.jquery.com https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://challenges.cloudflare.com; "
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; "
                 "font-src 'self' https://fonts.gstatic.com; "
                 "img-src 'self' data: https:; "
                 "media-src 'self' https://*.s3.amazonaws.com; "
                 "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com "
                 "https://*.clarity.ms https://challenges.cloudflare.com https://*.s3.amazonaws.com https://www.google.com; "
-                "frame-src 'self' https://www.googletagmanager.com; "
+                "frame-src 'self' https://www.googletagmanager.com https://challenges.cloudflare.com; "
                 "frame-ancestors 'none'; "
                 "base-uri 'self'; "
                 "form-action 'self';"

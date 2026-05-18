@@ -37,15 +37,27 @@ def verify_turnstile_token(token, client_ip=None):
     if not turnstile_site_key or turnstile_site_key.startswith('your-'):
         # No real site key, assume Turnstile not in use
         return True, None
-    if not token or token == 'not-configured':
-        # Missing token - skip verification (treat as valid)
-        return True, None
-    
+        
     turnstile_secret = os.getenv('TURNSTILE_SECRET_KEY')
     if not turnstile_secret:
         # If Turnstile is not configured, skip verification (for development)
         print("[TURNSTILE] Warning: TURNSTILE_SECRET_KEY not set, skipping verification")
         return True, None
+
+    # Check if we're in local development
+    is_local = False
+    if client_ip in ['127.0.0.1', '::1', 'localhost']:
+        is_local = True
+    elif os.getenv('FLASK_DEBUG') == '1' or os.getenv('FLASK_ENV') == 'development':
+        is_local = True
+
+    if not token or token == 'not-configured':
+        if is_local:
+            print("[TURNSTILE] Local development detected: Skipping verification for missing token.")
+            return True, None
+        else:
+            # In production, a missing token is a security failure (bot attempt or bypassed frontend)
+            return False, "Security verification token is missing. Please complete the security check."
     
     try:
         # Cloudflare Turnstile verification endpoint
@@ -73,11 +85,15 @@ def verify_turnstile_token(token, client_ip=None):
             
     except requests.exceptions.RequestException as e:
         print(f"[TURNSTILE] Error verifying token: {str(e)}")
-        # On network error, we could either fail open or fail closed
-        # For security, we'll fail closed (require verification)
+        # On network error, we fail closed in production, but open in development
+        if is_local:
+            print("[TURNSTILE] Network error on localhost, failing open.")
+            return True, None
         return False, f"Error verifying Turnstile token: {str(e)}"
     except Exception as e:
         print(f"[TURNSTILE] Unexpected error: {str(e)}")
+        if is_local:
+            return True, None
         return False, f"Unexpected error during verification: {str(e)}"
 
 def send_confirmation_email(user):
@@ -393,11 +409,7 @@ def sign_up():
     if request.method == 'POST':
         # Verify Cloudflare Turnstile token
         turnstile_token = request.form.get('cf-turnstile-response', '')
-        # If token is missing, skip verification (treat as valid)
-        if not turnstile_token:
-            is_turnstile_valid, turnstile_error = True, None
-        else:
-            is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
+        is_turnstile_valid, turnstile_error = verify_turnstile_token(turnstile_token, client_ip)
         if not is_turnstile_valid:
             print(f"[TURNSTILE] BLOCKED signup attempt - Turnstile verification failed. IP: {client_ip}, Error: {turnstile_error}")
             flash('Security verification failed. Please try again.', 'error')

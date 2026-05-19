@@ -454,11 +454,26 @@ def sign_up():
             if not email_valid:
                 print(f"[EMAIL VALIDATION] Rejected email {email}: {email_error}")
                 flash(email_error or 'Invalid email address. Please use a valid email address.', category='error')
-                return render_template("sign_up.html", user=current_user)
+                return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
             
             # Continue with signup
             # Get IP address for registration
             client_ip = get_client_ip()
+            
+            # AUTOMATIC SPAM PATTERN DETECTION & SUBNET BLOCKING
+            from .spam_detection import detect_spam_pattern
+            from .blocking import block_ip_subnet
+            
+            is_spam, spam_reason, confidence = detect_spam_pattern(email, first_name, last_name, client_ip)
+            if is_spam:
+                print(f"[AUTOMATIC SPAM BLOCK] Blocked registration. Email: {email}, Name: {first_name} {last_name}, IP: {client_ip}, Reason: {spam_reason} (confidence: {confidence})")
+                
+                # Automatically block their entire IP subnet
+                block_ip_subnet(client_ip, reason=f"Automatic spam blocking: {spam_reason} (Email: {email}, Name: {first_name} {last_name})")
+                
+                # Render the sign-up page with a generic security failure to not leak detection details
+                flash('Security verification failed. Please try again.', 'error')
+                return render_template("sign_up.html", user=current_user, turnstile_site_key=turnstile_site_key)
             
 
             

@@ -101,6 +101,30 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
     
+    # Enforce global IP and user blocking
+    @app.before_request
+    def check_global_blocks():
+        from flask import request, abort
+        from flask_login import current_user
+        
+        # Skip static resources or undefined endpoints
+        if not request.endpoint or request.endpoint == 'static':
+            return
+            
+        from .blocking import get_client_ip, is_ip_blocked, is_user_blocked
+        client_ip = get_client_ip()
+        ip_blocked, block_record = is_ip_blocked(client_ip)
+        
+        if ip_blocked:
+            print(f"[BLOCK] Access denied globally for blocked IP: {client_ip} (reason: {block_record.reason or 'No reason provided'})")
+            abort(403)  # Forbidden
+            
+        if current_user.is_authenticated:
+            user_blocked, user = is_user_blocked(current_user.id)
+            if user_blocked:
+                print(f"[BLOCK] Access denied globally for blocked user: {current_user.email} (ID: {current_user.id})")
+                abort(403)  # Forbidden
+    
     # SECURITY HEADERS - Add security headers to all responses
     @app.after_request
     def add_security_headers(response):

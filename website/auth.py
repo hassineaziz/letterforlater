@@ -708,6 +708,22 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         
         if user:
+            # Check for 5-minute cooldown
+            if user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
+                time_left = user.password_reset_expires - datetime.now(timezone.utc)
+                total_seconds_left = time_left.total_seconds()
+                
+                minutes_since = None
+                if 23 * 3600 < total_seconds_left <= 24 * 3600:
+                    minutes_since = (24 * 3600 - total_seconds_left) / 60
+                elif 47 * 3600 < total_seconds_left <= 48 * 3600:
+                    minutes_since = (48 * 3600 - total_seconds_left) / 60
+                    
+                if minutes_since is not None and minutes_since < 5:
+                    minutes_left = 5 - int(minutes_since)
+                    flash(f'Please wait {minutes_left} minute(s) before requesting another email.', 'warning')
+                    return redirect(url_for('auth.forgot_password'))
+
             # Generate reset token
             reset_token = str(uuid.uuid4())
             user.password_reset_token = reset_token
@@ -740,13 +756,13 @@ def forgot_password():
             # Use rate-limited email sending (fails fast - no waiting to avoid timeout)
             success = safe_send_email(msg, email_type='password_reset', max_retries=0)
             if success:
-                flash('Password reset instructions have been sent to your email.', 'success')
+                flash("Password reset instructions have been sent to your email (don't forget to check your spam folder).", 'success')
             else:
                 # Rate limited or failed - show user-friendly message
                 flash('Email service is temporarily unavailable. Please try again in a few minutes.', 'info')
         else:
             # Don't reveal if email exists or not for security
-            flash('If an account with that email exists and is verified, password reset instructions have been sent.', 'info')
+            flash("If an account with that email exists and is verified, password reset instructions have been sent (don't forget to check your spam folder).", 'info')
         
         return redirect(url_for('auth.forgot_password'))
     

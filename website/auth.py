@@ -565,7 +565,7 @@ def sign_up():
             # Send confirmation email using helper function
             send_confirmation_email(new_user)
             
-            flash('Account created! Please check your email to confirm your account.', category='success')
+            flash("Account created! Please check your email to confirm your account (don't forget to check your spam folder).", category='success')
             return redirect(url_for('auth.login', next=next_page))
 
     # If this is a trusted contact signup, pre-fill the email
@@ -782,15 +782,23 @@ def resend_verification():
             
             # Check if user has a valid confirmation token (pending verification)
             if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
+                # Rate limit: max once every 5 minutes
+                last_sent_time = user.password_reset_expires - timedelta(hours=48)
+                time_since_last_sent = datetime.now(timezone.utc) - last_sent_time
+                if time_since_last_sent < timedelta(minutes=5):
+                    minutes_left = 5 - int(time_since_last_sent.total_seconds() / 60)
+                    flash(f'Please wait {minutes_left} minute(s) before requesting another verification email.', 'warning')
+                    return redirect(url_for('auth.login'))
+                    
                 # Resend the confirmation email
                 if send_confirmation_email(user):
-                    flash('Verification email sent! Please check your email and click the confirmation link.', 'success')
+                    flash('Verification email sent! Please check your email (and spam folder) and click the confirmation link.', 'success')
                 else:
                     flash('Error sending verification email. Please try again later or contact support.', 'error')
             else:
                 # Token expired or doesn't exist, generate new one
                 if send_confirmation_email(user):
-                    flash('New verification email sent! Please check your email and click the confirmation link.', 'success')
+                    flash('New verification email sent! Please check your email (and spam folder) and click the confirmation link.', 'success')
                 else:
                     flash('Error sending verification email. Please try again later or contact support.', 'error')
         else:

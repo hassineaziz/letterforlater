@@ -198,15 +198,13 @@ def login():
             if check_password_hash(user.password, password):
                 # Check if user account is suspended/deactivated
                 if not user.is_active:
-                    # Check if it's email confirmation or account suspension
-                    if user.password_reset_token and user.password_reset_expires and user.password_reset_expires > datetime.now(timezone.utc):
-                        resend_link = url_for('auth.resend_verification')
-                        flash(Markup('Please check your email and click the confirmation link to activate your account. If you didn\'t receive the email, <a href="{}" class="underline font-semibold">click here to resend the verification email</a>.'.format(resend_link)), 'error')
-                        return render_template("login.html", user=current_user, next=next_page)
-                    else:
+                    # Distinguish between unverified users and deactivated users.
+                    # Unverified users will have a password_reset_token (used for email confirmation).
+                    if not user.password_reset_token:
                         # Offer reactivation for deactivated accounts
                         session['pending_reactivation_user_id'] = user.id
                         return redirect(url_for('auth.reactivate_account'))
+                    # If they have a token, they are just unverified. Allow them to log in!
                 
                 # Password is correct and account is active, proceed to login or 2FA
                 if user.two_factor_enabled:
@@ -565,8 +563,12 @@ def sign_up():
             # Send confirmation email using helper function
             send_confirmation_email(new_user)
             
-            flash("Account created! Please check your email to confirm your account (don't forget to check your spam folder).", category='success')
-            return redirect(url_for('auth.login', next=next_page))
+            # Auto-login the user
+            from flask_login import login_user
+            login_user(new_user, remember=True)
+            
+            flash("Account created! Welcome to LetterForLater. Please check your email to verify your account (don't forget to check your spam folder).", category='success')
+            return redirect(next_page or url_for('views.home'))
 
     # If this is a trusted contact signup, pre-fill the email
     trusted_contact_code = session.get('trusted_contact_code')

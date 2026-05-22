@@ -958,6 +958,15 @@ def add_letter():
                     flash(error_msg, 'error')
                     return redirect(url_for('views.add_letter', letter_id=letter.id))
                 
+                # Unverified users cannot send to others
+                if not current_user.is_active:
+                    error_msg = 'You must verify your email address before you can send letters to other people. Please check your inbox or the banner above.'
+                    if is_ajax:
+                        db.session.rollback()
+                        return jsonify({'success': False, 'error': error_msg}), 403
+                    flash(error_msg, 'warning')
+                    return redirect(url_for('views.add_letter', letter_id=letter.id))
+                
                 # Use provided recipient info
                 letter.recipient_name = request.form.get('recipient_name')
                 letter.recipient_email = request.form.get('recipient_email')
@@ -1149,6 +1158,14 @@ def add_letter():
                 if is_ajax:
                     return jsonify({'success': False, 'error': error_msg}), 403
                 flash(error_msg, 'error')
+                return redirect(url_for('views.add_letter'))
+            
+            # Unverified users cannot send to others
+            if not current_user.is_active:
+                error_msg = 'You must verify your email address before you can send letters to other people. Please check your inbox or the banner above.'
+                if is_ajax:
+                    return jsonify({'success': False, 'error': error_msg}), 403
+                flash(error_msg, 'warning')
                 return redirect(url_for('views.add_letter'))
             
             # Use provided recipient info

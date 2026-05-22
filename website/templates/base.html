@@ -210,8 +210,8 @@
         {% if messages %}
         <div class="mb-8 space-y-3">
             {% for category, message in messages %}
-            <div class="p-4 rounded-2xl flex items-start gap-3 border {% if category == 'error' %}bg-red-50 border-red-100 text-red-800{% else %}bg-emerald-50 border-emerald-100 text-emerald-800{% endif %}">
-                <span class="material-symbols-outlined text-xl">{% if category == 'error' %}error{% else %}check_circle{% endif %}</span>
+            <div class="p-4 rounded-2xl flex items-start gap-3 border {% if category == 'error' %}bg-red-50 border-red-100 text-red-800{% elif category == 'warning' %}bg-amber-50 border-amber-100 text-amber-800{% else %}bg-emerald-50 border-emerald-100 text-emerald-800{% endif %}">
+                <span class="material-symbols-outlined text-xl">{% if category == 'error' %}error{% elif category == 'warning' %}warning{% else %}check_circle{% endif %}</span>
                 <p class="text-sm flex-1">{{ message|safe }}</p>
                 <button onclick="this.parentElement.remove()" class="opacity-50 hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
             </div>
@@ -219,6 +219,17 @@
         </div>
         {% endif %}
         {% endwith %}
+
+        {% if user.is_authenticated and not user.is_active %}
+        <div class="mb-8 p-4 rounded-2xl flex items-center gap-4 border bg-amber-50 border-amber-200 text-amber-900 shadow-sm">
+            <span class="material-symbols-outlined text-2xl text-amber-600">mark_email_unread</span>
+            <div class="flex-1">
+                <p class="text-sm font-bold">Please verify your email address</p>
+                <p class="text-xs opacity-80 mt-0.5">Check your inbox for a verification link. You must verify your email before sending letters.</p>
+            </div>
+            <a href="{{ url_for('auth.resend_verification') }}" class="text-xs font-bold uppercase tracking-widest bg-amber-200 hover:bg-amber-300 text-amber-900 px-4 py-2 rounded-xl transition-colors whitespace-nowrap text-center">Resend Email</a>
+        </div>
+        {% endif %}
 
         {% block content %}{% endblock %}
     </main>

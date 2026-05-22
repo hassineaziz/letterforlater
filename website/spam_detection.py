@@ -87,57 +87,6 @@ def is_random_name(name):
     return False
 
 
-def detect_spam_pattern(email, first_name, last_name, registration_ip):
-    """
-    Detect if signup is spam based on patterns.
-    Returns (is_spam, reason, confidence)
-    """
-    reasons = []
-    confidence = 0
-    
-    # Check email
-    if is_random_email(email):
-        reasons.append("random email pattern")
-        confidence += 50
-    
-    # Check names
-    if is_random_name(first_name):
-        reasons.append("random first name")
-        confidence += 30
-    
-    if is_random_name(last_name):
-        reasons.append("random last name")
-        confidence += 30
-    
-    # Check for cross-IP pattern (same email pattern from different IPs)
-    if registration_ip:
-        # Look for similar emails from different IPs in last hour
-        one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
-        
-        # Extract email pattern (first 8 chars + domain)
-        email_pattern = email[:8].lower() if len(email) >= 8 else email.lower()
-        domain = email.split('@')[-1].lower() if '@' in email else ''
-        
-        # Find similar emails (same pattern) from different IPs
-        similar_emails = User.query.filter(
-            User.created_date >= one_hour_ago,
-            User.email.like(f"{email_pattern}%@{domain}")
-        ).all()
-        
-        if len(similar_emails) >= 3:
-            unique_ips = set(u.registration_ip for u in similar_emails if u.registration_ip)
-            if len(unique_ips) >= 2:  # Same pattern from multiple IPs = spam
-                reasons.append("cross-IP spam pattern")
-                confidence += 40
-    
-    # High confidence = spam
-    is_spam = confidence >= 80
-    
-    reason = ", ".join(reasons) if reasons else "pattern detection"
-    
-    return is_spam, reason, confidence
-
-
 def check_recent_spam_activity(registration_ip):
     """
     Check if this IP or its Subnet has been creating too many accounts recently.

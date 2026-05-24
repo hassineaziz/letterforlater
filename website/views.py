@@ -4,6 +4,7 @@ from functools import wraps
 from .models import Letter, TrustedContact, User, DeathVerification, DeathVerificationConfirmation, MediaAttachment, BlogPost
 from . import db, mail
 from .s3_config import s3_config
+from .blocking import get_client_ip
 import json
 from datetime import datetime, timedelta, timezone
 from flask_mail import Message
@@ -3624,6 +3625,9 @@ def google_auth():
     base_url = request.url_root
     if '127.0.0.1' in base_url:
         base_url = base_url.replace('127.0.0.1', 'localhost')
+    elif 'localhost' not in base_url and base_url.startswith('http://'):
+        # Force HTTPS in production (proxies like Nginx often strip it)
+        base_url = base_url.replace('http://', 'https://')
     redirect_uri = f"{base_url}auth/google/callback"
     google_oauth_url = (
         f"https://accounts.google.com/o/oauth2/v2/auth?"
@@ -3688,6 +3692,9 @@ def google_callback():
         base_url = request.url_root
         if '127.0.0.1' in base_url:
             base_url = base_url.replace('127.0.0.1', 'localhost')
+        elif 'localhost' not in base_url and base_url.startswith('http://'):
+            # Force HTTPS in production (proxies like Nginx often strip it)
+            base_url = base_url.replace('http://', 'https://')
         token_data = {
             'client_id': GOOGLE_CLIENT_ID,
             'client_secret': GOOGLE_CLIENT_SECRET,

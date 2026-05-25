@@ -284,7 +284,6 @@ class User(db.Model, UserMixin):
     marketing_consent = db.Column(db.Boolean, default=False)
     
     # Reminder tracking for users without letters
-    last_no_letter_reminder_sent_at = db.Column(db.DateTime(timezone=True), nullable=True)
     
     # Reminder tracking for pricing/upsell emails
     last_pricing_reminder_sent_at = db.Column(db.DateTime(timezone=True), nullable=True)

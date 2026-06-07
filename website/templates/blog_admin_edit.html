@@ -19,6 +19,7 @@
   </div>
 
   <form method="POST" class="space-y-6">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-6">
@@ -232,6 +233,7 @@
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             credentials: 'include',
             body: JSON.stringify({
@@ -333,6 +335,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -397,6 +400,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           },
           credentials: 'include',
           body: JSON.stringify({

@@ -135,6 +135,7 @@
 <div id="editContactModal" class="fixed inset-0 flex items-center justify-center z-[60] px-4 pointer-events-none" style="display: none;">
     <div class="bg-surface-container-lowest rounded-[3rem] border border-surface-container-highest w-full max-w-xl shadow-2xl pointer-events-auto transform transition-all duration-300 scale-95 opacity-0">
         <form id="editContactForm" method="POST" action="{{ url_for('views.edit_trusted_contact') }}" class="p-10">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <div class="flex items-center justify-between mb-10">
                 <h5 class="font-headline text-3xl font-bold text-on-surface">Edit Guardian</h5>
                 <button type="button" class="modal-close p-2 hover:bg-surface-container rounded-full transition-colors" data-modal="editContactModal" onclick="closeEditModal()">
@@ -487,6 +488,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ url_for("views.delete_trusted_contact") }}';
+            
+            // CSRF Token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'contact_id';

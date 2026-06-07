@@ -17,6 +17,7 @@
           {% for verification in user.death_verifications.filter_by(status='verified') %}
           <p class="text-on-surface-variant text-sm leading-relaxed mb-6">{{ verification.confirmations_count }} of your trusted contacts have confirmed your passing. Your legacy messages are currently being processed for delivery.</p>
           <form method="POST" action="/respond-to-death-verification">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="verification_id" value="{{ verification.id }}">
             <button type="submit" name="action" value="deny" class="inline-flex items-center gap-2 bg-error hover:bg-error/90 text-on-error px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all shadow-lg shadow-error/20">
               <span class="material-symbols-outlined text-lg">close</span> I'm Alive — Stop Deliveries

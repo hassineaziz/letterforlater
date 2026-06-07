@@ -199,6 +199,7 @@
                    class="text-green-600 hover:text-green-900">View</a>
                 {% endif %}
                 <form method="POST" action="{{ url_for('views.blog_delete', post_id=post.id) }}" onsubmit="return handleDeleteConfirmation(event, 'Delete this post? This cannot be undone.');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
                 </form>
               </div>

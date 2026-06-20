@@ -15,7 +15,8 @@ def create_checkout_session():
     try:
         data = request.get_json()
         plan = data.get('plan')
-        cycle = data.get('cycle', 'month')
+        # cycle = data.get('cycle', 'month')
+        cycle = data.get('cycle', 'year')
         
         print(f"DEBUG: Create Checkout Session - User: {current_user.email}, Plan: {plan}, Cycle: {cycle}")
         

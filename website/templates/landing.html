@@ -392,7 +392,7 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
                     Most Popular</div>
                 <div class="mb-6">
                     <h3 class="text-xs font-bold uppercase tracking-widest text-primary mb-2">Premium</h3>
-                    <!-- Billing Toggle -->
+                    <!-- Billing Toggle (Hidden: Yearly Only)
                     <div class="flex items-center justify-start mb-4">
                         <div class="relative flex items-center p-0.5 bg-surface-container rounded-full w-28 h-6 overflow-hidden select-none">
                             <span id="billing-thumb"
@@ -403,7 +403,9 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
                                 class="relative z-10 w-[52px] h-5 text-[9px] font-bold text-on-surface-variant rounded-full">Yearly</button>
                         </div>
                     </div>
+                    -->
                     <div aria-live="polite">
+                        <!-- Price Monthly (Hidden: Yearly Only)
                         <div id="price-monthly">
                             <div class="flex items-baseline gap-1">
                                 <span class="text-3xl font-headline font-bold">$0.69</span>
@@ -413,7 +415,8 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
                                     id="trigger-yearly-toggle" type="button"
                                     class="text-primary font-bold hover:underline">save 64% yearly</button></p>
                         </div>
-                        <div id="price-yearly" class="hidden">
+                        -->
+                        <div id="price-yearly">
                             <div class="flex items-center gap-1.5 mb-0.5">
                                 <span class="text-[10px] text-on-surface-variant/50 line-through">$8.28</span>
                                 <span class="bg-primary/10 text-primary text-[8px] font-bold px-1 py-0.5 rounded-full">Save 64%</span>
@@ -437,7 +440,7 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
                     <li class="flex items-start gap-2 text-xs font-semibold"><span
                             class="material-symbols-outlined text-primary text-sm">check</span> Trusted Contacts &amp; Verification</li>
                 </ul>
-                <a href="{{ url_for('auth.sign_up') }}?plan=premium" id="premium-cta"
+                <a href="{{ url_for('auth.sign_up') }}?plan=premium&cycle=year" id="premium-cta"
                     class="w-full py-4 rounded-lg text-sm font-bold bg-primary text-on-primary hover:bg-primary-container transition-all shadow-lg hover:scale-[1.02] text-center inline-block">Upgrade Your Legacy</a>
             </div>
  
@@ -730,6 +733,13 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
             const premiumCta = document.getElementById('premium-cta');
             const thumb = document.getElementById('billing-thumb');
             const triggerYearly = document.getElementById('trigger-yearly-toggle');
+
+            // Default to yearly billing cycle
+            if (premiumCta) {
+                premiumCta.setAttribute('href', `{{ url_for('auth.sign_up') }}?plan=premium&cycle=year`);
+            }
+
+            /* Commented out billing cycle toggle logic
             if (!btnMonthly || !btnYearly || !monthly || !yearly || !thumb) return;
 
             function setCycle(cycle) {
@@ -753,6 +763,7 @@ future me, scheduled email delivery, goal setting letter, future self letter{% e
                 });
             }
             setCycle('month');
+            */
         })();
         {% endif %}
     });

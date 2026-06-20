@@ -592,7 +592,7 @@
                                 <div class="text-center mb-8 relative">
                                     <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
                                         Premium</h4>
-                                    <!-- Billing Toggle -->
+                                    <!-- Billing Toggle (Hidden: Yearly Only)
                                     <div class="flex items-center justify-center mb-4">
                                         <div
                                             class="relative flex items-center p-0.5 bg-surface-container rounded-full w-28 h-6 overflow-hidden select-none">
@@ -606,7 +606,9 @@
                                                 class="relative z-10 w-[52px] h-5 text-[9px] font-bold text-on-surface-variant rounded-full">Yearly</button>
                                         </div>
                                     </div>
+                                    -->
                                     <div aria-live="polite">
+                                        <!-- Price Monthly (Hidden: Yearly Only)
                                         <div id="settings-price-monthly">
                                             <div class="flex items-center justify-center gap-2 mb-2">
                                                 <span
@@ -617,7 +619,8 @@
                                             <div class="font-headline text-4xl font-bold text-on-surface">$0.69<span
                                                     class="text-xs font-medium text-on-surface-variant">/mo</span></div>
                                         </div>
-                                        <div id="settings-price-yearly" class="hidden">
+                                        -->
+                                        <div id="settings-price-yearly">
                                             <div class="flex items-center justify-center gap-2 mb-2">
                                                 <span
                                                     class="text-xs text-on-surface-variant/40 line-through font-bold">$5.98</span>
@@ -652,7 +655,7 @@
                                     </li>
                                 </ul>
                                 {% if user.plan != 'premium' and user.plan != 'lifetime' %}
-                                <button id="settings-premium-cta" onclick="checkout('premium', 'month')"
+                                <button id="settings-premium-cta" onclick="checkout('premium', 'year')"
                                     class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-6 py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] transition-all shadow-xl shadow-primary/20">
                                     Upgrade to Premium
                                 </button>
@@ -1293,6 +1296,7 @@
                 </div>
                 <div class="space-y-6 mb-10">
                     <div class="space-y-4">
+                        <!-- Monthly Option (Hidden: Yearly Only)
                         <label
                             class="flex items-center gap-4 p-6 bg-surface-container border border-surface-container-highest rounded-2xl cursor-pointer hover:border-primary transition-all group">
                             <input type="radio" name="new_cycle" value="month"
@@ -1304,11 +1308,11 @@
                                 <p class="text-xs text-on-surface-variant font-medium">$0.69 / Cycle</p>
                             </div>
                         </label>
+                        -->
                         <label
                             class="flex items-center gap-4 p-6 bg-surface-container border border-surface-container-highest rounded-2xl cursor-pointer hover:border-primary transition-all group">
                             <input type="radio" name="new_cycle" value="year"
-                                class="w-5 h-5 text-primary focus:ring-primary border-surface-container-highest" {% if
-                                user.subscription_cycle=='year' %}checked{% endif %}>
+                                class="w-5 h-5 text-primary focus:ring-primary border-surface-container-highest" checked>
                             <div class="flex-1">
                                 <div class="flex items-center justify-between">
                                     <p class="text-sm font-bold text-on-surface uppercase tracking-widest">Yearly
@@ -1622,6 +1626,13 @@
         const yearly = document.getElementById('settings-price-yearly');
         const premiumCta = document.getElementById('settings-premium-cta');
         const thumb = document.getElementById('settings-billing-thumb');
+
+        // Default settings upgrade to yearly cycle
+        if (premiumCta) {
+            premiumCta.setAttribute('onclick', "checkout('premium', 'year')");
+        }
+
+        /* Commented out billing cycle toggle logic
         if (!btnMonthly || !btnYearly || !monthly || !yearly || !thumb) return;
 
         function setCycle(cycle) {
@@ -1639,6 +1650,7 @@
         btnMonthly.addEventListener('click', function () { setCycle('month'); });
         btnYearly.addEventListener('click', function () { setCycle('year'); });
         setCycle('month');
+        */
     })();
 </script>
 {% endblock %}

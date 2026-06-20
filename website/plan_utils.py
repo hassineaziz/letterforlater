@@ -154,8 +154,10 @@ def get_plan_comparison():
         },
         'premium': {
             'name': 'Premium',
-            'price': '$0.69',
-            'period': 'per month',
+            # 'price': '$0.69',
+            # 'period': 'per month',
+            'price': '$2.99',
+            'period': 'per year',
             'features': [
                 'Unlimited letters',
                 'Photos, videos, and audio attachments',
@@ -233,7 +235,8 @@ def get_upgrade_cta_text(plan=None):
         return {
             'primary': 'Upgrade to Premium',
             'secondary': 'Get Lifetime Access',
-            'price_primary': '$0.69/month',
+            # 'price_primary': '$0.69/month',
+            'price_primary': '$2.99/year',
             'price_secondary': '$9.99 one-time',
             'benefit': 'Save 64% on annual subscription!'
         }
@@ -243,7 +246,8 @@ def get_upgrade_cta_text(plan=None):
             'secondary': 'Get Lifetime Access',
             'price_primary': '$9.99 one-time',
             'price_secondary': 'Pay once, use forever',
-            'benefit': 'No more monthly payments!'
+            # 'benefit': 'No more monthly payments!'
+            'benefit': 'Get permanent lifetime access!'
         }
     
     return {

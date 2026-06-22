@@ -85,6 +85,7 @@ htmlcov/
 # Documentation (keep only README.md and deployment docs)
 *.md
 !README.md
+!ARCHITECTURE.md
 !DEPLOYMENT.md
 !GOOGLE_OAUTH_SETUP.md
 !CLEANUP_SUMMARY.md

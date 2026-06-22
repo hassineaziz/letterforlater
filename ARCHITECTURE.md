@@ -1,8 +1,8 @@
-# Architecture — Legacy Letter
+# Architecture — Letter for Later
 
 ## System Overview
 
-Legacy Letter is a Flask/PostgreSQL SaaS application with a server-rendered frontend, cron-based data pipelines, and third-party integrations for payments, storage, and email.
+Letter for Later is a Flask/PostgreSQL SaaS application with a server-rendered frontend, cron-based data pipelines, and third-party integrations for payments, storage, and email.
 
 ```
                         ┌─────────────────────────────────────────────────────┐

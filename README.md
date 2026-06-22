@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📬 Legacy Letter — *Letters That Outlive You*
+# 📬 Letter for Later — *Letters That Outlive You*
 
 **A production Flask/Python SaaS application** for writing encrypted letters to be delivered after death verification.
 
@@ -16,7 +16,7 @@
 
 ## What It Does
 
-Legacy Letter lets users compose personal letters—to family, friends, or themselves—and schedule them to be delivered at a specific future date **or** only after a verified death event. The platform handles:
+Letter for Later lets users compose personal letters—to family, friends, or themselves—and schedule them to be delivered at a specific future date **or** only after a verified death event. The platform handles:
 
 - **Secure writing** — rich-text editor with media uploads (images, video, audio)
 - **Encryption at rest** — letter content encrypted with Fernet (AES-128-CBC) before hitting the database
@@ -141,7 +141,7 @@ Real-world scheduled data pipelines running in production:
 ## Project Structure
 
 ```
-legacy-letter/
+letterforlater/
 ├── main.py                     # App entry point
 ├── wsgi.py                     # Gunicorn WSGI binding
 ├── requirements.txt            # Pinned dependencies

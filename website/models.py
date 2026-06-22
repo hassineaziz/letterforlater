@@ -1,4 +1,21 @@
+"""
+Database models for letterforlater.com.
+
+Models:
+- User           : Core account model with OAuth, 2FA, subscription, and IP tracking.
+- Letter         : User-authored letter with Fernet encryption, S3 media, and delivery logic.
+- TrustedContact : People designated to confirm a user's death and receive letters.
+- DeathVerification / DeathVerificationConfirmation : Multi-contact death consensus workflow.
+- MediaAttachment: Tracks S3-stored images, videos, and audio linked to letters.
+- BlogPost       : SEO-optimised blog with GIN-indexed JSONB tags.
+- NewsletterSubscriber : Double opt-in newsletter with bounce/complaint handling.
+- BlockedIP      : Admin-managed IP blocklist for abuse prevention.
+- RecipientInvite: Tracks letter delivery invites and follow-up reminders.
+- Payment        : Stripe payment history per user.
+- Notification   : In-app notification feed.
+"""
 from . import db
+
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 from datetime import datetime

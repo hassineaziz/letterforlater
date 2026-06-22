@@ -34,8 +34,9 @@ instance/
 
 # Environment variables
 .env
-.env.local
-.env.production
+.env.*
+*.env
+*.backup
 
 # IDE
 .vscode/
@@ -53,6 +54,12 @@ logs/
 # Media uploads (if using S3, local uploads should be ignored)
 website/static/uploads/*
 !website/static/uploads/.gitkeep
+
+# Private data files
+website/newsletter_subscribers.txt
+
+# Large unused legacy files
+old_landing.html
 
 # Temporary files
 *.tmp

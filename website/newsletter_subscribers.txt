@@ -1,1 +1,2 @@
-2025-10-05T12:34:58.454233	hassineaziz@icloud.com
+# This file is intentionally kept empty.
+# Newsletter subscribers are managed via the database (NewsletterSubscriber model).
